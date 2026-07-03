@@ -3,1245 +3,1061 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stripmate — Open Trip Partner Terbaikmu</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <style>
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  <title>Stripmate — Open Trip Adventure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Three.js importmap -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
     }
+  }
+  </script>
+
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
     :root {
+      --bg: #050510;
       --primary: #6366f1;
-      --primary-dark: #4f46e5;
       --secondary: #f59e0b;
-      --bg: #0f172a;
-      --bg-card: #1e293b;
-      --bg-section: #1a2332;
+      --accent-cyan: #4fc3f7;
+      --accent-purple: #7c4dff;
+      --accent-teal: #06d6a0;
+      --glass: rgba(5,5,16,0.55);
+      --glass-border: rgba(255,255,255,0.06);
       --text: #f1f5f9;
       --text-muted: #94a3b8;
-      --radius: 1rem;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      --radius: 1.25rem;
     }
 
-    html {
-      scroll-behavior: smooth;
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+    h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:800;letter-spacing:-0.03em}
+
+    #three-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0}
+    .content{position:relative;z-index:1}
+
+    section{min-height:100vh;display:flex;align-items:center;padding:5rem 0;position:relative}
+    .container{max-width:1200px;margin:0 auto;padding:0 1.5rem;width:100%}
+
+    .glass-panel {
+      background:var(--glass);
+      backdrop-filter:blur(16px) saturate(1.4);
+      -webkit-backdrop-filter:blur(16px) saturate(1.4);
+      border:1px solid var(--glass-border);
+      border-radius:var(--radius);
+      padding:2.5rem 3rem;
     }
 
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-    }
+    .section-label{display:inline-block;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:var(--accent-cyan);margin-bottom:0.5rem;text-shadow:0 0 20px rgba(79,195,247,0.3)}
+    .section-title{font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.1;margin-bottom:0.6rem}
+    .section-desc{color:var(--text-muted);max-width:560px;font-size:1.05rem;line-height:1.7}
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
-    /* ─── NAVBAR ─── */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(99, 102, 241, 0.15);
-      transition: background 0.3s;
-    }
-
-    .navbar .container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 70px;
-    }
-
-    .logo {
-      font-size: 1.6rem;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-    }
-
-    .nav-cta {
-      background: var(--primary);
-      color: #fff;
-      padding: 0.5rem 1.25rem;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      text-decoration: none;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .nav-cta:hover {
-      background: var(--primary-dark);
-      transform: scale(1.05);
-    }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-    }
-
-    .hamburger span {
-      width: 26px;
-      height: 3px;
-      background: var(--text);
-      border-radius: 3px;
-      transition: 0.3s;
-    }
+    .glow-text{background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
     /* ─── HERO ─── */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      padding-top: 70px;
-    }
+    #hero{min-height:100vh;padding-top:0;align-items:center;justify-content:center;text-align:center}
+    #hero .container{max-width:860px}
+    #hero .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.2);color:var(--accent-cyan);padding:0.4rem 1.2rem;border-radius:999px;font-size:0.8rem;font-weight:600;margin-bottom:1.5rem;text-shadow:0 0 10px rgba(79,195,247,0.2)}
+    #hero h1{font-size:clamp(2.8rem,8vw,5rem);font-weight:900;line-height:1.08;margin-bottom:1rem;letter-spacing:-0.04em}
+    #hero .sub{font-size:1.15rem;color:var(--text-muted);max-width:600px;margin:0 auto 2.5rem;line-height:1.8}
+    .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;border-radius:999px;font-weight:600;font-size:0.95rem;text-decoration:none;transition:all 0.3s;cursor:pointer;border:none;position:relative;overflow:hidden}
+    .btn-primary{background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));color:#fff}
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(79,195,247,0.3)}
+    .btn-outline{background:transparent;color:var(--text);border:1.5px solid rgba(255,255,255,0.15)}
+    .btn-outline:hover{border-color:var(--accent-cyan);background:rgba(79,195,247,0.08);transform:translateY(-3px)}
+    .btn-glowing::before{content:'';position:absolute;inset:-2px;border-radius:inherit;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple),var(--secondary));z-index:-1;opacity:0;transition:opacity 0.3s}
+    .btn-glowing:hover::before{opacity:1}
 
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(99, 102, 241, 0.15), transparent),
-        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(245, 158, 11, 0.08), transparent);
-      pointer-events: none;
-    }
+    /* ─── DESTINASI ─── */
+    .dest-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-top:2rem}
+    .dest-card{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;transition:transform 0.4s,box-shadow 0.4s;cursor:pointer;transform-style:preserve-3d;perspective:1000px}
+    .dest-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 60px rgba(0,0,0,0.5),0 0 40px rgba(79,195,247,0.08)}
+    .dest-card .thumb{width:100%;height:180px;object-fit:cover;display:block;transition:transform 0.6s}
+    .dest-card:hover .thumb{transform:scale(1.08)}
+    .dest-card .body{padding:1.25rem 1.5rem}
+    .dest-card .body h3{font-size:1.2rem;font-weight:700;margin-bottom:0.25rem}
+    .dest-card .body .meta{display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--text-muted);margin-bottom:0.5rem}
+    .dest-card .body .price{font-size:1.4rem;font-weight:800;color:var(--secondary)}
+    .dest-card .body .price small{font-size:0.8rem;font-weight:400;color:var(--text-muted)}
 
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      max-width: 800px;
-    }
+    /* ─── STEPS ─── */
+    .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-top:2rem}
+    .step-card{text-align:center;padding:2rem 1.5rem;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius);transition:transform 0.3s}
+    .step-card:hover{transform:translateY(-4px)}
+    .step-num{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));font-weight:800;font-size:1.1rem;margin-bottom:1rem;box-shadow:0 0 30px rgba(79,195,247,0.2)}
+    .step-card h3{font-size:1.05rem;font-weight:700;margin-bottom:0.4rem}
+    .step-card p{font-size:0.88rem;color:var(--text-muted);line-height:1.6}
 
-    .hero-badge {
-      display: inline-block;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: var(--primary);
-      padding: 0.4rem 1.2rem;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      letter-spacing: 0.02em;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.6rem, 7vw, 4.2rem);
-      font-weight: 900;
-      line-height: 1.15;
-      letter-spacing: -0.04em;
-      margin-bottom: 1.2rem;
-    }
-
-    .hero h1 span {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero p {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 2.2rem;
-    }
-
-    .hero-buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.85rem 2rem;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: all 0.25s;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35);
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1.5px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--primary);
-      background: rgba(99, 102, 241, 0.1);
-      transform: translateY(-2px);
-    }
-
-    /* stats */
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      margin-top: 3.5rem;
-      flex-wrap: wrap;
-    }
-
-    .hero-stats .stat {
-      text-align: center;
-    }
-
-    .hero-stats .stat .num {
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-stats .stat .label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    /* ─── SECTION COMMON ─── */
-    section {
-      padding: 5rem 0;
-    }
-
-    .section-label {
-      display: inline-block;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: var(--primary);
-      margin-bottom: 0.6rem;
-    }
-
-    .section-title {
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.8rem;
-    }
-
-    .section-desc {
-      color: var(--text-muted);
-      max-width: 600px;
-      margin-bottom: 3rem;
-    }
-
-    /* ─── DESTINATIONS ─── */
-    .dest-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .dest-card {
-      background: var(--bg-card);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .dest-card:hover {
-      transform: translateY(-6px);
-      box-shadow: var(--shadow);
-    }
-
-    .dest-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .dest-card .body {
-      padding: 1.25rem;
-    }
-
-    .dest-card .body h3 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
-    }
-
-    .dest-card .body .meta {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .dest-card .body .price {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--secondary);
-    }
-
-    .dest-card .body .price small {
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: var(--text-muted);
-    }
-
-    /* ─── HOW IT WORKS ─── */
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 2rem;
-      counter-reset: step;
-    }
-
-    .step-card {
-      background: var(--bg-card);
-      border-radius: var(--radius);
-      padding: 2rem 1.5rem;
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      transition: transform 0.3s;
-      counter-increment: step;
-      position: relative;
-    }
-
-    .step-card:hover {
-      transform: translateY(-4px);
-    }
-
-    .step-card .icon {
-      font-size: 2.4rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .step-card .step-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .step-card h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
-    }
-
-    .step-card p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    /* ─── SCHEDULE / JADWAL ─── */
-    .schedule-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .schedule-item {
-      background: var(--bg-card);
-      border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-      border-left: 4px solid var(--primary);
-      transition: transform 0.2s;
-    }
-
-    .schedule-item:hover {
-      transform: translateX(4px);
-    }
-
-    .schedule-item .info h4 {
-      font-weight: 700;
-      font-size: 1.05rem;
-    }
-
-    .schedule-item .info p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .schedule-item .meta {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .schedule-item .meta .harga {
-      font-weight: 700;
-      color: var(--secondary);
-    }
-
-    .schedule-item .meta .slot {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .schedule-item .btn-small {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 0.45rem 1.2rem;
-      border-radius: 999px;
-      font-weight: 600;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .schedule-item .btn-small:hover {
-      background: var(--primary-dark);
-    }
-
-    /* ─── TESTIMONIALS ─── */
-    .testi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .testi-card {
-      background: var(--bg-card);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.04);
-    }
-
-    .testi-card .stars {
-      color: var(--secondary);
-      font-size: 1rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .testi-card blockquote {
-      font-style: italic;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
-    }
-
-    .testi-card .author {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .testi-card .author img {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-
-    .testi-card .author .name {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .testi-card .author .trip {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
+    /* ─── JADWAL ─── */
+    .schedule-list{display:flex;flex-direction:column;gap:0.75rem;margin-top:2rem}
+    .schedule-item{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding:1.1rem 1.5rem;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:0.85rem;border-left:3px solid var(--accent-cyan);transition:transform 0.3s,box-shadow 0.3s}
+    .schedule-item:hover{transform:translateX(6px);box-shadow:0 0 30px rgba(79,195,247,0.06)}
+    .schedule-item .info h4{font-size:1rem;font-weight:700}
+    .schedule-item .info p{font-size:0.82rem;color:var(--text-muted)}
+    .schedule-item .meta{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+    .schedule-item .meta .harga{font-weight:700;color:var(--secondary)}
+    .schedule-item .meta .slot{font-size:0.82rem;color:var(--text-muted)}
+    .btn-small{padding:0.4rem 1.1rem;border-radius:999px;border:none;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));color:#fff;font-weight:600;font-size:0.78rem;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+    .btn-small:hover{transform:scale(1.05);box-shadow:0 0 25px rgba(79,195,247,0.25)}
 
     /* ─── GALLERY ─── */
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
+    .gallery-3d-wrap{position:relative;height:500px;perspective:1200px;margin:2rem 0}
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-top:2rem}
+    .gallery-grid img{width:100%;height:180px;object-fit:cover;border-radius:0.75rem;transition:transform 0.4s,filter 0.4s;cursor:pointer;filter:brightness(0.85) saturate(1.1)}
+    .gallery-grid img:hover{transform:scale(1.05);filter:brightness(1.1) saturate(1.3);box-shadow:0 0 40px rgba(79,195,247,0.1)}
 
-    .gallery-grid img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 0.75rem;
-      transition: transform 0.3s, filter 0.3s;
-      cursor: pointer;
-    }
+    /* ─── TESTIMONI ─── */
+    .testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:2rem}
+    .testi-card{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:1.5rem;transition:transform 0.3s}
+    .testi-card:hover{transform:translateY(-4px);box-shadow:0 0 40px rgba(79,195,247,0.06)}
+    .testi-card .stars{color:var(--secondary);font-size:0.9rem;margin-bottom:0.6rem}
+    .testi-card blockquote{font-style:italic;color:var(--text-muted);font-size:0.92rem;margin-bottom:1rem;line-height:1.7}
+    .testi-card .author{display:flex;align-items:center;gap:0.75rem}
+    .testi-card .author img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(79,195,247,0.2)}
+    .testi-card .author .name{font-weight:600;font-size:0.85rem}
+    .testi-card .author .trip{font-size:0.78rem;color:var(--text-muted)}
 
-    .gallery-grid img:hover {
-      transform: scale(1.03);
-      filter: brightness(1.1);
-    }
-
-    /* ─── BOOKING FORM ─── */
-    .booking-wrap {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: start;
-    }
-
-    .booking-info h2 {
-      margin-bottom: 0.8rem;
-    }
-
-    .booking-info .benefits {
-      list-style: none;
-      margin-top: 1.5rem;
-    }
-
-    .booking-info .benefits li {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      padding: 0.5rem 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-    }
-
-    .booking-info .benefits li::before {
-      content: '✓';
-      color: #22c55e;
-      font-weight: 700;
-    }
-
-    .booking-form {
-      background: var(--bg-card);
-      border-radius: var(--radius);
-      padding: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .booking-form .form-group {
-      margin-bottom: 1.2rem;
-    }
-
-    .booking-form label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-    }
-
-    .booking-form input,
-    .booking-form select,
-    .booking-form textarea {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border-radius: 0.6rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 0.95rem;
-      transition: border-color 0.2s;
-    }
-
-    .booking-form input:focus,
-    .booking-form select:focus,
-    .booking-form textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .booking-form textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    .booking-form select option {
-      background: var(--bg);
-    }
-
-    .booking-form .btn {
-      width: 100%;
-      justify-content: center;
-    }
-
-    .booking-form .success-msg {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .booking-form .success-msg .icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-    }
-
-    .booking-form .success-msg h3 {
-      font-size: 1.4rem;
-      margin-bottom: 0.4rem;
-    }
-
-    .booking-form .success-msg p {
-      color: var(--text-muted);
-    }
+    /* ─── BOOKING ─── */
+    .booking-wrap{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:2rem}
+    .booking-info .benefits{list-style:none;margin-top:1.5rem}
+    .booking-info .benefits li{padding:0.45rem 0;color:var(--text-muted);font-size:0.92rem;display:flex;align-items:center;gap:0.6rem}
+    .booking-info .benefits li::before{content:'\2713';color:#22c55e;font-weight:700;font-size:1.1rem}
+    .booking-form{background:var(--glass);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid var(--glass-border);border-radius:var(--radius);padding:2rem}
+    .booking-form .form-group{margin-bottom:1rem}
+    .booking-form label{display:block;font-size:0.8rem;font-weight:600;margin-bottom:0.3rem;color:var(--text-muted)}
+    .booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:0.7rem 1rem;border-radius:0.6rem;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:var(--text);font-family:inherit;font-size:0.9rem;transition:border-color 0.2s}
+    .booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{outline:none;border-color:var(--accent-cyan);box-shadow:0 0 20px rgba(79,195,247,0.08)}
+    .booking-form select option{background:var(--bg)}
+    .booking-form textarea{min-height:80px;resize:vertical}
+    .booking-form .btn{width:100%;justify-content:center}
+    .success-msg{display:none;text-align:center;padding:2rem}
+    .success-msg .icon{font-size:3rem;margin-bottom:0.8rem}
+    .success-msg h3{font-size:1.3rem;margin-bottom:0.3rem}
+    .success-msg p{color:var(--text-muted);font-size:0.92rem}
 
     /* ─── CTA ─── */
-    .cta-section {
-      text-align: center;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(245, 158, 11, 0.06));
-      border-radius: var(--radius);
-      padding: 4rem 2rem;
-      margin-bottom: 3rem;
-    }
-
-    .cta-section h2 {
-      font-size: clamp(1.6rem, 3vw, 2.2rem);
-      margin-bottom: 0.8rem;
-    }
-
-    .cta-section p {
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+    #cta{text-align:center}
+    #cta .cta-box{background:linear-gradient(135deg,rgba(79,195,247,0.06),rgba(124,77,255,0.04));border:1px solid var(--glass-border);border-radius:var(--radius);padding:4rem 2rem}
+    #cta h2{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:0.6rem}
+    #cta p{color:var(--text-muted);margin-bottom:2rem;max-width:480px;margin-left:auto;margin-right:auto}
 
     /* ─── FOOTER ─── */
-    footer {
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 3rem 0 2rem;
+    footer{border-top:1px solid rgba(255,255,255,0.04);padding:3rem 0 2rem;position:relative;z-index:1}
+    footer .grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2rem}
+    footer .brand .logo{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+    footer .brand p{color:var(--text-muted);font-size:0.85rem;margin-top:0.4rem;max-width:280px;line-height:1.6}
+    footer h4{font-size:0.85rem;font-weight:700;margin-bottom:0.8rem}
+    footer ul{list-style:none}
+    footer ul li{margin-bottom:0.35rem}
+    footer ul li a{color:var(--text-muted);text-decoration:none;font-size:0.85rem;transition:color 0.2s}
+    footer ul li a:hover{color:var(--accent-cyan)}
+    footer .bottom{border-top:1px solid rgba(255,255,255,0.04);padding-top:1.25rem;text-align:center;font-size:0.8rem;color:var(--text-muted)}
+    footer .social{display:flex;gap:0.75rem;margin-top:1rem}
+    footer .social a{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.04);color:var(--text-muted);text-decoration:none;font-size:0.8rem;transition:all 0.2s}
+    footer .social a:hover{background:var(--accent-cyan);color:#fff;transform:translateY(-2px)}
+
+    /* ─── NAV OVERLAY ─── */
+    .nav-overlay{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.25rem 0;background:rgba(5,5,16,0.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.04);transition:transform 0.3s}
+    .nav-overlay .container{display:flex;align-items:center;justify-content:space-between}
+    .nav-overlay .logo{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:900;background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+    .nav-overlay ul{display:flex;gap:2rem;list-style:none;align-items:center}
+    .nav-overlay ul a{color:var(--text-muted);text-decoration:none;font-size:0.85rem;font-weight:500;transition:color 0.2s}
+    .nav-overlay ul a:hover{color:var(--text)}
+    .nav-overlay ul .nav-cta{background:linear-gradient(135deg,var(--accent-cyan),var(--accent-purple));color:#fff;padding:0.45rem 1.2rem;border-radius:999px;font-weight:600;font-size:0.8rem}
+    .nav-overlay ul .nav-cta:hover{color:#fff;box-shadow:0 0 30px rgba(79,195,247,0.2)}
+    .hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:4px}
+    .hamburger span{width:24px;height:2.5px;background:var(--text);border-radius:3px;transition:0.3s}
+
+    .scroll-indicator {
+      position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;
+      display:flex;flex-direction:column;align-items:center;gap:0.5rem;color:var(--text-muted);font-size:0.7rem;
+      animation:bounce 2s infinite;text-transform:uppercase;letter-spacing:0.15em;
     }
+    .scroll-indicator .line{width:1px;height:40px;background:linear-gradient(to bottom,var(--text-muted),transparent)}
+    @keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
 
-    footer .grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 2rem;
-      margin-bottom: 2rem;
+    @media(max-width:768px){
+      .nav-overlay ul{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);flex-direction:column;padding:1.5rem;gap:1rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+      .nav-overlay ul.open{display:flex}
+      .hamburger{display:flex}
+      .booking-wrap{grid-template-columns:1fr}
+      footer .grid{grid-template-columns:1fr 1fr}
+      .gallery-grid{grid-template-columns:repeat(2,1fr)}
+      .glass-panel{padding:1.5rem}
     }
-
-    footer .brand p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
-      max-width: 300px;
-    }
-
-    footer h4 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-
-    footer ul {
-      list-style: none;
-    }
-
-    footer ul li {
-      margin-bottom: 0.5rem;
-    }
-
-    footer ul li a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-
-    footer ul li a:hover {
-      color: var(--text);
-    }
-
-    footer .bottom {
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      padding-top: 1.5rem;
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    footer .social {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    footer .social a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: background 0.2s, color 0.2s;
-    }
-
-    footer .social a:hover {
-      background: var(--primary);
-      color: #fff;
-    }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        right: 0;
-        background: var(--bg);
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.2rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      .nav-links.open {
-        display: flex;
-      }
-
-      .hamburger {
-        display: flex;
-      }
-
-      .booking-wrap {
-        grid-template-columns: 1fr;
-      }
-
-      footer .grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .hero-stats {
-        gap: 1.5rem;
-      }
-
-      .schedule-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    @media (max-width: 480px) {
-      footer .grid {
-        grid-template-columns: 1fr;
-      }
+    @media(max-width:480px){
+      footer .grid{grid-template-columns:1fr}
+      .gallery-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══ NAVBAR ═══ -->
-  <nav class="navbar">
+  <div id="three-canvas"></div>
+
+  <!-- NAV -->
+  <nav class="nav-overlay" id="navbar">
     <div class="container">
       <a href="#" class="logo">Stripmate</a>
       <button class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
-      <ul class="nav-links" id="navLinks">
+      <ul id="navLinks">
         <li><a href="#destinasi">Destinasi</a></li>
+        <li><a href="#cara-kerja">Cara Kerja</a></li>
         <li><a href="#jadwal">Jadwal</a></li>
-        <li><a href="#testimoni">Testimoni</a></li>
         <li><a href="#gallery">Galeri</a></li>
         <li><a href="#booking" class="nav-cta">Booking</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- ═══ HERO ═══ -->
-  <section class="hero" id="home">
-    <div class="container hero-content">
-      <span class="hero-badge">&#9733; Open Trip Terpercaya</span>
-      <h1>Jalan&#8209;jalan Seru,<br/>Bersama <span>Stripmate</span></h1>
-      <p>
-        Nikmati liburan seru bareng teman-teman baru. Harga terjangkau, itinerary
-        lengkap, dan pengalaman tak terlupakan di setiap destinasi.
-      </p>
-      <div class="hero-buttons">
-        <a href="#destinasi" class="btn btn-primary">&#128269; Lihat Destinasi</a>
-        <a href="#booking" class="btn btn-outline">&#9990; Pesan Sekarang</a>
-      </div>
-      <div class="hero-stats">
-        <div class="stat">
-          <div class="num" data-count="150">0</div>
-          <div class="label">Trip Berangkat</div>
-        </div>
-        <div class="stat">
-          <div class="num" data-count="3200">0</div>
-          <div class="label">Traveler</div>
-        </div>
-        <div class="stat">
-          <div class="num" data-count="12">0</div>
-          <div class="label">Destinasi</div>
-        </div>
-        <div class="stat">
-          <div class="num" data-count="4.9">0</div>
-          <div class="label">Rating &#9733;</div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="content">
 
-  <!-- ═══ DESTINASI ═══ -->
-  <section id="destinasi">
-    <div class="container">
-      <span class="section-label">&#127758; Destinasi</span>
-      <h2 class="section-title">Destinasi Populer</h2>
-      <p class="section-desc">Pilih trip favoritmu dan dapatkan pengalaman seru bersama Stripmate.</p>
-      <div class="dest-grid">
-        <div class="dest-card">
-          <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Bali" loading="lazy" />
-          <div class="body">
-            <h3>Bali Sunset Trip</h3>
-            <div class="meta">&#128197; 3H2M &middot; &#128100; Max 12 org</div>
-            <div class="price">Rp 899K <small>/org</small></div>
-          </div>
-        </div>
-        <div class="dest-card">
-          <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=200&fit=crop" alt="Bromo" loading="lazy" />
-          <div class="body">
-            <h3>Bromo Midnight</h3>
-            <div class="meta">&#128197; 2H1M &middot; &#128100; Max 10 org</div>
-            <div class="price">Rp 650K <small>/org</small></div>
-          </div>
-        </div>
-        <div class="dest-card">
-          <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400&h=200&fit=crop" alt="Raja Ampat" loading="lazy" />
-          <div class="body">
-            <h3>Raja Ampat Dive</h3>
-            <div class="meta">&#128197; 5H4M &middot; &#128100; Max 8 org</div>
-            <div class="price">Rp 2.499K <small>/org</small></div>
-          </div>
-        </div>
-        <div class="dest-card">
-          <img src="https://images.unsplash.com/photo-1506020647804-04f956952847?w=400&h=200&fit=crop" alt="Yogyakarta" loading="lazy" />
-          <div class="body">
-            <h3>Jogja Culture Explore</h3>
-            <div class="meta">&#128197; 3H2M &middot; &#128100; Max 15 org</div>
-            <div class="price">Rp 750K <small>/org</small></div>
-          </div>
+    <!-- ═══ HERO ═══ -->
+    <section id="hero">
+      <div class="container">
+        <div class="hero-badge">&#9733; Adventure Open Trip</div>
+        <h1>Jelajahi<br/><span class="glow-text">Dunia Bersama</span></h1>
+        <p class="sub">Open trip seru buat kamu yang haus petualangan. Harga ramah, teman baru, dan kenangan yang nggak pernah pudar.</p>
+        <div class="hero-btns" data-anim="hero-btns">
+          <a href="#destinasi" class="btn btn-primary">&#8595; Lihat Destinasi</a>
+          <a href="#booking" class="btn btn-outline">&#9990; Pesan Sekarang</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ═══ HOW IT WORKS ═══ -->
-  <section style="background: var(--bg-section);">
-    <div class="container">
-      <span class="section-label">&#128204; Cara Kerja</span>
-      <h2 class="section-title">Gimana Cara Ikut Trip?</h2>
-      <p class="section-desc">Mudah banget! Tinggal 4 langkah aja.</p>
-      <div class="steps">
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <h3>Pilih Destinasi</h3>
-          <p>Lihat jadwal dan pilih trip yang paling kamu suka.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">2</div>
-          <h3>Isi Data Booking</h3>
-          <p>Lengkapi formulir pemesanan dengan data dirimu.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">3</div>
-          <h3>Konfirmasi & Bayar</h3>
-          <p>DP 50% — sisanya lunas H-7. Gampang & aman.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">4</div>
-          <h3>Berangkat!</h3>
-          <p>Tinggal dateng di titik kumpul, sisanya kami urus.</p>
-        </div>
+      <div class="scroll-indicator">
+        <span>Scroll</span>
+        <div class="line"></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ═══ JADWAL ═══ -->
-  <section id="jadwal">
-    <div class="container">
-      <span class="section-label">&#128197; Jadwal</span>
-      <h2 class="section-title">Jadwal Keberangkatan</h2>
-      <p class="section-desc">Cek ketersediaan slot dan booking sebelum kehabisan.</p>
-      <div class="schedule-list">
-        <div class="schedule-item">
-          <div class="info">
-            <h4>&#127463;&#127462; Bali Sunset Trip</h4>
-            <p>12 - 14 Agustus 2026</p>
-          </div>
-          <div class="meta">
-            <span class="harga">Rp 899K</span>
-            <span class="slot">&#128100; Sisa 5 kursi</span>
-            <button class="btn-small" onclick="selectTrip('Bali Sunset Trip', '12 - 14 Agt 2026')">Booking</button>
-          </div>
-        </div>
-        <div class="schedule-item">
-          <div class="info">
-            <h4>&#127987;&#65039; Bromo Midnight</h4>
-            <p>19 - 20 Agustus 2026</p>
-          </div>
-          <div class="meta">
-            <span class="harga">Rp 650K</span>
-            <span class="slot">&#128100; Sisa 3 kursi</span>
-            <button class="btn-small" onclick="selectTrip('Bromo Midnight', '19 - 20 Agt 2026')">Booking</button>
-          </div>
-        </div>
-        <div class="schedule-item">
-          <div class="info">
-            <h4>&#127754; Raja Ampat Dive</h4>
-            <p>25 - 29 Agustus 2026</p>
-          </div>
-          <div class="meta">
-            <span class="harga">Rp 2.499K</span>
-            <span class="slot">&#128100; Sisa 2 kursi</span>
-            <button class="btn-small" onclick="selectTrip('Raja Ampat Dive', '25 - 29 Agt 2026')">Booking</button>
-          </div>
-        </div>
-        <div class="schedule-item">
-          <div class="info">
-            <h4>&#128332; Jogja Culture Explore</h4>
-            <p>2 - 4 September 2026</p>
-          </div>
-          <div class="meta">
-            <span class="harga">Rp 750K</span>
-            <span class="slot">&#128100; Sisa 8 kursi</span>
-            <button class="btn-small" onclick="selectTrip('Jogja Culture Explore', '2 - 4 Sep 2026')">Booking</button>
-          </div>
-        </div>
-        <div class="schedule-item">
-          <div class="info">
-            <h4>&#127796; Lombok Pink Beach</h4>
-            <p>9 - 11 September 2026</p>
-          </div>
-          <div class="meta">
-            <span class="harga">Rp 849K</span>
-            <span class="slot">&#128100; Sisa 6 kursi</span>
-            <button class="btn-small" onclick="selectTrip('Lombok Pink Beach', '9 - 11 Sep 2026')">Booking</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ TESTIMONI ═══ -->
-  <section id="testimoni" style="background: var(--bg-section);">
-    <div class="container">
-      <span class="section-label">&#128172; Testimoni</span>
-      <h2 class="section-title">Kata Mereka</h2>
-      <p class="section-desc">Pengalaman seru dari traveler yang sudah jalan bareng Stripmate.</p>
-      <div class="testi-grid">
-        <div class="testi-card">
-          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>"Trip ke Bromo-nya keren banget! Guide asik, itinerary jelas, dan dapet temen baru. Highly recommended!"</blockquote>
-          <div class="author">
-            <img src="https://i.pravatar.cc/80?img=1" alt="" loading="lazy" />
-            <div>
-              <div class="name">Rina Andriani</div>
-              <div class="trip">Bromo Midnight &mdash; Juni 2026</div>
+    <!-- ═══ DESTINASI ═══ -->
+    <section id="destinasi">
+      <div class="container">
+        <div class="glass-panel" data-anim="fade-up">
+          <span class="section-label">&#127758; Destinasi</span>
+          <h2 class="section-title">Pilih Petualanganmu</h2>
+          <p class="section-desc">Dari gunung hingga laut, setiap trip dirancang buat pengalaman maksimal.</p>
+          <div class="dest-grid">
+            <div class="dest-card" data-anim="card">
+              <img class="thumb" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Bali" loading="lazy" />
+              <div class="body">
+                <h3>Bali Sunset Trip</h3>
+                <div class="meta">&#128197; 3H2M &middot; &#128100; Max 12</div>
+                <div class="price">Rp 899K <small>/org</small></div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="testi-card">
-          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>"Pertama kali ikut open trip, awalnya ragu tapi ternyata seru banget. Stripmate bikin liburan jadi effortless!"</blockquote>
-          <div class="author">
-            <img src="https://i.pravatar.cc/80?img=5" alt="" loading="lazy" />
-            <div>
-              <div class="name">Dimas Pratama</div>
-              <div class="trip">Bali Sunset Trip &mdash; Mei 2026</div>
+            <div class="dest-card" data-anim="card">
+              <img class="thumb" src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=200&fit=crop" alt="Bromo" loading="lazy" />
+              <div class="body">
+                <h3>Bromo Midnight</h3>
+                <div class="meta">&#128197; 2H1M &middot; &#128100; Max 10</div>
+                <div class="price">Rp 650K <small>/org</small></div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="testi-card">
-          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <blockquote>"Raja Ampat nya luar biasa! Snorkeling di spot yang jarang dikunjungi, fotonya aesthetic semua. Worth it banget!"</blockquote>
-          <div class="author">
-            <img src="https://i.pravatar.cc/80?img=9" alt="" loading="lazy" />
-            <div>
-              <div class="name">Sari Wulandari</div>
-              <div class="trip">Raja Ampat Dive &mdash; April 2026</div>
+            <div class="dest-card" data-anim="card">
+              <img class="thumb" src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400&h=200&fit=crop" alt="Raja Ampat" loading="lazy" />
+              <div class="body">
+                <h3>Raja Ampat Dive</h3>
+                <div class="meta">&#128197; 5H4M &middot; &#128100; Max 8</div>
+                <div class="price">Rp 2.499K <small>/org</small></div>
+              </div>
+            </div>
+            <div class="dest-card" data-anim="card">
+              <img class="thumb" src="https://images.unsplash.com/photo-1506020647804-04f956952847?w=400&h=200&fit=crop" alt="Yogyakarta" loading="lazy" />
+              <div class="body">
+                <h3>Jogja Culture</h3>
+                <div class="meta">&#128197; 3H2M &middot; &#128100; Max 15</div>
+                <div class="price">Rp 750K <small>/org</small></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ═══ GALLERY ═══ -->
-  <section id="gallery">
-    <div class="container">
-      <span class="section-label">&#128247; Galeri</span>
-      <h2 class="section-title">Momen Perjalanan</h2>
-      <p class="section-desc">Cuplikan seru dari trip-trip Stripmate sebelumnya.</p>
-      <div class="gallery-grid">
-        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=300&fit=crop" alt="Galeri 1" loading="lazy" />
-        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Galeri 2" loading="lazy" />
-        <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400&h=300&fit=crop" alt="Galeri 3" loading="lazy" />
-        <img src="https://images.unsplash.com/photo-1506020647804-04f956952847?w=400&h=300&fit=crop" alt="Galeri 4" loading="lazy" />
-        <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop" alt="Galeri 5" loading="lazy" />
-        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Galeri 6" loading="lazy" />
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ BOOKING ═══ -->
-  <section id="booking" style="background: var(--bg-section);">
-    <div class="container">
-      <div class="booking-wrap">
-        <div class="booking-info">
-          <span class="section-label">&#128221; Booking</span>
-          <h2 class="section-title" style="margin-bottom:0.6rem;">Siap Berpetualang?</h2>
-          <p style="color:var(--text-muted);">
-            Isi form di samping dan tim kami akan menghubungimu dalam
-            1x24 jam untuk konfirmasi dan pembayaran.
-          </p>
-          <ul class="benefits">
-            <li>Konfirmasi cepat via WhatsApp</li>
-            <li>DP 50%, sisanya bayar H-7</li>
-            <li>Free e-certificate & dokumentasi</li>
-            <li>Guide profesional & berpengalaman</li>
-            <li>Asuransi perjalanan dasar</li>
-          </ul>
-        </div>
-
-        <div class="booking-form" id="bookingForm">
-          <form id="formBooking">
-            <div class="form-group">
-              <label for="nama">Nama Lengkap</label>
-              <input type="text" id="nama" placeholder="Masukkan nama" required />
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" placeholder="contoh@email.com" required />
-            </div>
-            <div class="form-group">
-              <label for="wa">No. WhatsApp</label>
-              <input type="tel" id="wa" placeholder="0812xxxxxx" required />
-            </div>
-            <div class="form-group">
-              <label for="trip">Pilih Trip</label>
-              <select id="trip" required>
-                <option value="">-- Pilih Trip --</option>
-                <option value="Bali Sunset Trip">Bali Sunset Trip - Rp 899K</option>
-                <option value="Bromo Midnight">Bromo Midnight - Rp 650K</option>
-                <option value="Raja Ampat Dive">Raja Ampat Dive - Rp 2.499K</option>
-                <option value="Jogja Culture Explore">Jogja Culture Explore - Rp 750K</option>
-                <option value="Lombok Pink Beach">Lombok Pink Beach - Rp 849K</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="jumlah">Jumlah Peserta</label>
-              <input type="number" id="jumlah" min="1" max="15" placeholder="1" required />
-            </div>
-            <div class="form-group">
-              <label for="pesan">Pesan Tambahan (opsional)</label>
-              <textarea id="pesan" placeholder="Misal: alergi makanan, request kamar, dll."></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">&#10148; Kirim Pemesanan</button>
-          </form>
-
-          <div class="success-msg" id="successMsg">
-            <div class="icon">&#10004;&#65039;</div>
-            <h3>Pemesanan Terkirim!</h3>
-            <p>Tim Stripmate akan menghubungimu via WhatsApp dalam 1x24 jam. Cek pesananmu ya!</p>
+    <!-- ═══ CARA KERJA ═══ -->
+    <section id="cara-kerja">
+      <div class="container">
+        <div class="glass-panel" data-anim="fade-up">
+          <span class="section-label">&#128204; Cara Kerja</span>
+          <h2 class="section-title">4 Langkah Mudah</h2>
+          <p class="section-desc">Cuma butuh 5 menit, sisanya biar kami yang urus.</p>
+          <div class="steps-grid">
+            <div class="step-card" data-anim="step"><div class="step-num">1</div><h3>Pilih Trip</h3><p>Cek destinasi dan jadwal yang cocok buat kamu.</p></div>
+            <div class="step-card" data-anim="step"><div class="step-num">2</div><h3>Isi Data</h3><p>Lengkapi form booking di bawah. Gampang!</p></div>
+            <div class="step-card" data-anim="step"><div class="step-num">3</div><h3>DP 50%</h3><p>Bayar DP, sisanya lunas H-7 via transfer.</p></div>
+            <div class="step-card" data-anim="step"><div class="step-num">4</div><h3>Berangkat!</h3><p>Dateng di titik kumpul, kita handle sisanya.</p></div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ═══ CTA ═══ -->
-  <section>
-    <div class="container cta-section">
-      <h2>Masih Ragu? Chat Aja Langsung!</h2>
-      <p>Tim Stripmate siap bantu kamu pilih trip yang paling cocok.</p>
-      <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-primary">&#128242; Hubungi via WhatsApp</a>
-    </div>
-  </section>
-
-  <!-- ═══ FOOTER ═══ -->
-  <footer>
-    <div class="container">
-      <div class="grid">
-        <div class="brand">
-          <a href="#" class="logo">Stripmate</a>
-          <p>Open trip partner terbaik buat anak muda Indonesia. Liburan seru, harga ramah di kantong, teman baru tanpa batas.</p>
-          <div class="social">
-            <a href="#" aria-label="Instagram">&#9654;</a>
-            <a href="#" aria-label="Facebook">f</a>
-            <a href="#" aria-label="YouTube">&#9654;</a>
-            <a href="#" aria-label="TikTok">t</a>
+    <!-- ═══ JADWAL ═══ -->
+    <section id="jadwal">
+      <div class="container">
+        <div class="glass-panel" data-anim="fade-up">
+          <span class="section-label">&#128197; Jadwal</span>
+          <h2 class="section-title">Keberangkatan Terdekat</h2>
+          <p class="section-desc">Slot terbatas — booking sebelum kehabisan!</p>
+          <div class="schedule-list">
+            <div class="schedule-item" data-anim="schedule">
+              <div class="info"><h4>&#127463;&#127462; Bali Sunset Trip</h4><p>12 - 14 Agustus 2026</p></div>
+              <div class="meta"><span class="harga">Rp 899K</span><span class="slot">&#128100; Sisa 5</span><button class="btn-small" onclick="selectTrip('Bali Sunset Trip','12-14 Agt 2026')">Booking</button></div>
+            </div>
+            <div class="schedule-item" data-anim="schedule">
+              <div class="info"><h4>&#127987;&#65039; Bromo Midnight</h4><p>19 - 20 Agustus 2026</p></div>
+              <div class="meta"><span class="harga">Rp 650K</span><span class="slot">&#128100; Sisa 3</span><button class="btn-small" onclick="selectTrip('Bromo Midnight','19-20 Agt 2026')">Booking</button></div>
+            </div>
+            <div class="schedule-item" data-anim="schedule">
+              <div class="info"><h4>&#127754; Raja Ampat Dive</h4><p>25 - 29 Agustus 2026</p></div>
+              <div class="meta"><span class="harga">Rp 2.499K</span><span class="slot">&#128100; Sisa 2</span><button class="btn-small" onclick="selectTrip('Raja Ampat Dive','25-29 Agt 2026')">Booking</button></div>
+            </div>
+            <div class="schedule-item" data-anim="schedule">
+              <div class="info"><h4>&#128332; Jogja Culture</h4><p>2 - 4 September 2026</p></div>
+              <div class="meta"><span class="harga">Rp 750K</span><span class="slot">&#128100; Sisa 8</span><button class="btn-small" onclick="selectTrip('Jogja Culture','2-4 Sep 2026')">Booking</button></div>
+            </div>
+            <div class="schedule-item" data-anim="schedule">
+              <div class="info"><h4>&#127796; Lombok Pink Beach</h4><p>9 - 11 September 2026</p></div>
+              <div class="meta"><span class="harga">Rp 849K</span><span class="slot">&#128100; Sisa 6</span><button class="btn-small" onclick="selectTrip('Lombok Pink Beach','9-11 Sep 2026')">Booking</button></div>
+            </div>
           </div>
         </div>
-        <div>
-          <h4>Destinasi</h4>
-          <ul>
-            <li><a href="#">Bali</a></li>
-            <li><a href="#">Bromo</a></li>
-            <li><a href="#">Raja Ampat</a></li>
-            <li><a href="#">Yogyakarta</a></li>
-            <li><a href="#">Lombok</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Perusahaan</h4>
-          <ul>
-            <li><a href="#">Tentang Kami</a></li>
-            <li><a href="#">Syarat & Ketentuan</a></li>
-            <li><a href="#">Kebijakan Privasi</a></li>
-            <li><a href="#">Karir</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Kontak</h4>
-          <ul>
-            <li><a href="#">halo@stripmate.id</a></li>
-            <li><a href="#">+62 812-3456-7890</a></li>
-            <li><a href="#">Jakarta, Indonesia</a></li>
-          </ul>
-        </div>
       </div>
-      <div class="bottom">
-        &copy; 2026 Stripmate. All rights reserved.
-      </div>
-    </div>
-  </footer>
+    </section>
 
-  <!-- ═══ JS ═══ -->
+    <!-- ═══ GALLERY ═══ -->
+    <section id="gallery">
+      <div class="container">
+        <div class="glass-panel" data-anim="fade-up">
+          <span class="section-label">&#128247; Galeri</span>
+          <h2 class="section-title">Momen Perjalanan</h2>
+          <p class="section-desc">Cuplikan petualangan seru Stripmate sebelumnya.</p>
+          <div class="gallery-grid">
+            <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=250&fit=crop" alt="" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop" alt="" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400&h=250&fit=crop" alt="" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1506020647804-04f956952847?w=400&h=250&fit=crop" alt="" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=250&fit=crop" alt="" loading="lazy" />
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop" alt="" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ TESTIMONI ═══ -->
+    <section id="testimoni">
+      <div class="container">
+        <div class="glass-panel" data-anim="fade-up">
+          <span class="section-label">&#128172; Testimoni</span>
+          <h2 class="section-title">Kata Mereka</h2>
+          <p class="section-desc">Pengalaman traveler yang sudah jalan bareng Stripmate.</p>
+          <div class="testi-grid">
+            <div class="testi-card" data-anim="testi">
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <blockquote>"Trip Bromo keren banget! Guide asik, itinerary jelas, dapet temen baru. Highly recommended!"</blockquote>
+              <div class="author"><img src="https://i.pravatar.cc/80?img=1" alt="" loading="lazy" /><div><div class="name">Rina Andriani</div><div class="trip">Bromo Midnight</div></div></div>
+            </div>
+            <div class="testi-card" data-anim="testi">
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <blockquote>"Pertama ikut open trip, awalnya ragu tapi ternyata seru banget. Stripmate bikin liburan effortless!"</blockquote>
+              <div class="author"><img src="https://i.pravatar.cc/80?img=5" alt="" loading="lazy" /><div><div class="name">Dimas Pratama</div><div class="trip">Bali Sunset</div></div></div>
+            </div>
+            <div class="testi-card" data-anim="testi">
+              <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <blockquote>"Raja Ampat luar biasa! Snorkeling spot langka, foto aesthetic semua. Worth it banget!"</blockquote>
+              <div class="author"><img src="https://i.pravatar.cc/80?img=9" alt="" loading="lazy" /><div><div class="name">Sari Wulandari</div><div class="trip">Raja Ampat Dive</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ BOOKING ═══ -->
+    <section id="booking">
+      <div class="container">
+        <div class="booking-wrap">
+          <div class="booking-info" data-anim="fade-right">
+            <span class="section-label">&#128221; Booking</span>
+            <h2 class="section-title">Siap Berangkat?</h2>
+            <p style="color:var(--text-muted);line-height:1.7">Isi form di samping, tim kami akan hubungi kamu dalam 1x24 jam.</p>
+            <ul class="benefits">
+              <li>Konfirmasi cepat via WhatsApp</li>
+              <li>DP 50%, sisanya H-7</li>
+              <li>Free e-certificate & dokumentasi</li>
+              <li>Guide profesional & berpengalaman</li>
+              <li>Asuransi perjalanan dasar</li>
+            </ul>
+          </div>
+          <div class="booking-form" data-anim="fade-left" id="bookingForm">
+            <form id="formBooking">
+              <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" required /></div>
+              <div class="form-group"><label>Email</label><input type="email" id="email" required /></div>
+              <div class="form-group"><label>No. WhatsApp</label><input type="tel" id="wa" required /></div>
+              <div class="form-group">
+                <label>Pilih Trip</label>
+                <select id="trip" required>
+                  <option value="">-- Pilih --</option>
+                  <option value="Bali Sunset Trip">Bali Sunset Trip - Rp 899K</option>
+                  <option value="Bromo Midnight">Bromo Midnight - Rp 650K</option>
+                  <option value="Raja Ampat Dive">Raja Ampat Dive - Rp 2.499K</option>
+                  <option value="Jogja Culture">Jogja Culture - Rp 750K</option>
+                  <option value="Lombok Pink Beach">Lombok Pink Beach - Rp 849K</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Jumlah Peserta</label><input type="number" id="jumlah" min="1" max="15" required /></div>
+              <div class="form-group"><label>Pesan (opsional)</label><textarea id="pesan" placeholder="Alergi makanan, request kamar, dll."></textarea></div>
+              <button type="submit" class="btn btn-primary">&#10148; Kirim Pemesanan</button>
+            </form>
+            <div class="success-msg" id="successMsg">
+              <div class="icon">&#10004;&#65039;</div>
+              <h3>Terkirim!</h3>
+              <p>Tim Stripmate akan menghubungimu via WA dalam 1x24 jam.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CTA ═══ -->
+    <section id="cta">
+      <div class="container">
+        <div class="cta-box" data-anim="fade-up">
+          <h2>Masih Ragu? Langsung Chat Aja!</h2>
+          <p>Tim Stripmate siap bantu kamu pilih trip yang paling cocok.</p>
+          <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-primary">&#128242; Hubungi WhatsApp</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer>
+      <div class="container">
+        <div class="grid">
+          <div class="brand">
+            <a href="#" class="logo">Stripmate</a>
+            <p>Open trip adventure terbaik. Liburan seru, harga ramah, teman baru tanpa batas.</p>
+            <div class="social">
+              <a href="#" aria-label="Instagram">IG</a>
+              <a href="#" aria-label="TikTok">TT</a>
+              <a href="#" aria-label="YouTube">YT</a>
+            </div>
+          </div>
+          <div><h4>Destinasi</h4><ul><li><a href="#">Bali</a></li><li><a href="#">Bromo</a></li><li><a href="#">Raja Ampat</a></li><li><a href="#">Yogyakarta</a></li><li><a href="#">Lombok</a></li></ul></div>
+          <div><h4>Info</h4><ul><li><a href="#">Tentang</a></li><li><a href="#">Syarat & Ketentuan</a></li><li><a href="#">Privasi</a></li><li><a href="#">Karir</a></li></ul></div>
+          <div><h4>Kontak</h4><ul><li><a href="#">halo@stripmate.id</a></li><li><a href="#">+62 812-3456-7890</a></li><li><a href="#">Jakarta</a></li></ul></div>
+        </div>
+        <div class="bottom">&copy; 2026 Stripmate. All rights reserved.</div>
+      </div>
+    </footer>
+
+  </div><!-- /.content -->
+
   <script>
-    // ─── Hamburger ───
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-
-    hamburger.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
-    });
-
-    // Tutup nav saat link diklik
-    document.querySelectorAll('.nav-links a').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('open');
-      });
-    });
-
-    // ─── Animated Counter ───
-    function animateCounters() {
-      const stats = document.querySelectorAll('.hero-stats .num');
-      stats.forEach(el => {
-        const target = parseFloat(el.dataset.count);
-        const isFloat = target % 1 !== 0;
-        const duration = 2000;
-        const start = performance.now();
-
-        function update(now) {
-          const elapsed = now - start;
-          const progress = Math.min(elapsed / duration, 1);
-          const current = progress * target;
-          el.textContent = isFloat ? current.toFixed(1) : Math.floor(current);
-          if (progress < 1) requestAnimationFrame(update);
-          else el.textContent = isFloat ? target.toFixed(1) : target;
-        }
-        requestAnimationFrame(update);
-      });
-    }
-
-    // ─── Pilih trip dari jadwal ───
     function selectTrip(trip, date) {
       document.getElementById('trip').value = trip;
       document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-      document.getElementById('pesan').value = 'Booking untuk jadwal: ' + date;
+      document.getElementById('pesan').value = 'Jadwal: ' + date;
     }
 
-    // ─── Form Submit ───
-    const form = document.getElementById('formBooking');
-    const successMsg = document.getElementById('successMsg');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const btn = form.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.textContent = 'Mengirim...';
-
-      // Simulasi kirim (ganti dengan POST ke backend-mu)
-      await new Promise(r => setTimeout(r, 1500));
-
-      form.style.display = 'none';
-      successMsg.style.display = 'block';
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('navLinks').classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-overlay ul a').forEach(a => {
+      a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
     });
 
-    // ─── Intersection Observer untuk counter ───
-    const heroSection = document.querySelector('.hero');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateCounters();
-          observer.disconnect();
-        }
-      });
-    }, { threshold: 0.3 });
-    observer.observe(heroSection);
+    document.getElementById('formBooking').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.disabled = true; btn.textContent = 'Mengirim...';
+      await new Promise(r => setTimeout(r, 1500));
+      e.target.style.display = 'none';
+      document.getElementById('successMsg').style.display = 'block';
+    });
   </script>
 
+  <!-- ═══ THREE.JS SCENE ═══ -->
+  <script type="module">
+    import * as THREE from 'three';
+
+    // ─── CONFIG ───
+    const TOTAL_PROGRESS_RANGE = 1;
+    const SECTIONS = {
+      hero:        [0.00, 0.16],
+      destinasi:   [0.14, 0.32],
+      carakerja:   [0.30, 0.46],
+      jadwal:      [0.44, 0.60],
+      gallery:     [0.58, 0.72],
+      testimoni:   [0.70, 0.84],
+      booking:     [0.82, 1.00],
+    };
+
+    // ─── SETUP ───
+    const canvasWrap = document.getElementById('three-canvas');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050510);
+    scene.fog = new THREE.FogExp2(0x050510, 0.0055);
+
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.5, 7);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    canvasWrap.appendChild(renderer.domElement);
+
+    // ─── LIGHTS ───
+    const ambient = new THREE.AmbientLight(0x404070, 0.6);
+    scene.add(ambient);
+
+    const dir1 = new THREE.DirectionalLight(0x4fc3f7, 1.8);
+    dir1.position.set(8, 12, 4);
+    scene.add(dir1);
+    const dir2 = new THREE.DirectionalLight(0x7c4dff, 0.8);
+    dir2.position.set(-6, 4, 8);
+    scene.add(dir2);
+    const pointLight = new THREE.PointLight(0xf59e0b, 0.6, 20);
+    pointLight.position.set(5, 3, -10);
+    scene.add(pointLight);
+
+    // ─── TERRAIN ───
+    const terrainGeo = new THREE.PlaneGeometry(50, 50, 90, 90);
+    terrainGeo.rotateX(-Math.PI / 2);
+
+    function displaceTerrain(geo, time) {
+      const pos = geo.attributes.position;
+      const t = time || 0;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const z = pos.getZ(i);
+        const y = Math.sin(x * 0.18 + t * 0.15) * Math.cos(z * 0.22 + t * 0.1) * 1.8
+                + Math.sin(x * 0.4 + z * 0.35 + t * 0.2) * 0.9
+                + Math.cos(x * 0.7 + z * 0.2) * 0.5
+                + Math.sin(x * 0.12 - z * 0.18) * 1.2;
+        pos.setY(i, y - 1.5);
+      }
+      pos.needsUpdate = true;
+      geo.computeVertexNormals();
+    }
+    displaceTerrain(terrainGeo);
+
+    const terrainMat = new THREE.MeshStandardMaterial({
+      color: 0x141038,
+      emissive: 0x0a0820,
+      emissiveIntensity: 0.3,
+      metalness: 0.15,
+      roughness: 0.7,
+      flatShading: true,
+      side: THREE.DoubleSide,
+    });
+    const terrain = new THREE.Mesh(terrainGeo, terrainMat);
+    terrain.position.set(0, -7, -25);
+    scene.add(terrain);
+
+    const wireGeo = terrainGeo.clone();
+    const wireMat2 = new THREE.MeshBasicMaterial({
+      color: 0x4fc3f7,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.08,
+    });
+    const wireTerrain = new THREE.Mesh(wireGeo, wireMat2);
+    wireTerrain.position.copy(terrain.position);
+    scene.add(wireTerrain);
+
+    // ─── STARS ───
+    const starGeo = new THREE.BufferGeometry();
+    const NSTARS = 2500;
+    const starPositions = new Float32Array(NSTARS * 3);
+    const starSizes = new Float32Array(NSTARS);
+    for (let i = 0; i < NSTARS; i++) {
+      starPositions[i*3] = (Math.random() - 0.5) * 100;
+      starPositions[i*3+1] = (Math.random() - 0.5) * 60 + 10;
+      starPositions[i*3+2] = (Math.random() - 0.5) * 100 - 20;
+      starSizes[i] = Math.random() * 0.15 + 0.04;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    starGeo.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+    const starMat2 = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.08,
+      transparent: true,
+      opacity: 0.9,
+      sizeAttenuation: true,
+    });
+    const stars = new THREE.Points(starGeo, starMat2);
+    scene.add(stars);
+
+    // ─── SUN ───
+    const sunGeo = new THREE.SphereGeometry(0.9, 32, 32);
+    const sunMat2 = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+    const sun = new THREE.Mesh(sunGeo, sunMat2);
+    sun.position.set(7, 5, -28);
+    scene.add(sun);
+
+    const glowGeo = new THREE.SphereGeometry(1.8, 32, 32);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      transparent: true,
+      opacity: 0.12,
+    });
+    const glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.position.copy(sun.position);
+    scene.add(glow);
+
+    // ─── FLOATING DESTINATION CUBES ───
+    const cubeGroup = new THREE.Group();
+    const cubeData = [
+      { pos: [-4.5, 1.2, -14], color: 0x4fc3f7, rotSpeed: 0.4 },
+      { pos: [4.5, -0.5, -13], color: 0x7c4dff, rotSpeed: 0.3 },
+      { pos: [-3.2, 2.5, -11], color: 0xf59e0b, rotSpeed: 0.5 },
+      { pos: [3.8, 0.8, -16],  color: 0x06d6a0, rotSpeed: 0.35 },
+    ];
+    const cubeMeshes = [];
+    cubeData.forEach((d, i) => {
+      const geo = new THREE.BoxGeometry(1.0, 1.0, 1.0);
+      const mat = new THREE.MeshStandardMaterial({
+        color: d.color,
+        emissive: d.color,
+        emissiveIntensity: 0.15,
+        metalness: 0.4,
+        roughness: 0.2,
+        transparent: true,
+        opacity: 0,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(d.pos[0], d.pos[1], d.pos[2]);
+      mesh.userData = { rotSpeed: d.rotSpeed, baseY: d.pos[1], phase: i * 1.5 };
+      cubeGroup.add(mesh);
+      cubeMeshes.push(mesh);
+
+      const edge = new THREE.EdgesGeometry(geo);
+      const edgeMat2 = new THREE.LineBasicMaterial({
+        color: d.color,
+        transparent: true,
+        opacity: 0,
+      });
+      const line = new THREE.LineSegments(edge, edgeMat2);
+      line.position.copy(mesh.position);
+      line.userData = mesh.userData;
+      cubeGroup.add(line);
+      cubeMeshes.push(line);
+    });
+    scene.add(cubeGroup);
+
+    // ─── STEP COLUMNS ───
+    const stepGroup = new THREE.Group();
+    const stepColors = [0x4fc3f7, 0x7c4dff, 0xf59e0b, 0x06d6a0];
+    const stepMeshes = [];
+    for (let i = 0; i < 4; i++) {
+      const h = 1.0 + i * 0.5;
+      const geo = new THREE.CylinderGeometry(0.35, 0.5, h, 12);
+      const mat = new THREE.MeshStandardMaterial({
+        color: stepColors[i],
+        emissive: stepColors[i],
+        emissiveIntensity: 0.2,
+        metalness: 0.3,
+        roughness: 0.2,
+        transparent: true,
+        opacity: 0,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(-4.5 + i * 3, -3 + h / 2, -9);
+      mesh.userData = { baseY: -3 + h / 2, phase: i * 0.8 };
+      stepGroup.add(mesh);
+      stepMeshes.push(mesh);
+
+      const top = new THREE.SphereGeometry(0.25, 12, 12);
+      const topMat = new THREE.MeshBasicMaterial({
+        color: stepColors[i],
+        transparent: true,
+        opacity: 0,
+      });
+      const topMesh = new THREE.Mesh(top, topMat);
+      topMesh.position.set(mesh.position.x, -3 + h + 0.1, mesh.position.z);
+      topMesh.userData = mesh.userData;
+      stepGroup.add(topMesh);
+      stepMeshes.push(topMesh);
+    }
+
+    // connection lines
+    const linePoints = [];
+    for (let i = 0; i < 4; i++) {
+      const x = -4.5 + i * 3;
+      const h = 1.0 + i * 0.5;
+      linePoints.push(new THREE.Vector3(x, -3 + h, -9));
+    }
+    const lineGeo2 = new THREE.BufferGeometry().setFromPoints(linePoints);
+    const lineMat2 = new THREE.LineBasicMaterial({
+      color: 0x4fc3f7,
+      transparent: true,
+      opacity: 0,
+    });
+    const pathLine = new THREE.Line(lineGeo2, lineMat2);
+    stepGroup.add(pathLine);
+    stepMeshes.push(pathLine);
+    scene.add(stepGroup);
+
+    // ─── TIMELINE SPHERES ───
+    const timelineGroup = new THREE.Group();
+    const tlData = [
+      { pos: [-6, 0.2, -6], label: 'Bali' },
+      { pos: [-3, -0.3, -5.5], label: 'Bromo' },
+      { pos: [0, 0.5, -5], label: 'Raja Ampat' },
+      { pos: [3, -0.2, -5.5], label: 'Jogja' },
+      { pos: [6, 0.3, -6], label: 'Lombok' },
+    ];
+    const tlMeshes = [];
+    tlData.forEach((d, i) => {
+      const geo = new THREE.SphereGeometry(0.35, 16, 16);
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x4fc3f7,
+        emissive: 0x4fc3f7,
+        emissiveIntensity: 0.15,
+        metalness: 0.5,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(d.pos[0], d.pos[1], d.pos[2]);
+      mesh.userData = { phase: i * 1.2 };
+      timelineGroup.add(mesh);
+      tlMeshes.push(mesh);
+
+      const ring = new THREE.RingGeometry(0.4, 0.55, 24);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x4fc3f7,
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+      });
+      const ringMesh = new THREE.Mesh(ring, ringMat);
+      ringMesh.position.copy(mesh.position);
+      ringMesh.rotation.x = Math.PI / 2;
+      ringMesh.userData = mesh.userData;
+      timelineGroup.add(ringMesh);
+      tlMeshes.push(ringMesh);
+    });
+
+    const tlPoints = tlData.map(d => new THREE.Vector3(d.pos[0], d.pos[1], d.pos[2]));
+    const tlCurve = new THREE.CatmullRomCurve3(tlPoints);
+    const tlCurvePoints = tlCurve.getPoints(50);
+    const tlCurveGeo = new THREE.BufferGeometry().setFromPoints(tlCurvePoints);
+    const tlCurveMat = new THREE.LineBasicMaterial({
+      color: 0x7c4dff,
+      transparent: true,
+      opacity: 0,
+    });
+    const tlLine = new THREE.Line(tlCurveGeo, tlCurveMat);
+    timelineGroup.add(tlLine);
+    tlMeshes.push(tlLine);
+    scene.add(timelineGroup);
+
+    // ─── GALLERY PANELS ───
+    const galleryGroup = new THREE.Group();
+    const galPositions = [
+      [-4.5, 2.5, -2], [0, 2.8, -1.5], [4.5, 2.5, -2],
+      [-4.5, -0.5, -1], [0, -0.2, -0.5], [4.5, -0.5, -1],
+    ];
+    const galMeshes = [];
+    galPositions.forEach((pos, i) => {
+      const geo = new THREE.PlaneGeometry(1.8, 1.2);
+      const mat = new THREE.MeshStandardMaterial({
+        color: 0x1a1a3a,
+        emissive: 0x4fc3f7,
+        emissiveIntensity: 0.04,
+        metalness: 0.2,
+        roughness: 0.4,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(pos[0], pos[1], pos[2]);
+      mesh.rotation.y = (i % 3 - 1) * 0.15;
+      mesh.userData = { phase: i * 0.7, baseY: pos[1] };
+      galleryGroup.add(mesh);
+      galMeshes.push(mesh);
+
+      const edge = new THREE.EdgesGeometry(geo);
+      const edgeMat3 = new THREE.LineBasicMaterial({
+        color: 0x4fc3f7,
+        transparent: true,
+        opacity: 0,
+      });
+      const line = new THREE.LineSegments(edge, edgeMat3);
+      line.position.copy(mesh.position);
+      line.rotation.copy(mesh.rotation);
+      mesh.add(line);
+    });
+    scene.add(galleryGroup);
+
+    // ─── FLOATING SHAPES ───
+    const shapeGroup = new THREE.Group();
+    const shapeTypes = [
+      { geo: new THREE.TorusKnotGeometry(0.7, 0.25, 48, 12), color: 0x4fc3f7, pos: [-3, 2, 0] },
+      { geo: new THREE.OctahedronGeometry(0.7), color: 0x7c4dff, pos: [3, 1.5, 1] },
+      { geo: new THREE.DodecahedronGeometry(0.6), color: 0xf59e0b, pos: [0, 3.5, -0.5] },
+      { geo: new THREE.IcosahedronGeometry(0.6), color: 0x06d6a0, pos: [-2, -0.5, 2] },
+    ];
+    const shapeMeshes = [];
+    shapeTypes.forEach((s, i) => {
+      const mat = new THREE.MeshStandardMaterial({
+        color: s.color,
+        emissive: s.color,
+        emissiveIntensity: 0.1,
+        metalness: 0.6,
+        roughness: 0.15,
+        wireframe: false,
+        transparent: true,
+        opacity: 0,
+      });
+      const mesh = new THREE.Mesh(s.geo, mat);
+      mesh.position.set(s.pos[0], s.pos[1], s.pos[2]);
+      mesh.userData = { rotSpeed: 0.3 + i * 0.15, phase: i * 1.0, baseY: s.pos[1] };
+      shapeGroup.add(mesh);
+      shapeMeshes.push(mesh);
+
+      const wire = new THREE.Mesh(s.geo.clone(), new THREE.MeshBasicMaterial({
+        color: s.color,
+        wireframe: true,
+        transparent: true,
+        opacity: 0,
+      }));
+      wire.position.copy(mesh.position);
+      wire.scale.set(1.25, 1.25, 1.25);
+      wire.userData = mesh.userData;
+      shapeGroup.add(wire);
+      shapeMeshes.push(wire);
+    });
+    scene.add(shapeGroup);
+
+    // ─── SCROLL → 3D ───
+    let scrollProgress = 0;
+    let mouseX = 0, mouseY = 0;
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }
+
+    function smoothstep(edge0, edge1, x) {
+      const t = clamp((x - edge0) / (edge1 - edge0), 0, 1);
+      return t * t * (3 - 2 * t);
+    }
+
+    function updateScene(progress) {
+      scrollProgress = progress;
+
+      // ── Camera Path ──
+      const baseZ = lerp(7, -6, progress);
+      const baseY = lerp(1.5, 3.5, progress);
+      const baseX = mouseX * 0.3;
+      const yOffset = mouseY * -0.2;
+      camera.position.x += (baseX - camera.position.x) * 0.02;
+      camera.position.y += (baseY + yOffset - camera.position.y) * 0.02;
+      camera.position.z += (baseZ - camera.position.z) * 0.02;
+      camera.lookAt(0, 0, lerp(-10, 0, progress));
+
+      // ── Fog ──
+      scene.fog.density = lerp(0.0055, 0.012, progress);
+
+      // ── Terrain ──
+      const tAlpha = smoothstep(-0.05, 0.08, progress) * (1 - smoothstep(0.12, 0.22, progress));
+      terrainMat.opacity = tAlpha;
+      terrainMat.transparent = true;
+      wireTerrain.material.opacity = tAlpha * 0.5;
+      terrain.position.y = lerp(-7, -9, progress);
+      sun.material.opacity = tAlpha;
+      sun.material.transparent = true;
+      glow.material.opacity = tAlpha * 0.12;
+
+      // ── Cubes ──
+      const cAlpha = smoothstep(0.12, 0.20, progress) * (1 - smoothstep(0.30, 0.38, progress));
+      cubeMeshes.forEach((m, i) => {
+        if (m.type === 'Mesh' && m.geometry.type === 'BoxGeometry') {
+          m.material.opacity = cAlpha;
+        } else if (m.type === 'LineSegments') {
+          m.material.opacity = cAlpha * 0.6;
+        }
+      });
+
+      // ── Steps ──
+      const sAlpha = smoothstep(0.28, 0.36, progress) * (1 - smoothstep(0.44, 0.52, progress));
+      stepMeshes.forEach(m => {
+        if (m.material) m.material.opacity = sAlpha;
+      });
+
+      // ── Timeline ──
+      const tlAlpha = smoothstep(0.42, 0.50, progress) * (1 - smoothstep(0.58, 0.66, progress));
+      tlMeshes.forEach(m => {
+        if (m.material) m.material.opacity = tlAlpha;
+      });
+
+      // ── Gallery ──
+      const gAlpha = smoothstep(0.56, 0.64, progress) * (1 - smoothstep(0.70, 0.78, progress));
+      galMeshes.forEach(m => {
+        if (m.material) m.material.opacity = gAlpha;
+        m.children.forEach(c => {
+          if (c.material) c.material.opacity = gAlpha * 0.5;
+        });
+      });
+
+      // ── Shapes ──
+      const shAlpha = smoothstep(0.68, 0.78, progress) * (1 - smoothstep(0.90, 1.00, progress));
+      shapeMeshes.forEach(m => {
+        if (m.material) m.material.opacity = shAlpha;
+      });
+    }
+
+    // ─── GSAP SCROLLTRIGGER ───
+    let progressListeners = [];
+
+    ScrollTrigger.create({
+      trigger: document.body,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: self => {
+        updateScene(self.progress);
+        progressListeners.forEach(fn => fn(self.progress));
+      },
+      onRefresh: self => updateScene(self.progress),
+    });
+
+    // ─── ANIMATION LOOP ───
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // Animate terrain waves slowly
+      displaceTerrain(terrainGeo, time * 0.15);
+      wireTerrain.geometry.attributes.position.array.set(terrainGeo.attributes.position.array);
+      wireTerrain.geometry.attributes.position.needsUpdate = true;
+      wireTerrain.geometry.computeVertexNormals();
+
+      // Cube rotation
+      cubeMeshes.forEach(m => {
+        if (m.type === 'Mesh' && m.geometry.type === 'BoxGeometry') {
+          m.rotation.x += 0.005 * m.userData.rotSpeed;
+          m.rotation.y += 0.008 * m.userData.rotSpeed;
+          m.position.y = m.userData.baseY + Math.sin(time * 0.6 + m.userData.phase) * 0.15;
+        }
+      });
+
+      // Step floating
+      stepMeshes.forEach(m => {
+        if (m.userData && m.userData.baseY !== undefined) {
+          m.position.y = m.userData.baseY + Math.sin(time * 0.4 + m.userData.phase) * 0.12;
+        }
+      });
+
+      // Timeline animation
+      tlMeshes.forEach(m => {
+        if (m.geometry && m.geometry.type === 'SphereGeometry') {
+          m.position.y += Math.sin(time * 0.5 + m.userData.phase) * 0.002;
+        }
+      });
+
+      // Gallery floating
+      galMeshes.forEach(m => {
+        if (m.userData && m.userData.baseY !== undefined) {
+          m.position.y = m.userData.baseY + Math.sin(time * 0.35 + m.userData.phase) * 0.1;
+        }
+      });
+
+      // Shape rotation
+      shapeMeshes.forEach(m => {
+        if (m.userData && m.userData.rotSpeed) {
+          m.rotation.x += 0.003 * m.userData.rotSpeed;
+          m.rotation.y += 0.005 * m.userData.rotSpeed;
+          if (m.userData.baseY !== undefined) {
+            m.position.y = m.userData.baseY + Math.sin(time * 0.5 + m.userData.phase) * 0.15;
+          }
+        }
+      });
+
+      // Sun glow pulse
+      const pulse = 1 + Math.sin(time * 0.5) * 0.05;
+      glow.scale.set(pulse, pulse, pulse);
+
+      // Stars subtle rotation
+      stars.rotation.y += 0.0002;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // ─── CONTENT ANIMATIONS WITH GSAP ───
+    gsap.utils.toArray('[data-anim]').forEach(el => {
+      const anim = el.dataset.anim;
+      let vars = { opacity: 0, y: 40 };
+      if (anim === 'fade-up') vars = { opacity: 0, y: 50 };
+      else if (anim === 'fade-right') vars = { opacity: 0, x: -50 };
+      else if (anim === 'fade-left') vars = { opacity: 0, x: 50 };
+      else if (anim === 'card') vars = { opacity: 0, y: 40, scale: 0.92 };
+      else if (anim === 'step') vars = { opacity: 0, y: 30 };
+      else if (anim === 'schedule') vars = { opacity: 0, x: -30 };
+      else if (anim === 'testi') vars = { opacity: 0, y: 30 };
+      else if (anim === 'hero-btns') vars = { opacity: 0, y: 20 };
+
+      gsap.from(el, {
+        ...vars,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 88%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    });
+
+    gsap.from('#hero h1', {
+      opacity: 0, y: 40, duration: 1, ease: 'power3.out',
+      scrollTrigger: { trigger: '#hero', start: 'top 70%', toggleActions: 'play none none none' },
+    });
+    gsap.from('#hero .sub', {
+      opacity: 0, y: 20, duration: 0.8, delay: 0.15, ease: 'power3.out',
+      scrollTrigger: { trigger: '#hero', start: 'top 70%', toggleActions: 'play none none none' },
+    });
+
+    // ─── MOUSE PARALLAX ───
+    document.addEventListener('mousemove', e => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    // ─── RESIZE ───
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ─── REVEAL NAV ON SCROLL ───
+    const nav = document.getElementById('navbar');
+    ScrollTrigger.create({
+      trigger: '#destinasi',
+      start: 'top center',
+      onEnter: () => nav.style.transform = 'translateY(0)',
+      onLeaveBack: () => nav.style.transform = 'translateY(0)',
+    });
+
+    console.log('Stripmate 3D scene ready.');
+  </script>
 </body>
 </html>
