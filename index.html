@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stripmate — Open Trip Partner Terbaikmu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #f59e0b;
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-section: #1a2332;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --radius: 1rem;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+      transition: background 0.3s;
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 70px;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.5rem 1.25rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .nav-cta:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      width: 26px;
+      height: 3px;
+      background: var(--text);
+      border-radius: 3px;
+      transition: 0.3s;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 70px;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(99, 102, 241, 0.15), transparent),
+        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(245, 158, 11, 0.08), transparent);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--primary);
+      padding: 0.4rem 1.2rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.6rem, 7vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2.2rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.25s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* stats */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 3.5rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-stats .stat {
+      text-align: center;
+    }
+
+    .hero-stats .stat .num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-stats .stat .label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section {
+      padding: 5rem 0;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--primary);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+
+    /* ─── DESTINATIONS ─── */
+    .dest-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .dest-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .dest-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+    }
+
+    .dest-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .dest-card .body {
+      padding: 1.25rem;
+    }
+
+    .dest-card .body h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .dest-card .body .meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .dest-card .body .price {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--secondary);
+    }
+
+    .dest-card .body .price small {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      counter-reset: step;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: transform 0.3s;
+      counter-increment: step;
+      position: relative;
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .step-card .icon {
+      font-size: 2.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .step-card .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .step-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .step-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── SCHEDULE / JADWAL ─── */
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .schedule-item {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-left: 4px solid var(--primary);
+      transition: transform 0.2s;
+    }
+
+    .schedule-item:hover {
+      transform: translateX(4px);
+    }
+
+    .schedule-item .info h4 {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .schedule-item .info p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .schedule-item .meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .schedule-item .meta .harga {
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .schedule-item .meta .slot {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .schedule-item .btn-small {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.45rem 1.2rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .schedule-item .btn-small:hover {
+      background: var(--primary-dark);
+    }
+
+    /* ─── TESTIMONIALS ─── */
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .testi-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .testi-card .stars {
+      color: var(--secondary);
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .testi-card blockquote {
+      font-style: italic;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .testi-card .author {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .testi-card .author img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .testi-card .author .name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .testi-card .author .trip {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ─── GALLERY ─── */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .gallery-grid img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 0.75rem;
+      transition: transform 0.3s, filter 0.3s;
+      cursor: pointer;
+    }
+
+    .gallery-grid img:hover {
+      transform: scale(1.03);
+      filter: brightness(1.1);
+    }
+
+    /* ─── BOOKING FORM ─── */
+    .booking-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .booking-info h2 {
+      margin-bottom: 0.8rem;
+    }
+
+    .booking-info .benefits {
+      list-style: none;
+      margin-top: 1.5rem;
+    }
+
+    .booking-info .benefits li {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .booking-info .benefits li::before {
+      content: '✓';
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    .booking-form {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .booking-form .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .booking-form label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .booking-form input,
+    .booking-form select,
+    .booking-form textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border-radius: 0.6rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+
+    .booking-form input:focus,
+    .booking-form select:focus,
+    .booking-form textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .booking-form textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .booking-form select option {
+      background: var(--bg);
+    }
+
+    .booking-form .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .booking-form .success-msg {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .booking-form .success-msg .icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .booking-form .success-msg h3 {
+      font-size: 1.4rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .booking-form .success-msg p {
+      color: var(--text-muted);
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(245, 158, 11, 0.06));
+      border-radius: var(--radius);
+      padding: 4rem 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      margin-bottom: 0.8rem;
+    }
+
+    .cta-section p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 3rem 0 2rem;
+    }
+
+    footer .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    footer .brand p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      max-width: 300px;
+    }
+
+    footer h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    footer ul {
+      list-style: none;
+    }
+
+    footer ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    footer ul li a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    footer ul li a:hover {
+      color: var(--text);
+    }
+
+    footer .bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    footer .social {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    footer .social a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    footer .social a:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: var(--bg);
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .booking-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      footer .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .hero-stats {
+        gap: 1.5rem;
+      }
+
+      .schedule-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      footer .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="#" class="logo">Stripmate</a>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#destinasi">Destinasi</a></li>
+        <li><a href="#jadwal">Jadwal</a></li>
+        <li><a href="#testimoni">Testimoni</a></li>
+        <li><a href="#gallery">Galeri</a></li>
+        <li><a href="#booking" class="nav-cta">Booking</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero" id="home">
+    <div class="container hero-content">
+      <span class="hero-badge">&#9733; Open Trip Terpercaya</span>
+      <h1>Jalan&#8209;jalan Seru,<br/>Bersama <span>Stripmate</span></h1>
+      <p>
+        Nikmati liburan seru bareng teman-teman baru. Harga terjangkau, itinerary
+        lengkap, dan pengalaman tak terlupakan di setiap destinasi.
+      </p>
+      <div class="hero-buttons">
+        <a href="#destinasi" class="btn btn-primary">&#128269; Lihat Destinasi</a>
+        <a href="#booking" class="btn btn-outline">&#9990; Pesan Sekarang</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="num" data-count="150">0</div>
+          <div class="label">Trip Berangkat</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-count="3200">0</div>
+          <div class="label">Traveler</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-count="12">0</div>
+          <div class="label">Destinasi</div>
+        </div>
+        <div class="stat">
+          <div class="num" data-count="4.9">0</div>
+          <div class="label">Rating &#9733;</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DESTINASI ═══ -->
+  <section id="destinasi">
+    <div class="container">
+      <span class="section-label">&#127758; Destinasi</span>
+      <h2 class="section-title">Destinasi Populer</h2>
+      <p class="section-desc">Pilih trip favoritmu dan dapatkan pengalaman seru bersama Stripmate.</p>
+      <div class="dest-grid">
+        <div class="dest-card">
+          <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop" alt="Bali" loading="lazy" />
+          <div class="body">
+            <h3>Bali Sunset Trip</h3>
+            <div class="meta">&#128197; 3H2M &middot; &#128100; Max 12 org</div>
+            <div class="price">Rp 899K <small>/org</small></div>
+          </div>
+        </div>
+        <div class="dest-card">
+          <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=200&fit=crop" alt="Bromo" loading="lazy" />
+          <div class="body">
+            <h3>Bromo Midnight</h3>
+            <div class="meta">&#128197; 2H1M &middot; &#128100; Max 10 org</div>
+            <div class="price">Rp 650K <small>/org</small></div>
+          </div>
+        </div>
+        <div class="dest-card">
+          <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400&h=200&fit=crop" alt="Raja Ampat" loading="lazy" />
+          <div class="body">
+            <h3>Raja Ampat Dive</h3>
+            <div class="meta">&#128197; 5H4M &middot; &#128100; Max 8 org</div>
+            <div class="price">Rp 2.499K <small>/org</small></div>
+          </div>
+        </div>
+        <div class="dest-card">
+          <img src="https://images.unsplash.com/photo-1506020647804-04f956952847?w=400&h=200&fit=crop" alt="Yogyakarta" loading="lazy" />
+          <div class="body">
+            <h3>Jogja Culture Explore</h3>
+            <div class="meta">&#128197; 3H2M &middot; &#128100; Max 15 org</div>
+            <div class="price">Rp 750K <small>/org</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <section style="background: var(--bg-section);">
+    <div class="container">
+      <span class="section-label">&#128204; Cara Kerja</span>
+      <h2 class="section-title">Gimana Cara Ikut Trip?</h2>
+      <p class="section-desc">Mudah banget! Tinggal 4 langkah aja.</p>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Pilih Destinasi</h3>
+          <p>Lihat jadwal dan pilih trip yang paling kamu suka.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Isi Data Booking</h3>
+          <p>Lengkapi formulir pemesanan dengan data dirimu.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Konfirmasi & Bayar</h3>
+          <p>DP 50% — sisanya lunas H-7. Gampang & aman.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h3>Berangkat!</h3>
+          <p>Tinggal dateng di titik kumpul, sisanya kami urus.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ JADWAL ═══ -->
+  <section id="jadwal">
+    <div class="container">
+      <span class="section-label">&#128197; Jadwal</span>
+      <h2 class="section-title">Jadwal Keberangkatan</h2>
+      <p class="section-desc">Cek ketersediaan slot dan booking sebelum kehabisan.</p>
+      <div class="schedule-list">
+        <div class="schedule-item">
+          <div class="info">
+            <h4>&#127463;&#127462; Bali Sunset Trip</h4>
+            <p>12 - 14 Agustus 2026</p>
+          </div>
+          <div class="meta">
+            <span class="harga">Rp 899K</span>
+            <span class="slot">&#128100; Sisa 5 kursi</span>
+            <button class="btn-small" onclick="selectTrip('Bali Sunset Trip', '12 - 14 Agt 2026')">Booking</button>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="info">
+            <h4>&#127987;&#65039; Bromo Midnight</h4>
+            <p>19 - 20 Agustus 2026</p>
+          </div>
+          <div class="meta">
+            <span class="harga">Rp 650K</span>
+            <span class="slot">&#128100; Sisa 3 kursi</span>
+            <button class="btn-small" onclick="selectTrip('Bromo Midnight', '19 - 20 Agt 2026')">Booking</button>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="info">
+            <h4>&#127754; Raja Ampat Dive</h4>
+            <p>25 - 29 Agustus 2026</p>
+          </div>
+          <div class="meta">
+            <span class="harga">Rp 2.499K</span>
+            <span class="slot">&#128100; Sisa 2 kursi</span>
+            <button class="btn-small" onclick="selectTrip('Raja Ampat Dive', '25 - 29 Agt 2026')">Booking</button>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="info">
+            <h4>&#128332; Jogja Culture Explore</h4>
+            <p>2 - 4 September 2026</p>
+          </div>
+          <div class="meta">
+            <span class="harga">Rp 750K</span>
+            <span class="slot">&#128100; Sisa 8 kursi</span>
+            <button class="btn-small" onclick="selectTrip('Jogja Culture Explore', '2 - 4 Sep 2026')">Booking</button>
+          </div>
+        </div>
+        <div class="schedule-item">
+          <div class="info">
+            <h4>&#127796; Lombok Pink Beach</h4>
+            <p>9 - 11 September 2026</p>
+          </div>
+          <div class="meta">
+            <span class="harga">Rp 849K</span>
+            <span class="slot">&#128100; Sisa 6 kursi</span>
+            <button class="btn-small" onclick="selectTrip('Lombok Pink Beach', '9 - 11 Sep 2026')">Booking</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TESTIMONI ═══ -->
+  <section id="testimoni" style="background: var(--bg-section);">
+    <div class="container">
+      <span class="section-label">&#128172; Testimoni</span>
+      <h2 class="section-title">Kata Mereka</h2>
+      <p class="section-desc">Pengalaman seru dari traveler yang sudah jalan bareng Stripmate.</p>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>"Trip ke Bromo-nya keren banget! Guide asik, itinerary jelas, dan dapet temen baru. Highly recommended!"</blockquote>
+          <div class="author">
+            <img src="https://i.pravatar.cc/80?img=1" alt="" loading="lazy" />
+            <div>
+              <div class="name">Rina Andriani</div>
+              <div class="trip">Bromo Midnight &mdash; Juni 2026</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>"Pertama kali ikut open trip, awalnya ragu tapi ternyata seru banget. Stripmate bikin liburan jadi effortless!"</blockquote>
+          <div class="author">
+            <img src="https://i.pravatar.cc/80?img=5" alt="" loading="lazy" />
+            <div>
+              <div class="name">Dimas Pratama</div>
+              <div class="trip">Bali Sunset Trip &mdash; Mei 2026</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <blockquote>"Raja Ampat nya luar biasa! Snorkeling di spot yang jarang dikunjungi, fotonya aesthetic semua. Worth it banget!"</blockquote>
+          <div class="author">
+            <img src="https://i.pravatar.cc/80?img=9" alt="" loading="lazy" />
+            <div>
+              <div class="name">Sari Wulandari</div>
+              <div class="trip">Raja Ampat Dive &mdash; April 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ GALLERY ═══ -->
+  <section id="gallery">
+    <div class="container">
+      <span class="section-label">&#128247; Galeri</span>
+      <h2 class="section-title">Momen Perjalanan</h2>
+      <p class="section-desc">Cuplikan seru dari trip-trip Stripmate sebelumnya.</p>
+      <div class="gallery-grid">
+        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=300&fit=crop" alt="Galeri 1" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Galeri 2" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=400&h=300&fit=crop" alt="Galeri 3" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1506020647804-04f956952847?w=400&h=300&fit=crop" alt="Galeri 4" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop" alt="Galeri 5" loading="lazy" />
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop" alt="Galeri 6" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ BOOKING ═══ -->
+  <section id="booking" style="background: var(--bg-section);">
+    <div class="container">
+      <div class="booking-wrap">
+        <div class="booking-info">
+          <span class="section-label">&#128221; Booking</span>
+          <h2 class="section-title" style="margin-bottom:0.6rem;">Siap Berpetualang?</h2>
+          <p style="color:var(--text-muted);">
+            Isi form di samping dan tim kami akan menghubungimu dalam
+            1x24 jam untuk konfirmasi dan pembayaran.
+          </p>
+          <ul class="benefits">
+            <li>Konfirmasi cepat via WhatsApp</li>
+            <li>DP 50%, sisanya bayar H-7</li>
+            <li>Free e-certificate & dokumentasi</li>
+            <li>Guide profesional & berpengalaman</li>
+            <li>Asuransi perjalanan dasar</li>
+          </ul>
+        </div>
+
+        <div class="booking-form" id="bookingForm">
+          <form id="formBooking">
+            <div class="form-group">
+              <label for="nama">Nama Lengkap</label>
+              <input type="text" id="nama" placeholder="Masukkan nama" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="contoh@email.com" required />
+            </div>
+            <div class="form-group">
+              <label for="wa">No. WhatsApp</label>
+              <input type="tel" id="wa" placeholder="0812xxxxxx" required />
+            </div>
+            <div class="form-group">
+              <label for="trip">Pilih Trip</label>
+              <select id="trip" required>
+                <option value="">-- Pilih Trip --</option>
+                <option value="Bali Sunset Trip">Bali Sunset Trip - Rp 899K</option>
+                <option value="Bromo Midnight">Bromo Midnight - Rp 650K</option>
+                <option value="Raja Ampat Dive">Raja Ampat Dive - Rp 2.499K</option>
+                <option value="Jogja Culture Explore">Jogja Culture Explore - Rp 750K</option>
+                <option value="Lombok Pink Beach">Lombok Pink Beach - Rp 849K</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="jumlah">Jumlah Peserta</label>
+              <input type="number" id="jumlah" min="1" max="15" placeholder="1" required />
+            </div>
+            <div class="form-group">
+              <label for="pesan">Pesan Tambahan (opsional)</label>
+              <textarea id="pesan" placeholder="Misal: alergi makanan, request kamar, dll."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">&#10148; Kirim Pemesanan</button>
+          </form>
+
+          <div class="success-msg" id="successMsg">
+            <div class="icon">&#10004;&#65039;</div>
+            <h3>Pemesanan Terkirim!</h3>
+            <p>Tim Stripmate akan menghubungimu via WhatsApp dalam 1x24 jam. Cek pesananmu ya!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section>
+    <div class="container cta-section">
+      <h2>Masih Ragu? Chat Aja Langsung!</h2>
+      <p>Tim Stripmate siap bantu kamu pilih trip yang paling cocok.</p>
+      <a href="https://wa.me/6281234567890" target="_blank" class="btn btn-primary">&#128242; Hubungi via WhatsApp</a>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="container">
+      <div class="grid">
+        <div class="brand">
+          <a href="#" class="logo">Stripmate</a>
+          <p>Open trip partner terbaik buat anak muda Indonesia. Liburan seru, harga ramah di kantong, teman baru tanpa batas.</p>
+          <div class="social">
+            <a href="#" aria-label="Instagram">&#9654;</a>
+            <a href="#" aria-label="Facebook">f</a>
+            <a href="#" aria-label="YouTube">&#9654;</a>
+            <a href="#" aria-label="TikTok">t</a>
+          </div>
+        </div>
+        <div>
+          <h4>Destinasi</h4>
+          <ul>
+            <li><a href="#">Bali</a></li>
+            <li><a href="#">Bromo</a></li>
+            <li><a href="#">Raja Ampat</a></li>
+            <li><a href="#">Yogyakarta</a></li>
+            <li><a href="#">Lombok</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Perusahaan</h4>
+          <ul>
+            <li><a href="#">Tentang Kami</a></li>
+            <li><a href="#">Syarat & Ketentuan</a></li>
+            <li><a href="#">Kebijakan Privasi</a></li>
+            <li><a href="#">Karir</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Kontak</h4>
+          <ul>
+            <li><a href="#">halo@stripmate.id</a></li>
+            <li><a href="#">+62 812-3456-7890</a></li>
+            <li><a href="#">Jakarta, Indonesia</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="bottom">
+        &copy; 2026 Stripmate. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══ JS ═══ -->
+  <script>
+    // ─── Hamburger ───
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburger.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    // Tutup nav saat link diklik
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+      });
+    });
+
+    // ─── Animated Counter ───
+    function animateCounters() {
+      const stats = document.querySelectorAll('.hero-stats .num');
+      stats.forEach(el => {
+        const target = parseFloat(el.dataset.count);
+        const isFloat = target % 1 !== 0;
+        const duration = 2000;
+        const start = performance.now();
+
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const current = progress * target;
+          el.textContent = isFloat ? current.toFixed(1) : Math.floor(current);
+          if (progress < 1) requestAnimationFrame(update);
+          else el.textContent = isFloat ? target.toFixed(1) : target;
+        }
+        requestAnimationFrame(update);
+      });
+    }
+
+    // ─── Pilih trip dari jadwal ───
+    function selectTrip(trip, date) {
+      document.getElementById('trip').value = trip;
+      document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('pesan').value = 'Booking untuk jadwal: ' + date;
+    }
+
+    // ─── Form Submit ───
+    const form = document.getElementById('formBooking');
+    const successMsg = document.getElementById('successMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.textContent = 'Mengirim...';
+
+      // Simulasi kirim (ganti dengan POST ke backend-mu)
+      await new Promise(r => setTimeout(r, 1500));
+
+      form.style.display = 'none';
+      successMsg.style.display = 'block';
+    });
+
+    // ─── Intersection Observer untuk counter ───
+    const heroSection = document.querySelector('.hero');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCounters();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(heroSection);
+  </script>
+
+</body>
+</html>
