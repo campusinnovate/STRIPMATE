@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Blog - STRIPMATE Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/supabase-client.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/utils.js"></script>
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar">
+      <div class="logo">STRIP<span>MATE</span></div>
+      <nav>
+        <a href="/admin/">&#128202; Dashboard</a>
+        <a href="/admin/trips.html">&#127758; Trips</a>
+        <a href="/admin/bookings.html">&#128221; Bookings</a>
+        <a href="/admin/payments.html">&#128179; Payments</a>
+        <a href="/admin/blog.html" class="active">&#128240; Blog</a>
+        <a href="/admin/media.html">&#128247; Media</a>
+        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
+        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
+        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Manage Blog</h1>
+        <button class="btn btn-primary" onclick="openPostModal()">+ Tambah Artikel</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Slug</th><th>Author</th><th>Status</th><th>Tanggal</th></tr></thead><tbody id="blogTable"></tbody></table></div></div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="postModal"><div class="modal">
+    <h2 id="postModalTitle">Tambah Artikel</h2>
+    <form id="postForm" onsubmit="return savePost(event)">
+      <input type="hidden" id="postId" />
+      <div class="form-row"><div class="form-group"><label>Title</label><input type="text" id="pTitle" required/></div><div class="form-group"><label>Slug</label><input type="text" id="pSlug" required/></div></div>
+      <div class="form-row"><div class="form-group"><label>Author</label><input type="text" id="pAuthor" /></div><div class="form-group"><label>Image URL</label><input type="url" id="pImage" /></div></div>
+      <div class="form-group"><label>Excerpt</label><textarea id="pExcerpt" rows="2"></textarea></div>
+      <div class="form-group"><label>Content (HTML)</label><textarea id="pContent" rows="10"></textarea></div>
+      <div class="form-row"><div class="form-group"><label>Tags (JSON)</label><input type="text" id="pTags" placeholder='["tips","gunung"]' /></div><div class="form-group"><label><input type="checkbox" id="pPublished" checked /> Published</label></div></div>
+      <div style="display:flex;gap:0.5rem;margin-top:1rem">
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <button type="button" class="btn btn-secondary" onclick="closePostModal()">Batal</button>
+      </div>
+    </form>
+  </div></div>
+
+  <script>
+    let posts = []
+
+    async function init() {
+      await requireAdmin()
+      loadPosts()
+    }
+
+    async function loadPosts() {
+      const { data, error } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false })
+      if (error) return
+      posts = data || []
+      document.getElementById('blogTable').innerHTML = posts.map(p => `
+        <tr>
+          <td><strong>${escapeHtml(p.title)}</strong></td>
+          <td>${escapeHtml(p.slug)}</td>
+          <td>${escapeHtml(p.author || '-')}</td>
+          <td>${p.published ? '<span class="badge badge-open">Published</span>' : '<span class="badge badge-closed">Draft</span>'}</td>
+          <td>${formatDate(p.created_at)}</td>
+        </tr>
+      `).join('')
+    }
+
+    function openPostModal() {
+      document.getElementById('postModalTitle').textContent = 'Tambah Artikel'
+      document.getElementById('postForm').reset()
+      document.getElementById('postId').value = ''
+      document.getElementById('postModal').classList.add('open')
+    }
+
+    function closePostModal() {
+      document.getElementById('postModal').classList.remove('open')
+    }
+
+    async function savePost(e) {
+      e.preventDefault()
+      const id = document.getElementById('postId').value
+      let tags = []
+      try { tags = JSON.parse(document.getElementById('pTags').value || '[]') } catch(e) {}
+      const data = {
+        title: document.getElementById('pTitle').value,
+        slug: document.getElementById('pSlug').value,
+        author: document.getElementById('pAuthor').value || 'STRIPMATE',
+        image_url: document.getElementById('pImage').value,
+        excerpt: document.getElementById('pExcerpt').value,
+        content: document.getElementById('pContent').value,
+        tags,
+        published: document.getElementById('pPublished').checked,
+        published_at: document.getElementById('pPublished').checked ? new Date().toISOString() : null
+      }
+      if (id) {
+        await supabase.from('blog_posts').update(data).eq('id', id)
+      } else {
+        await supabase.from('blog_posts').insert(data)
+      }
+      closePostModal()
+      loadPosts()
+    }
+
+    init()
+  </script>
+</body>
+</html>

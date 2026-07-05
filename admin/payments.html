@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Payments - STRIPMATE Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/supabase-client.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/utils.js"></script>
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar">
+      <div class="logo">STRIP<span>MATE</span></div>
+      <nav>
+        <a href="/admin/">&#128202; Dashboard</a>
+        <a href="/admin/trips.html">&#127758; Trips</a>
+        <a href="/admin/bookings.html">&#128221; Bookings</a>
+        <a href="/admin/payments.html" class="active">&#128179; Payments</a>
+        <a href="/admin/blog.html">&#128240; Blog</a>
+        <a href="/admin/media.html">&#128247; Media</a>
+        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
+        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
+        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Manage Payments</h1>
+        <select id="payFilter" onchange="loadPayments()" style="padding:0.55rem 1rem;border-radius:999px;border:1.5px solid var(--gray);font-family:inherit;font-size:0.82rem">
+          <option value="">Semua</option>
+          <option value="pending">Pending</option>
+          <option value="paid">Paid</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Peserta</th><th>Metode</th><th>Amount</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody id="payTable"></tbody></table></div></div>
+    </main>
+  </div>
+
+  <script>
+    async function init() {
+      await requireAdmin()
+      loadPayments()
+    }
+
+    async function loadPayments() {
+      const filter = document.getElementById('payFilter').value
+      let query = supabase
+        .from('payments')
+        .select('*, bookings!inner(invoice_number, profiles!inner(full_name))')
+        .order('created_at', { ascending: false })
+      if (filter) query = query.eq('status', filter)
+      const { data, error } = await query
+      if (error) return
+      document.getElementById('payTable').innerHTML = (data || []).map(p => `
+        <tr>
+          <td>${escapeHtml(p.bookings?.invoice_number || '-')}</td>
+          <td>${escapeHtml(p.bookings?.profiles?.full_name || '-')}</td>
+          <td>${p.method || '-'}</td>
+          <td>${formatCurrency(p.amount)}</td>
+          <td>${getStatusBadge(p.status)}</td>
+          <td>${formatDate(p.created_at)}</td>
+          <td>
+            ${p.status === 'pending' ? `
+              <button class="btn btn-sm btn-green" onclick="confirmPay('${p.id}')">Confirm</button>
+              <button class="btn btn-sm btn-danger" onclick="cancelPay('${p.id}')">Tolak</button>
+            ` : '-'}
+          </td>
+        </tr>
+      `).join('')
+    }
+
+    async function confirmPay(id) {
+      if (!confirm('Konfirmasi pembayaran ini?')) return
+      await supabase.from('payments').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', id)
+      const { data: pay } = await supabase.from('payments').select('booking_id').eq('id', id).single()
+      if (pay) {
+        await supabase.from('bookings').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', pay.booking_id)
+      }
+      loadPayments()
+    }
+
+    async function cancelPay(id) {
+      if (!confirm('Batalkan pembayaran ini?')) return
+      await supabase.from('payments').update({ status: 'cancelled' }).eq('id', id)
+      loadPayments()
+    }
+
+    init()
+  </script>
+</body>
+</html>

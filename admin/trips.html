@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Trips - STRIPMATE Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/supabase-client.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/utils.js"></script>
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar">
+      <div class="logo">STRIP<span>MATE</span></div>
+      <nav>
+        <a href="/admin/">&#128202; Dashboard</a>
+        <a href="/admin/trips.html" class="active">&#127758; Trips</a>
+        <a href="/admin/bookings.html">&#128221; Bookings</a>
+        <a href="/admin/payments.html">&#128179; Payments</a>
+        <a href="/admin/blog.html">&#128240; Blog</a>
+        <a href="/admin/media.html">&#128247; Media</a>
+        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
+        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
+        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Manage Trips</h1>
+        <button class="btn btn-primary" onclick="openTripModal()">+ Tambah Trip</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Date</th><th>Price</th><th>Kuota</th><th>Status</th></tr></thead><tbody id="tripTable"></tbody></table></div></div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="tripModal"><div class="modal">
+    <h2 id="tripModalTitle">Tambah Trip</h2>
+    <form id="tripForm" onsubmit="return saveTrip(event)">
+      <input type="hidden" id="tripId" />
+      <div class="form-row"><div class="form-group"><label>Title</label><input type="text" id="tTitle" required/></div><div class="form-group"><label>Slug</label><input type="text" id="tSlug" required/></div></div>
+      <div class="form-row"><div class="form-group"><label>Date</label><input type="date" id="tDate" required/></div><div class="form-group"><label>Price (Rp)</label><input type="number" id="tPrice" required/></div></div>
+      <div class="form-row"><div class="form-group"><label>Kuota</label><input type="number" id="tKuota" /></div><div class="form-group"><label>Meeting Point</label><input type="text" id="tMeeting" /></div></div>
+      <div class="form-row"><div class="form-group"><label>Status</label><select id="tStatus"><option value="open">Open</option><option value="closed">Closed</option><option value="full">Full</option></select></div><div class="form-group"><label>Image URL</label><input type="url" id="tImage" placeholder="https://..." /></div></div>
+      <div class="form-group"><label>Description</label><textarea id="tDesc" rows="3"></textarea></div>
+      <div style="display:flex;gap:0.5rem;margin-top:1rem">
+        <button type="submit" class="btn btn-primary" id="tripSaveBtn">Simpan</button>
+        <button type="button" class="btn btn-secondary" onclick="closeTripModal()">Batal</button>
+      </div>
+    </form>
+  </div></div>
+
+  <script>
+    async function init() {
+      await requireAdmin()
+      loadTrips()
+    }
+
+    async function loadTrips() {
+      const { data, error } = await supabase.from('trips').select('*').order('date', { ascending: true })
+      if (error) return
+      document.getElementById('tripTable').innerHTML = (data || []).map(t => `
+        <tr>
+          <td><strong>${escapeHtml(t.title)}</strong></td>
+          <td>${t.date || '-'}</td>
+          <td>${formatCurrency(t.price)}</td>
+          <td>${t.kuota || '-'}</td>
+          <td>${getStatusBadge(t.status)}</td>
+        </tr>
+      `).join('')
+    }
+
+    function openTripModal() {
+      document.getElementById('tripModalTitle').textContent = 'Tambah Trip'
+      document.getElementById('tripForm').reset()
+      document.getElementById('tripId').value = ''
+      document.getElementById('tripModal').classList.add('open')
+    }
+
+    function closeTripModal() {
+      document.getElementById('tripModal').classList.remove('open')
+    }
+
+    async function saveTrip(e) {
+      e.preventDefault()
+      const id = document.getElementById('tripId').value
+      const data = {
+        title: document.getElementById('tTitle').value,
+        slug: document.getElementById('tSlug').value,
+        date: document.getElementById('tDate').value,
+        price: parseFloat(document.getElementById('tPrice').value),
+        kuota: parseInt(document.getElementById('tKuota').value) || null,
+        meeting_point: document.getElementById('tMeeting').value,
+        status: document.getElementById('tStatus').value,
+        image_url: document.getElementById('tImage').value,
+        description: document.getElementById('tDesc').value
+      }
+      if (id) {
+        await supabase.from('trips').update(data).eq('id', id)
+      } else {
+        await supabase.from('trips').insert(data)
+      }
+      closeTripModal()
+      loadTrips()
+    }
+
+    init()
+  </script>
+</body>
+</html>

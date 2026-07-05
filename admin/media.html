@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Media - STRIPMATE Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/supabase-client.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/utils.js"></script>
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar">
+      <div class="logo">STRIP<span>MATE</span></div>
+      <nav>
+        <a href="/admin/">&#128202; Dashboard</a>
+        <a href="/admin/trips.html">&#127758; Trips</a>
+        <a href="/admin/bookings.html">&#128221; Bookings</a>
+        <a href="/admin/payments.html">&#128179; Payments</a>
+        <a href="/admin/blog.html">&#128240; Blog</a>
+        <a href="/admin/media.html" class="active">&#128247; Media</a>
+        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
+        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
+        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Manage Media Assets</h1>
+        <button class="btn btn-primary" onclick="openMediaModal()">+ Tambah Media</button>
+      </div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Downloadable</th><th>Tanggal</th></tr></thead><tbody id="mediaTable"></tbody></table></div></div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="mediaModal"><div class="modal">
+    <h2>Tambah Media</h2>
+    <input type="hidden" id="mediaId" />
+    <div class="form-group"><label>Title</label><input type="text" id="mTitle" required/></div>
+    <div class="form-group"><label>Type</label><select id="mType"><option value="press_release">Press Release</option><option value="logo">Logo</option><option value="photo">Photo</option><option value="video">Video</option><option value="brand_guideline">Brand Guideline</option><option value="media_kit">Media Kit</option></select></div>
+    <div class="form-group"><label>File URL</label><input type="url" id="mUrl" /></div>
+    <div class="form-group"><label>Description</label><textarea id="mDesc" rows="2"></textarea></div>
+    <div class="form-group"><label><input type="checkbox" id="mDownloadable" checked /> Dapat di-download</label></div>
+    <div style="display:flex;gap:0.5rem"><button class="btn btn-primary" onclick="saveMedia()">Simpan</button><button class="btn btn-secondary" onclick="closeMediaModal()">Batal</button></div>
+  </div></div>
+
+  <script>
+    async function init() {
+      await requireAdmin()
+      loadMedia()
+    }
+
+    async function loadMedia() {
+      const { data, error } = await supabase.from('media_assets').select('*').order('created_at', { ascending: false })
+      if (error) return
+      document.getElementById('mediaTable').innerHTML = (data || []).map(m => `
+        <tr>
+          <td><strong>${escapeHtml(m.title)}</strong></td>
+          <td><span class="badge badge-open">${m.type}</span></td>
+          <td>${m.downloadable ? '&#10003;' : '&#10007;'}</td>
+          <td>${formatDate(m.created_at)}</td>
+        </tr>
+      `).join('')
+    }
+
+    function openMediaModal() {
+      document.getElementById('mediaModal').classList.add('open')
+    }
+    function closeMediaModal() {
+      document.getElementById('mediaModal').classList.remove('open')
+    }
+
+    async function saveMedia() {
+      await supabase.from('media_assets').insert({
+        title: document.getElementById('mTitle').value,
+        type: document.getElementById('mType').value,
+        file_url: document.getElementById('mUrl').value,
+        description: document.getElementById('mDesc').value,
+        downloadable: document.getElementById('mDownloadable').checked
+      })
+      closeMediaModal()
+      loadMedia()
+    }
+
+    init()
+  </script>
+</body>
+</html>
