@@ -52,7 +52,7 @@
       let query = supabase
         .from('payments')
         .select('*, bookings!inner(invoice_number, profiles!inner(full_name))')
-        .order('created_at', { ascending: false })
+        .order('payments.created_at', { ascending: false })
       if (filter) query = query.eq('status', filter)
       const { data, error } = await query
       if (error) return

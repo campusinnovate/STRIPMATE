@@ -231,7 +231,7 @@
         .from('payments')
         .select('*, bookings!inner(trip_id, invoice_number, trips!inner(title))')
         .eq('bookings.user_id', session.user.id)
-        .order('created_at', { ascending: false })
+        .order('payments.created_at', { ascending: false })
       if (error) return showError(container, 'Gagal memuat data.')
       if (!payments || payments.length === 0) return showEmpty(container, 'Belum ada pembayaran.')
       container.innerHTML = payments.map(p => `
