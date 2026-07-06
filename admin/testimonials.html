@@ -9,35 +9,30 @@
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
+  <script>const PAGE = 'testimonials'</script>
+  <script src="/assets/js/admin.js"></script>
   <link rel="stylesheet" href="/assets/css/admin.css" />
 </head>
 <body>
   <div class="admin-body">
     <aside class="admin-sidebar">
       <div class="logo">STRIP<span>MATE</span></div>
-      <nav>
-        <a href="/admin/">&#128202; Dashboard</a>
-        <a href="/admin/trips.html">&#127758; Trips</a>
-        <a href="/admin/bookings.html">&#128221; Bookings</a>
-        <a href="/admin/payments.html">&#128179; Payments</a>
-        <a href="/admin/blog.html">&#128240; Blog</a>
-        <a href="/admin/media.html">&#128247; Media</a>
-        <a href="/admin/testimonials.html" class="active">&#128172; Testimonials</a>
-        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
-        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
-      </nav>
+      <nav></nav>
     </aside>
     <main class="admin-main">
       <div class="admin-header">
         <h1>Manage Testimonials</h1>
         <button class="btn btn-primary" onclick="openTestiModal()">+ Tambah Testimoni</button>
       </div>
-      <div class="card"><div class="table-wrap"><table><thead><tr><th>Nama</th><th>Trip</th><th>Rating</th><th>Isi</th><th>Aksi</th></tr></thead><tbody id="testiTable"></tbody></table></div></div>
+      <div class="card">
+        <div id="testiLoading"></div>
+        <div class="table-wrap"><table><thead><tr><th>Nama</th><th>Trip</th><th>Rating</th><th>Isi</th><th>Aksi</th></tr></thead><tbody id="testiTable"></tbody></table></div>
+      </div>
     </main>
   </div>
 
   <div class="modal-overlay" id="testiModal"><div class="modal">
-    <h2>Tambah Testimoni</h2>
+    <h2 id="testiModalTitle">Tambah Testimoni</h2>
     <input type="hidden" id="testiId" />
     <div class="form-row"><div class="form-group"><label>Nama</label><input type="text" id="tName" required/></div><div class="form-group"><label>Trip</label><input type="text" id="tTrip" /></div></div>
     <div class="form-group"><label>Rating (1-5)</label><select id="tRating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
@@ -48,46 +43,88 @@
 
   <script>
     async function init() {
-      await requireAdmin()
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
       loadTestimonials()
     }
 
     async function loadTestimonials() {
+      const loading = document.getElementById('testiLoading')
+      loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false })
-      if (error) return
+      loading.innerHTML = ''
+      if (error) { showToast(error.message, 'error'); return }
       document.getElementById('testiTable').innerHTML = (data || []).map(t => `
         <tr>
           <td><strong>${escapeHtml(t.name)}</strong></td>
           <td>${escapeHtml(t.trip || '-')}</td>
           <td>${'&#9733;'.repeat(t.rating)}</td>
           <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(t.content || '')}</td>
-          <td><button class="btn btn-sm btn-danger" onclick="deleteTesti('${t.id}')">Hapus</button></td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="editTesti('${t.id}')">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteTesti('${t.id}')">Hapus</button>
+          </td>
         </tr>
       `).join('')
     }
 
-    function openTestiModal() {
+    function openTestiModal(data) {
+      const title = document.getElementById('testiModalTitle')
+      document.getElementById('testiId').value = ''
+      document.getElementById('tName').value = ''
+      document.getElementById('tTrip').value = ''
+      document.getElementById('tRating').value = '5'
+      document.getElementById('tContent').value = ''
+      document.getElementById('tAvatar').value = ''
+
+      if (data) {
+        title.textContent = 'Edit Testimoni'
+        document.getElementById('testiId').value = data.id
+        document.getElementById('tName').value = data.name || ''
+        document.getElementById('tTrip').value = data.trip || ''
+        document.getElementById('tRating').value = data.rating || '5'
+        document.getElementById('tContent').value = data.content || ''
+        document.getElementById('tAvatar').value = data.avatar_url || ''
+      } else {
+        title.textContent = 'Tambah Testimoni'
+      }
       document.getElementById('testiModal').classList.add('open')
     }
+
     function closeTestiModal() {
       document.getElementById('testiModal').classList.remove('open')
     }
 
+    async function editTesti(id) {
+      const { data, error } = await supabase.from('testimonials').select('*').eq('id', id).single()
+      if (error || !data) { showToast('Testimoni tidak ditemukan', 'error'); return }
+      openTestiModal(data)
+    }
+
+    async function deleteTesti(id) {
+      if (!confirm('Hapus testimoni ini?')) return
+      const { error } = await supabase.from('testimonials').delete().eq('id', id)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast('Testimoni berhasil dihapus')
+      loadTestimonials()
+    }
+
     async function saveTesti() {
-      await supabase.from('testimonials').insert({
+      const id = document.getElementById('testiId').value
+      const data = {
         name: document.getElementById('tName').value,
         trip: document.getElementById('tTrip').value,
         rating: parseInt(document.getElementById('tRating').value),
         content: document.getElementById('tContent').value,
         avatar_url: document.getElementById('tAvatar').value
-      })
+      }
+      const { error } = id
+        ? await supabase.from('testimonials').update(data).eq('id', id)
+        : await supabase.from('testimonials').insert(data)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast(id ? 'Testimoni berhasil diupdate' : 'Testimoni berhasil ditambahkan')
       closeTestiModal()
-      loadTestimonials()
-    }
-
-    async function deleteTesti(id) {
-      if (!confirm('Hapus testimoni ini?')) return
-      await supabase.from('testimonials').delete().eq('id', id)
       loadTestimonials()
     }
 

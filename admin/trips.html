@@ -9,30 +9,25 @@
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
+  <script>const PAGE = 'trips'</script>
+  <script src="/assets/js/admin.js"></script>
   <link rel="stylesheet" href="/assets/css/admin.css" />
 </head>
 <body>
   <div class="admin-body">
     <aside class="admin-sidebar">
       <div class="logo">STRIP<span>MATE</span></div>
-      <nav>
-        <a href="/admin/">&#128202; Dashboard</a>
-        <a href="/admin/trips.html" class="active">&#127758; Trips</a>
-        <a href="/admin/bookings.html">&#128221; Bookings</a>
-        <a href="/admin/payments.html">&#128179; Payments</a>
-        <a href="/admin/blog.html">&#128240; Blog</a>
-        <a href="/admin/media.html">&#128247; Media</a>
-        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
-        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
-        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
-      </nav>
+      <nav></nav>
     </aside>
     <main class="admin-main">
       <div class="admin-header">
         <h1>Manage Trips</h1>
         <button class="btn btn-primary" onclick="openTripModal()">+ Tambah Trip</button>
       </div>
-      <div class="card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Date</th><th>Price</th><th>Kuota</th><th>Status</th></tr></thead><tbody id="tripTable"></tbody></table></div></div>
+      <div class="card">
+        <div id="tripLoading"></div>
+        <div class="table-wrap" id="tripTableWrap"><table><thead><tr><th>Title</th><th>Date</th><th>Price</th><th>Kuota</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tripTable"></tbody></table></div>
+      </div>
     </main>
   </div>
 
@@ -54,13 +49,18 @@
 
   <script>
     async function init() {
-      await requireAdmin()
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
       loadTrips()
     }
 
     async function loadTrips() {
+      const loading = document.getElementById('tripLoading')
+      loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const { data, error } = await supabase.from('trips').select('*').order('date', { ascending: true })
-      if (error) return
+      loading.innerHTML = ''
+      if (error) { showToast(error.message, 'error'); return }
       document.getElementById('tripTable').innerHTML = (data || []).map(t => `
         <tr>
           <td><strong>${escapeHtml(t.title)}</strong></td>
@@ -68,19 +68,55 @@
           <td>${formatCurrency(t.price)}</td>
           <td>${t.kuota || '-'}</td>
           <td>${getStatusBadge(t.status)}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="editTrip('${t.id}')">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteTrip('${t.id}')">Hapus</button>
+          </td>
         </tr>
       `).join('')
     }
 
-    function openTripModal() {
-      document.getElementById('tripModalTitle').textContent = 'Tambah Trip'
-      document.getElementById('tripForm').reset()
+    function openTripModal(data) {
+      const modal = document.getElementById('tripModal')
+      const title = document.getElementById('tripModalTitle')
+      const form = document.getElementById('tripForm')
+      form.reset()
       document.getElementById('tripId').value = ''
-      document.getElementById('tripModal').classList.add('open')
+
+      if (data) {
+        title.textContent = 'Edit Trip'
+        document.getElementById('tripId').value = data.id
+        document.getElementById('tTitle').value = data.title || ''
+        document.getElementById('tSlug').value = data.slug || ''
+        document.getElementById('tDate').value = data.date || ''
+        document.getElementById('tPrice').value = data.price || ''
+        document.getElementById('tKuota').value = data.kuota || ''
+        document.getElementById('tMeeting').value = data.meeting_point || ''
+        document.getElementById('tStatus').value = data.status || 'open'
+        document.getElementById('tImage').value = data.image_url || ''
+        document.getElementById('tDesc').value = data.description || ''
+      } else {
+        title.textContent = 'Tambah Trip'
+      }
+      modal.classList.add('open')
     }
 
     function closeTripModal() {
       document.getElementById('tripModal').classList.remove('open')
+    }
+
+    async function editTrip(id) {
+      const { data, error } = await supabase.from('trips').select('*').eq('id', id).single()
+      if (error || !data) { showToast('Trip tidak ditemukan', 'error'); return }
+      openTripModal(data)
+    }
+
+    async function deleteTrip(id) {
+      if (!confirm('Hapus trip ini?')) return
+      const { error } = await supabase.from('trips').delete().eq('id', id)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast('Trip berhasil dihapus')
+      loadTrips()
     }
 
     async function saveTrip(e) {
@@ -97,11 +133,11 @@
         image_url: document.getElementById('tImage').value,
         description: document.getElementById('tDesc').value
       }
-      if (id) {
-        await supabase.from('trips').update(data).eq('id', id)
-      } else {
-        await supabase.from('trips').insert(data)
-      }
+      const { error } = id
+        ? await supabase.from('trips').update(data).eq('id', id)
+        : await supabase.from('trips').insert(data)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast(id ? 'Trip berhasil diupdate' : 'Trip berhasil ditambahkan')
       closeTripModal()
       loadTrips()
     }

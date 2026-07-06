@@ -9,23 +9,15 @@
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
+  <script>const PAGE = 'bookings'</script>
+  <script src="/assets/js/admin.js"></script>
   <link rel="stylesheet" href="/assets/css/admin.css" />
 </head>
 <body>
   <div class="admin-body">
     <aside class="admin-sidebar">
       <div class="logo">STRIP<span>MATE</span></div>
-      <nav>
-        <a href="/admin/">&#128202; Dashboard</a>
-        <a href="/admin/trips.html">&#127758; Trips</a>
-        <a href="/admin/bookings.html" class="active">&#128221; Bookings</a>
-        <a href="/admin/payments.html">&#128179; Payments</a>
-        <a href="/admin/blog.html">&#128240; Blog</a>
-        <a href="/admin/media.html">&#128247; Media</a>
-        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
-        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
-        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
-      </nav>
+      <nav></nav>
     </aside>
     <main class="admin-main">
       <div class="admin-header">
@@ -37,7 +29,10 @@
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
-      <div class="card"><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Peserta</th><th>Trip</th><th>Total</th><th>Status</th><th>Payment</th><th>Aksi</th></tr></thead><tbody id="bookingTable"></tbody></table></div></div>
+      <div class="card">
+        <div id="bookingLoading"></div>
+        <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Peserta</th><th>Trip</th><th>Total</th><th>Status</th><th>Payment</th><th>Aksi</th></tr></thead><tbody id="bookingTable"></tbody></table></div>
+      </div>
     </main>
   </div>
 
@@ -51,16 +46,21 @@
 
   <script>
     async function init() {
-      await requireAdmin()
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
       loadBookings()
     }
 
     async function loadBookings() {
+      const loading = document.getElementById('bookingLoading')
+      loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const filter = document.getElementById('statusFilter').value
       let query = supabase.from('bookings').select('*, profiles(full_name, email), trips(title)').order('created_at', { ascending: false })
       if (filter) query = query.eq('status', filter)
       const { data, error } = await query
-      if (error) return
+      loading.innerHTML = ''
+      if (error) { showToast(error.message, 'error'); return }
       document.getElementById('bookingTable').innerHTML = (data || []).map(b => `
         <tr>
           <td>${escapeHtml(b.invoice_number)}</td>
@@ -87,10 +87,12 @@
 
     async function updateBooking() {
       const id = document.getElementById('bId').value
-      await supabase.from('bookings').update({
+      const { error } = await supabase.from('bookings').update({
         status: document.getElementById('bStatus').value,
         payment_status: document.getElementById('bPayStatus').value
       }).eq('id', id)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast('Booking berhasil diupdate')
       closeModal()
       loadBookings()
     }

@@ -63,7 +63,7 @@ tr:hover td{background:var(--gray-light);border-radius:0.3rem}
 .btn{display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1.1rem;border-radius:999px;font-weight:600;font-size:0.82rem;border:none;cursor:pointer;transition:all.2s;font-family:inherit}
 .btn-primary{background:var(--orange);color:#fff}
 .btn-primary:hover{background:var(--orange-light);box-shadow:0 4px 16px rgba(249,115,22,0.2)}
-btn-secondary{background:var(--gray);color:var(--text)}
+.btn-secondary{background:var(--gray);color:var(--text)}
 .btn-secondary:hover{background:var(--gray)}
 .btn-danger{background:#FEE2E2;color:#EF4444}
 .btn-danger:hover{background:#FECACA}
@@ -96,6 +96,11 @@ btn-secondary{background:var(--gray);color:var(--text)}
 .profile-card .info p{font-size:0.8rem;color:var(--text-muted)}
 
 .delete-btn{cursor:pointer;color:#EF4444;font-size:1.1rem}
+
+.toast{position:fixed;bottom:2rem;right:2rem;padding:1rem 1.5rem;border-radius:0.6rem;font-size:0.88rem;font-weight:600;z-index:999;transform:translateY(20px);opacity:0;transition:all 0.3s;max-width:400px;box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-success{background:var(--green);color:#fff}
+.toast-error{background:#EF4444;color:#fff}
 
 @media(max-width:768px){
   .admin-body{flex-direction:column}

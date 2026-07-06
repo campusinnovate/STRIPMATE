@@ -9,35 +9,30 @@
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
+  <script>const PAGE = 'media'</script>
+  <script src="/assets/js/admin.js"></script>
   <link rel="stylesheet" href="/assets/css/admin.css" />
 </head>
 <body>
   <div class="admin-body">
     <aside class="admin-sidebar">
       <div class="logo">STRIP<span>MATE</span></div>
-      <nav>
-        <a href="/admin/">&#128202; Dashboard</a>
-        <a href="/admin/trips.html">&#127758; Trips</a>
-        <a href="/admin/bookings.html">&#128221; Bookings</a>
-        <a href="/admin/payments.html">&#128179; Payments</a>
-        <a href="/admin/blog.html">&#128240; Blog</a>
-        <a href="/admin/media.html" class="active">&#128247; Media</a>
-        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
-        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
-        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
-      </nav>
+      <nav></nav>
     </aside>
     <main class="admin-main">
       <div class="admin-header">
         <h1>Manage Media Assets</h1>
         <button class="btn btn-primary" onclick="openMediaModal()">+ Tambah Media</button>
       </div>
-      <div class="card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Downloadable</th><th>Tanggal</th></tr></thead><tbody id="mediaTable"></tbody></table></div></div>
+      <div class="card">
+        <div id="mediaLoading"></div>
+        <div class="table-wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Downloadable</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody id="mediaTable"></tbody></table></div>
+      </div>
     </main>
   </div>
 
   <div class="modal-overlay" id="mediaModal"><div class="modal">
-    <h2>Tambah Media</h2>
+    <h2 id="mediaModalTitle">Tambah Media</h2>
     <input type="hidden" id="mediaId" />
     <div class="form-group"><label>Title</label><input type="text" id="mTitle" required/></div>
     <div class="form-group"><label>Type</label><select id="mType"><option value="press_release">Press Release</option><option value="logo">Logo</option><option value="photo">Photo</option><option value="video">Video</option><option value="brand_guideline">Brand Guideline</option><option value="media_kit">Media Kit</option></select></div>
@@ -49,38 +44,88 @@
 
   <script>
     async function init() {
-      await requireAdmin()
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
       loadMedia()
     }
 
     async function loadMedia() {
+      const loading = document.getElementById('mediaLoading')
+      loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const { data, error } = await supabase.from('media_assets').select('*').order('created_at', { ascending: false })
-      if (error) return
+      loading.innerHTML = ''
+      if (error) { showToast(error.message, 'error'); return }
       document.getElementById('mediaTable').innerHTML = (data || []).map(m => `
         <tr>
           <td><strong>${escapeHtml(m.title)}</strong></td>
           <td><span class="badge badge-open">${m.type}</span></td>
           <td>${m.downloadable ? '&#10003;' : '&#10007;'}</td>
           <td>${formatDate(m.created_at)}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="editMedia('${m.id}')">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteMedia('${m.id}')">Hapus</button>
+          </td>
         </tr>
       `).join('')
     }
 
-    function openMediaModal() {
+    function openMediaModal(data) {
+      const title = document.getElementById('mediaModalTitle')
+      const form = document.getElementById('mediaModal').querySelector('.modal')
+      document.getElementById('mediaId').value = ''
+      document.getElementById('mTitle').value = ''
+      document.getElementById('mType').value = 'press_release'
+      document.getElementById('mUrl').value = ''
+      document.getElementById('mDesc').value = ''
+      document.getElementById('mDownloadable').checked = true
+
+      if (data) {
+        title.textContent = 'Edit Media'
+        document.getElementById('mediaId').value = data.id
+        document.getElementById('mTitle').value = data.title || ''
+        document.getElementById('mType').value = data.type || 'press_release'
+        document.getElementById('mUrl').value = data.file_url || ''
+        document.getElementById('mDesc').value = data.description || ''
+        document.getElementById('mDownloadable').checked = data.downloadable !== false
+      } else {
+        title.textContent = 'Tambah Media'
+      }
       document.getElementById('mediaModal').classList.add('open')
     }
+
     function closeMediaModal() {
       document.getElementById('mediaModal').classList.remove('open')
     }
 
+    async function editMedia(id) {
+      const { data, error } = await supabase.from('media_assets').select('*').eq('id', id).single()
+      if (error || !data) { showToast('Media tidak ditemukan', 'error'); return }
+      openMediaModal(data)
+    }
+
+    async function deleteMedia(id) {
+      if (!confirm('Hapus media ini?')) return
+      const { error } = await supabase.from('media_assets').delete().eq('id', id)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast('Media berhasil dihapus')
+      loadMedia()
+    }
+
     async function saveMedia() {
-      await supabase.from('media_assets').insert({
+      const id = document.getElementById('mediaId').value
+      const data = {
         title: document.getElementById('mTitle').value,
         type: document.getElementById('mType').value,
         file_url: document.getElementById('mUrl').value,
         description: document.getElementById('mDesc').value,
         downloadable: document.getElementById('mDownloadable').checked
-      })
+      }
+      const { error } = id
+        ? await supabase.from('media_assets').update(data).eq('id', id)
+        : await supabase.from('media_assets').insert(data)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast(id ? 'Media berhasil diupdate' : 'Media berhasil ditambahkan')
       closeMediaModal()
       loadMedia()
     }

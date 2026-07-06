@@ -9,30 +9,25 @@
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
+  <script>const PAGE = 'blog'</script>
+  <script src="/assets/js/admin.js"></script>
   <link rel="stylesheet" href="/assets/css/admin.css" />
 </head>
 <body>
   <div class="admin-body">
     <aside class="admin-sidebar">
       <div class="logo">STRIP<span>MATE</span></div>
-      <nav>
-        <a href="/admin/">&#128202; Dashboard</a>
-        <a href="/admin/trips.html">&#127758; Trips</a>
-        <a href="/admin/bookings.html">&#128221; Bookings</a>
-        <a href="/admin/payments.html">&#128179; Payments</a>
-        <a href="/admin/blog.html" class="active">&#128240; Blog</a>
-        <a href="/admin/media.html">&#128247; Media</a>
-        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
-        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
-        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
-      </nav>
+      <nav></nav>
     </aside>
     <main class="admin-main">
       <div class="admin-header">
         <h1>Manage Blog</h1>
         <button class="btn btn-primary" onclick="openPostModal()">+ Tambah Artikel</button>
       </div>
-      <div class="card"><div class="table-wrap"><table><thead><tr><th>Title</th><th>Slug</th><th>Author</th><th>Status</th><th>Tanggal</th></tr></thead><tbody id="blogTable"></tbody></table></div></div>
+      <div class="card">
+        <div id="blogLoading"></div>
+        <div class="table-wrap"><table><thead><tr><th>Title</th><th>Slug</th><th>Author</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody id="blogTable"></tbody></table></div>
+      </div>
     </main>
   </div>
 
@@ -56,13 +51,18 @@
     let posts = []
 
     async function init() {
-      await requireAdmin()
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
       loadPosts()
     }
 
     async function loadPosts() {
+      const loading = document.getElementById('blogLoading')
+      loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const { data, error } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false })
-      if (error) return
+      loading.innerHTML = ''
+      if (error) { showToast(error.message, 'error'); return }
       posts = data || []
       document.getElementById('blogTable').innerHTML = posts.map(p => `
         <tr>
@@ -71,19 +71,54 @@
           <td>${escapeHtml(p.author || '-')}</td>
           <td>${p.published ? '<span class="badge badge-open">Published</span>' : '<span class="badge badge-closed">Draft</span>'}</td>
           <td>${formatDate(p.created_at)}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="editPost('${p.id}')">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deletePost('${p.id}')">Hapus</button>
+          </td>
         </tr>
       `).join('')
     }
 
-    function openPostModal() {
-      document.getElementById('postModalTitle').textContent = 'Tambah Artikel'
-      document.getElementById('postForm').reset()
+    function openPostModal(data) {
+      const title = document.getElementById('postModalTitle')
+      const form = document.getElementById('postForm')
+      form.reset()
       document.getElementById('postId').value = ''
+
+      if (data) {
+        title.textContent = 'Edit Artikel'
+        document.getElementById('postId').value = data.id
+        document.getElementById('pTitle').value = data.title || ''
+        document.getElementById('pSlug').value = data.slug || ''
+        document.getElementById('pAuthor').value = data.author || ''
+        document.getElementById('pImage').value = data.image_url || ''
+        document.getElementById('pExcerpt').value = data.excerpt || ''
+        document.getElementById('pContent').value = data.content || ''
+        document.getElementById('pTags').value = data.tags ? JSON.stringify(data.tags) : ''
+        document.getElementById('pPublished').checked = data.published
+      } else {
+        title.textContent = 'Tambah Artikel'
+        document.getElementById('pPublished').checked = true
+      }
       document.getElementById('postModal').classList.add('open')
     }
 
     function closePostModal() {
       document.getElementById('postModal').classList.remove('open')
+    }
+
+    async function editPost(id) {
+      const { data, error } = await supabase.from('blog_posts').select('*').eq('id', id).single()
+      if (error || !data) { showToast('Artikel tidak ditemukan', 'error'); return }
+      openPostModal(data)
+    }
+
+    async function deletePost(id) {
+      if (!confirm('Hapus artikel ini?')) return
+      const { error } = await supabase.from('blog_posts').delete().eq('id', id)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast('Artikel berhasil dihapus')
+      loadPosts()
     }
 
     async function savePost(e) {
@@ -102,11 +137,11 @@
         published: document.getElementById('pPublished').checked,
         published_at: document.getElementById('pPublished').checked ? new Date().toISOString() : null
       }
-      if (id) {
-        await supabase.from('blog_posts').update(data).eq('id', id)
-      } else {
-        await supabase.from('blog_posts').insert(data)
-      }
+      const { error } = id
+        ? await supabase.from('blog_posts').update(data).eq('id', id)
+        : await supabase.from('blog_posts').insert(data)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast(id ? 'Artikel berhasil diupdate' : 'Artikel berhasil ditambahkan')
       closePostModal()
       loadPosts()
     }

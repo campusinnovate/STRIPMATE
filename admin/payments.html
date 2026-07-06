@@ -9,23 +9,15 @@
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
+  <script>const PAGE = 'payments'</script>
+  <script src="/assets/js/admin.js"></script>
   <link rel="stylesheet" href="/assets/css/admin.css" />
 </head>
 <body>
   <div class="admin-body">
     <aside class="admin-sidebar">
       <div class="logo">STRIP<span>MATE</span></div>
-      <nav>
-        <a href="/admin/">&#128202; Dashboard</a>
-        <a href="/admin/trips.html">&#127758; Trips</a>
-        <a href="/admin/bookings.html">&#128221; Bookings</a>
-        <a href="/admin/payments.html" class="active">&#128179; Payments</a>
-        <a href="/admin/blog.html">&#128240; Blog</a>
-        <a href="/admin/media.html">&#128247; Media</a>
-        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
-        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
-        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
-      </nav>
+      <nav></nav>
     </aside>
     <main class="admin-main">
       <div class="admin-header">
@@ -37,17 +29,24 @@
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
-      <div class="card"><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Peserta</th><th>Metode</th><th>Amount</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody id="payTable"></tbody></table></div></div>
+      <div class="card">
+        <div id="payLoading"></div>
+        <div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Peserta</th><th>Metode</th><th>Amount</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody id="payTable"></tbody></table></div>
+      </div>
     </main>
   </div>
 
   <script>
     async function init() {
-      await requireAdmin()
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
       loadPayments()
     }
 
     async function loadPayments() {
+      const loading = document.getElementById('payLoading')
+      loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const filter = document.getElementById('payFilter').value
       let query = supabase
         .from('payments')
@@ -55,7 +54,8 @@
         .order('payments.created_at', { ascending: false })
       if (filter) query = query.eq('status', filter)
       const { data, error } = await query
-      if (error) return
+      loading.innerHTML = ''
+      if (error) { showToast(error.message, 'error'); return }
       document.getElementById('payTable').innerHTML = (data || []).map(p => `
         <tr>
           <td>${escapeHtml(p.bookings?.invoice_number || '-')}</td>
@@ -76,17 +76,21 @@
 
     async function confirmPay(id) {
       if (!confirm('Konfirmasi pembayaran ini?')) return
-      await supabase.from('payments').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', id)
-      const { data: pay } = await supabase.from('payments').select('booking_id').eq('id', id).single()
+      const { error: payError } = await supabase.from('payments').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', id)
+      if (payError) { showToast(payError.message, 'error'); return }
+      const { data: pay } = await supabase.from('payments').select('booking_id').eq('id', id).maybeSingle()
       if (pay) {
         await supabase.from('bookings').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', pay.booking_id)
       }
+      showToast('Pembayaran dikonfirmasi')
       loadPayments()
     }
 
     async function cancelPay(id) {
       if (!confirm('Batalkan pembayaran ini?')) return
-      await supabase.from('payments').update({ status: 'cancelled' }).eq('id', id)
+      const { error } = await supabase.from('payments').update({ status: 'cancelled' }).eq('id', id)
+      if (error) { showToast(error.message, 'error'); return }
+      showToast('Pembayaran dibatalkan')
       loadPayments()
     }
 

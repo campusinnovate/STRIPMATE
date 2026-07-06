@@ -10,23 +10,15 @@
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
+  <script>const PAGE = 'dashboard'</script>
+  <script src="/assets/js/admin.js"></script>
   <link rel="stylesheet" href="/assets/css/admin.css" />
 </head>
 <body>
   <div class="admin-body">
     <aside class="admin-sidebar">
       <div class="logo">STRIP<span>MATE</span></div>
-      <nav>
-        <a href="/admin/" class="active">&#128202; Dashboard</a>
-        <a href="/admin/trips.html">&#127758; Trips</a>
-        <a href="/admin/bookings.html">&#128221; Bookings</a>
-        <a href="/admin/payments.html">&#128179; Payments</a>
-        <a href="/admin/blog.html">&#128240; Blog</a>
-        <a href="/admin/media.html">&#128247; Media</a>
-        <a href="/admin/testimonials.html">&#128172; Testimonials</a>
-        <a href="/" target="_blank" style="margin-top:auto">&#127760; Lihat Site</a>
-        <a href="#" class="logout-link" onclick="logout()">&#10148; Logout</a>
-      </nav>
+      <nav></nav>
     </aside>
     <main class="admin-main">
       <div class="admin-header">
@@ -50,53 +42,58 @@
     async function init() {
       const session = await requireAdmin()
       if (!session) return
+      injectSidebar(PAGE)
       document.getElementById('adminInfo').textContent = session.profile.full_name || 'Admin'
 
-      const [users, bookings, payments, trips] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('bookings').select('id', { count: 'exact', head: true }),
-        supabase.from('payments').select('id, amount, status, created_at, booking_id', { count: 'exact' }).order('created_at', { ascending: false }).limit(10),
-        supabase.from('trips').select('title, date, status').order('date', { ascending: true }).limit(5)
-      ])
+      try {
+        const [users, bookings, payments, trips] = await Promise.all([
+          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('bookings').select('id', { count: 'exact', head: true }),
+          supabase.from('payments').select('id, amount, status, created_at, booking_id', { count: 'exact' }).order('created_at', { ascending: false }).limit(10),
+          supabase.from('trips').select('title, date, status').order('date', { ascending: true }).limit(5)
+        ])
 
-      document.getElementById('statCards').innerHTML = `
-        <div class="stat-card"><div class="label">Total Peserta</div><div class="value">${users.count || 0}</div></div>
-        <div class="stat-card"><div class="label">Total Booking</div><div class="value">${bookings.count || 0}</div></div>
-        <div class="stat-card"><div class="label">Total Payment</div><div class="value">${payments.count || 0}</div></div>
-        <div class="stat-card"><div class="label">Total Revenue</div><div class="value">${formatCurrency(payments.data ? payments.data.reduce((s, p) => s + (p.amount || 0), 0) : 0)}</div></div>
-      `
+        document.getElementById('statCards').innerHTML = `
+          <div class="stat-card"><div class="label">Total Peserta</div><div class="value">${users.count || 0}</div></div>
+          <div class="stat-card"><div class="label">Total Booking</div><div class="value">${bookings.count || 0}</div></div>
+          <div class="stat-card"><div class="label">Total Payment</div><div class="value">${payments.count || 0}</div></div>
+          <div class="stat-card"><div class="label">Total Revenue</div><div class="value">${formatCurrency(payments.data ? payments.data.reduce((s, p) => s + (p.amount || 0), 0) : 0)}</div></div>
+        `
 
-      const recentB = document.getElementById('recentBookings')
-      if (bookings.count > 0) {
-        const { data: recentBookingData } = await supabase
-          .from('bookings')
-          .select('invoice_number, status, total_amount, created_at, profiles(full_name)')
-          .order('created_at', { ascending: false })
-          .limit(5)
-        if (recentBookingData && recentBookingData.length > 0) {
-          recentB.innerHTML = recentBookingData.map(b => `
-            <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray);font-size:0.85rem">
-              <span>${escapeHtml(b.invoice_number)}<br/><span style="font-size:0.75rem;color:var(--text-muted)">${escapeHtml(b.profiles?.full_name || '')}</span></span>
-              <span>${getStatusBadge(b.status)}</span>
-            </div>
-          `).join('')
+        const recentB = document.getElementById('recentBookings')
+        if (bookings.count > 0) {
+          const { data: recentBookingData } = await supabase
+            .from('bookings')
+            .select('invoice_number, status, total_amount, created_at, profiles(full_name)')
+            .order('created_at', { ascending: false })
+            .limit(5)
+          if (recentBookingData && recentBookingData.length > 0) {
+            recentB.innerHTML = recentBookingData.map(b => `
+              <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray);font-size:0.85rem">
+                <span>${escapeHtml(b.invoice_number)}<br/><span style="font-size:0.75rem;color:var(--text-muted)">${escapeHtml(b.profiles?.full_name || '')}</span></span>
+                <span>${getStatusBadge(b.status)}</span>
+              </div>
+            `).join('')
+          } else {
+            recentB.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Belum ada booking.</p>'
+          }
         } else {
           recentB.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Belum ada booking.</p>'
         }
-      } else {
-        recentB.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Belum ada booking.</p>'
-      }
 
-      const recentP = document.getElementById('recentPayments')
-      if (payments.data && payments.data.length > 0) {
-        recentP.innerHTML = payments.data.map(p => `
-          <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray);font-size:0.85rem">
-            <span>${formatCurrency(p.amount)}<br/><span style="font-size:0.75rem;color:var(--text-muted)">${formatDate(p.created_at)}</span></span>
-            <span>${getStatusBadge(p.status)}</span>
-          </div>
-        `).join('')
-      } else {
-        recentP.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Belum ada pembayaran.</p>'
+        const recentP = document.getElementById('recentPayments')
+        if (payments.data && payments.data.length > 0) {
+          recentP.innerHTML = payments.data.map(p => `
+            <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--gray);font-size:0.85rem">
+              <span>${formatCurrency(p.amount)}<br/><span style="font-size:0.75rem;color:var(--text-muted)">${formatDate(p.created_at)}</span></span>
+              <span>${getStatusBadge(p.status)}</span>
+            </div>
+          `).join('')
+        } else {
+          recentP.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Belum ada pembayaran.</p>'
+        }
+      } catch (err) {
+        showToast(err.message || 'Gagal memuat dashboard', 'error')
       }
     }
     init()
