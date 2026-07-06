@@ -76,11 +76,13 @@
 
     async function confirmPay(id) {
       if (!confirm('Konfirmasi pembayaran ini?')) return
-      const { error: payError } = await supabase.from('payments').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', id)
-      if (payError) { showToast(payError.message, 'error'); return }
-      const { data: pay } = await supabase.from('payments').select('booking_id').eq('id', id).maybeSingle()
+      const { error: payUpdateError } = await supabase.from('payments').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', id)
+      if (payUpdateError) { showToast(payUpdateError.message, 'error'); return }
+      const { data: pay, error: paySelectError } = await supabase.from('payments').select('booking_id').eq('id', id).maybeSingle()
+      if (paySelectError) { showToast(paySelectError.message, 'error'); return }
       if (pay) {
-        await supabase.from('bookings').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', pay.booking_id)
+        const { error: bookingError } = await supabase.from('bookings').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', pay.booking_id)
+        if (bookingError) { showToast(bookingError.message, 'error'); return }
       }
       showToast('Pembayaran dikonfirmasi')
       loadPayments()
@@ -94,7 +96,7 @@
       loadPayments()
     }
 
-    init()
+    init().catch(function(err) { console.error(err); showToast(err.message || 'Terjadi kesalahan', 'error'); })
   </script>
 </body>
 </html>

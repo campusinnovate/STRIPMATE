@@ -25,8 +25,11 @@ async function login(email, password) {
 }
 
 async function logout() {
-  const { error } = await supabase.auth.signOut()
-  if (error) throw error
+  try {
+    await supabase.auth.signOut()
+  } catch (e) {
+    console.error('Logout error:', e)
+  }
   window.location.href = '/login.html'
 }
 
@@ -68,7 +71,7 @@ async function requireAuth(redirectTo = '/login.html') {
 async function requireAdmin() {
   const session = await requireAuth('/login.html')
   if (!session) return null
-  if (session.profile.role !== 'admin') {
+  if (!session.profile || session.profile.role !== 'admin') {
     window.location.href = '/dashboard.html'
     return null
   }

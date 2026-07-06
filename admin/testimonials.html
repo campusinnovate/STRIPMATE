@@ -59,7 +59,7 @@
         <tr>
           <td><strong>${escapeHtml(t.name)}</strong></td>
           <td>${escapeHtml(t.trip || '-')}</td>
-          <td>${'&#9733;'.repeat(t.rating)}</td>
+          <td>${'&#9733;'.repeat(t.rating || 0)}</td>
           <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(t.content || '')}</td>
           <td>
             <button class="btn btn-sm btn-secondary" onclick="editTesti('${t.id}')">Edit</button>
@@ -128,7 +128,7 @@
       loadTestimonials()
     }
 
-    init()
+    init().catch(function(err) { console.error(err); showToast(err.message || 'Terjadi kesalahan', 'error'); })
   </script>
 </body>
 </html>

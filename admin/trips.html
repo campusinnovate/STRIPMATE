@@ -142,7 +142,7 @@
       loadTrips()
     }
 
-    init()
+    init().catch(function(err) { console.error(err); showToast(err.message || 'Terjadi kesalahan', 'error'); })
   </script>
 </body>
 </html>
