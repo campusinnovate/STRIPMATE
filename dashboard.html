@@ -157,6 +157,10 @@
       session = await requireAuth('/login.html')
       if (!session) return
       const p = session.profile
+      if (!p) {
+        document.getElementById('loadingState').innerHTML = '<p>Gagal memuat profil. Silakan login ulang.</p>'
+        return
+      }
       document.getElementById('userName').textContent = p.full_name || 'Peserta'
       document.getElementById('userInfo').textContent = p.school || 'STRIPMATE Member'
       document.getElementById('loadingState').style.display = 'none'
@@ -167,8 +171,7 @@
     async function loadDashboard() {
       await Promise.all([
         loadTrips(),
-        loadProfile(),
-        loadBlogPosts()
+        loadProfile()
       ])
     }
 
@@ -421,11 +424,6 @@
       } catch (e) {
         alert('Gagal menyimpan profil: ' + e.message)
       }
-    }
-
-    async function loadBlogPosts() {
-      const container = document.getElementById('tabBlog')
-      if (!container) return
     }
 
     function handleLogout() {

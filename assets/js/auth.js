@@ -5,6 +5,16 @@ async function register(email, password, fullName) {
     options: { data: { full_name: fullName } }
   })
   if (error) throw error
+
+  if (data?.user) {
+    await supabase.from('profiles').insert({
+      id: data.user.id,
+      full_name: fullName,
+      email: email,
+      role: 'peserta'
+    }).maybeSingle()
+  }
+
   return data
 }
 
@@ -31,7 +41,7 @@ async function getProfile(userId) {
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .single()
+    .maybeSingle()
   if (error) return null
   return data
 }
@@ -42,7 +52,16 @@ async function requireAuth(redirectTo = '/login.html') {
     window.location.href = redirectTo
     return null
   }
-  const profile = await getProfile(user.id)
+  let profile = await getProfile(user.id)
+  if (!profile) {
+    await supabase.from('profiles').insert({
+      id: user.id,
+      email: user.email,
+      full_name: user.user_metadata?.full_name || '',
+      role: 'peserta'
+    }).maybeSingle()
+    profile = await getProfile(user.id)
+  }
   return { user, profile }
 }
 
