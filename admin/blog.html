@@ -61,7 +61,7 @@
     async function loadPosts() {
       const loading = document.getElementById('blogLoading')
       loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
-      const { data, error } = await supabase.from('blog_posts').select('*').order('created_at', { ascending: false })
+      const { data, error } = await supabaseClient.from('blog_posts').select('*').order('created_at', { ascending: false })
       loading.innerHTML = ''
       if (error) { showToast(error.message, 'error'); return }
       posts = data || []
@@ -109,14 +109,14 @@
     }
 
     async function editPost(id) {
-      const { data, error } = await supabase.from('blog_posts').select('*').eq('id', id).single()
+      const { data, error } = await supabaseClient.from('blog_posts').select('*').eq('id', id).single()
       if (error || !data) { showToast('Artikel tidak ditemukan', 'error'); return }
       openPostModal(data)
     }
 
     async function deletePost(id) {
       if (!confirm('Hapus artikel ini?')) return
-      const { error } = await supabase.from('blog_posts').delete().eq('id', id)
+      const { error } = await supabaseClient.from('blog_posts').delete().eq('id', id)
       if (error) { showToast(error.message, 'error'); return }
       showToast('Artikel berhasil dihapus')
       loadPosts()
@@ -139,8 +139,8 @@
         published_at: document.getElementById('pPublished').checked ? new Date().toISOString() : null
       }
       const { error } = id
-        ? await supabase.from('blog_posts').update(data).eq('id', id)
-        : await supabase.from('blog_posts').insert(data)
+        ? await supabaseClient.from('blog_posts').update(data).eq('id', id)
+        : await supabaseClient.from('blog_posts').insert(data)
       if (error) { showToast(error.message, 'error'); return }
       showToast(id ? 'Artikel berhasil diupdate' : 'Artikel berhasil ditambahkan')
       closePostModal()

@@ -48,10 +48,10 @@
 
       try {
         const [users, bookings, payments, trips] = await Promise.all([
-          supabase.from('profiles').select('id', { count: 'exact', head: true }),
-          supabase.from('bookings').select('id', { count: 'exact', head: true }),
-          supabase.from('payments').select('id, amount, status, created_at, booking_id', { count: 'exact' }).order('created_at', { ascending: false }).limit(10),
-          supabase.from('trips').select('title, date, status').order('date', { ascending: true }).limit(5)
+          supabaseClient.from('profiles').select('id', { count: 'exact', head: true }),
+          supabaseClient.from('bookings').select('id', { count: 'exact', head: true }),
+          supabaseClient.from('payments').select('id, amount, status, created_at, booking_id', { count: 'exact' }).order('created_at', { ascending: false }).limit(10),
+          supabaseClient.from('trips').select('title, date, status').order('date', { ascending: true }).limit(5)
         ])
 
         document.getElementById('statCards').innerHTML = `

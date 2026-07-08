@@ -61,11 +61,11 @@
 <body>
   <nav>
     <div class="container">
-      <a href="/" class="logo">STRIP<span>MATE</span></a>
+      <a href="index.html" class="logo">STRIP<span>MATE</span></a>
       <ul>
-        <li><a href="/">Beranda</a></li>
-        <li><a href="/blog.html" style="color:var(--navy);font-weight:600">Blog</a></li>
-        <li><a href="/login.html" class="nav-cta">Dashboard</a></li>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="blog.html" style="color:var(--navy);font-weight:600">Blog</a></li>
+        <li><a href="login.html" class="nav-cta">Dashboard</a></li>
       </ul>
     </div>
   </nav>
@@ -85,7 +85,7 @@
   <script>
     async function loadBlog() {
       const container = document.getElementById('blogList')
-      const { data: posts, error } = await supabase
+      const { data: posts, error } = await supabaseClient
         .from('blog_posts')
         .select('*')
         .eq('published', true)
@@ -97,7 +97,7 @@
       }
 
       container.innerHTML = posts.map(p => `
-        <a href="/blog-post.html?slug=${p.slug}" class="post-card" style="text-decoration:none">
+        <a href="blog-post.html?slug=${p.slug}" class="post-card" style="text-decoration:none">
           <div class="thumb"><img src="${p.image_url || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80'}" alt="${escapeHtml(p.title)}" loading="lazy"/></div>
           <div class="body">
             <div class="tags">${(p.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join('')}</div>

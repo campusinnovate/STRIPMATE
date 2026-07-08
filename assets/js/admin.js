@@ -1,11 +1,11 @@
 const ADMIN_SIDEBAR = [
-  { page: 'dashboard', label: 'Dashboard', icon: '📊', href: '/admin/index.html' },
-  { page: 'trips', label: 'Trips', icon: '🗺️', href: '/admin/trips.html' },
-  { page: 'bookings', label: 'Bookings', icon: '📋', href: '/admin/bookings.html' },
-  { page: 'payments', label: 'Payments', icon: '💰', href: '/admin/payments.html' },
-  { page: 'blog', label: 'Blog', icon: '📰', href: '/admin/blog.html' },
-  { page: 'media', label: 'Media', icon: '📷', href: '/admin/media.html' },
-  { page: 'testimonials', label: 'Testimonials', icon: '💬', href: '/admin/testimonials.html' },
+  { page: 'dashboard', label: 'Dashboard', icon: '📊', href: 'admin/index.html' },
+  { page: 'trips', label: 'Trips', icon: '🗺️', href: 'admin/trips.html' },
+  { page: 'bookings', label: 'Bookings', icon: '📋', href: 'admin/bookings.html' },
+  { page: 'payments', label: 'Payments', icon: '💰', href: 'admin/payments.html' },
+  { page: 'blog', label: 'Blog', icon: '📰', href: 'admin/blog.html' },
+  { page: 'media', label: 'Media', icon: '📷', href: 'admin/media.html' },
+  { page: 'testimonials', label: 'Testimonials', icon: '💬', href: 'admin/testimonials.html' },
 ]
 
 function injectSidebar(activePage) {
@@ -16,7 +16,7 @@ function injectSidebar(activePage) {
       <span>${item.icon}</span> ${item.label}
     </a>
   `).join('') + `
-    <a href="/" target="_blank" style="margin-top:auto">🌐 Lihat Site</a>
+    <a href="index.html" target="_blank" style="margin-top:auto">🌐 Lihat Site</a>
     <a href="#" class="logout-link" onclick="logout()">🚪 Logout</a>
   `
 }

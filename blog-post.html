@@ -61,14 +61,14 @@
 <body>
   <nav>
     <div class="container">
-      <a href="/" class="logo">STRIP<span>MATE</span></a>
-      <a href="/blog.html">Blog</a>
+      <a href="index.html" class="logo">STRIP<span>MATE</span></a>
+      <a href="blog.html">Blog</a>
     </div>
   </nav>
 
   <main>
     <div class="container">
-      <a href="/blog.html" class="back-link">&larr; Kembali ke Blog</a>
+      <a href="blog.html" class="back-link">&larr; Kembali ke Blog</a>
       <div id="loadingPost" class="loading"><div class="spinner"></div><p>Memuat artikel...</p></div>
       <article id="postContent" style="display:none"></article>
     </div>
@@ -81,7 +81,7 @@
         document.getElementById('loadingPost').innerHTML = '<p>Artikel tidak ditemukan.</p>'
         return
       }
-      const { data: post, error } = await supabase
+      const { data: post, error } = await supabaseClient
         .from('blog_posts')
         .select('*')
         .eq('slug', slug)

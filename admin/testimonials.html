@@ -53,7 +53,7 @@
     async function loadTestimonials() {
       const loading = document.getElementById('testiLoading')
       loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
-      const { data, error } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false })
+      const { data, error } = await supabaseClient.from('testimonials').select('*').order('created_at', { ascending: false })
       loading.innerHTML = ''
       if (error) { showToast(error.message, 'error'); return }
       document.getElementById('testiTable').innerHTML = (data || []).map(t => `
@@ -98,14 +98,14 @@
     }
 
     async function editTesti(id) {
-      const { data, error } = await supabase.from('testimonials').select('*').eq('id', id).single()
+      const { data, error } = await supabaseClient.from('testimonials').select('*').eq('id', id).single()
       if (error || !data) { showToast('Testimoni tidak ditemukan', 'error'); return }
       openTestiModal(data)
     }
 
     async function deleteTesti(id) {
       if (!confirm('Hapus testimoni ini?')) return
-      const { error } = await supabase.from('testimonials').delete().eq('id', id)
+      const { error } = await supabaseClient.from('testimonials').delete().eq('id', id)
       if (error) { showToast(error.message, 'error'); return }
       showToast('Testimoni berhasil dihapus')
       loadTestimonials()
@@ -121,8 +121,8 @@
         avatar_url: document.getElementById('tAvatar').value
       }
       const { error } = id
-        ? await supabase.from('testimonials').update(data).eq('id', id)
-        : await supabase.from('testimonials').insert(data)
+        ? await supabaseClient.from('testimonials').update(data).eq('id', id)
+        : await supabaseClient.from('testimonials').insert(data)
       if (error) { showToast(error.message, 'error'); return }
       showToast(id ? 'Testimoni berhasil diupdate' : 'Testimoni berhasil ditambahkan')
       closeTestiModal()

@@ -57,7 +57,7 @@
       const loading = document.getElementById('bookingLoading')
       loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const filter = document.getElementById('statusFilter').value
-      let query = supabase.from('bookings').select('*, profiles(full_name, email), trips(title)').order('created_at', { ascending: false })
+      let query = supabaseClient.from('bookings').select('*, profiles(full_name, email), trips(title)').order('created_at', { ascending: false })
       if (filter) query = query.eq('status', filter)
       const { data, error } = await query
       loading.innerHTML = ''
@@ -88,7 +88,7 @@
 
     async function updateBooking() {
       const id = document.getElementById('bId').value
-      const { error } = await supabase.from('bookings').update({
+      const { error } = await supabaseClient.from('bookings').update({
         status: document.getElementById('bStatus').value,
         payment_status: document.getElementById('bPayStatus').value
       }).eq('id', id)

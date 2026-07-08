@@ -105,10 +105,10 @@
 <body>
   <header class="dash-header">
     <div class="container">
-      <a href="/" class="logo">STRIP<span>MATE</span></a>
+      <a href="index.html" class="logo">STRIP<span>MATE</span></a>
       <div class="nav-right">
-        <a href="/">Beranda</a>
-        <a href="/blog.html">Blog</a>
+        <a href="index.html">Beranda</a>
+        <a href="blog.html">Blog</a>
         <button class="logout-btn" onclick="handleLogout()">Logout</button>
       </div>
     </div>
@@ -155,7 +155,7 @@
     let bookingsCache = []
 
     async function init() {
-      session = await requireAuth('/login.html')
+      session = await requireAuth()
       if (!session) return
       const p = session.profile
       if (!p) {
@@ -192,7 +192,7 @@
     async function loadTrips() {
       const container = document.getElementById('tabTrips')
       showLoading(container, 'Memuat trip...')
-      const { data: bookings, error } = await supabase
+      const { data: bookings, error } = await supabaseClient
         .from('bookings')
         .select('*, trips(*)')
         .eq('user_id', session.user.id)
@@ -200,7 +200,7 @@
       if (error) return showError(container, 'Gagal memuat data.')
       bookingsCache = bookings || []
       if (!bookings || bookings.length === 0) {
-        return showEmpty(container, 'Belum ada trip yang kamu ikuti. <a href="/#upcoming" style="color:var(--orange)">Lihat trip tersedia &rarr;</a>')
+        return showEmpty(container, 'Belum ada trip yang kamu ikuti. <a href="index.html#upcoming" style="color:var(--orange)">Lihat trip tersedia &rarr;</a>')
       }
       updateStats()
       container.innerHTML = bookings.map(b => `
@@ -231,7 +231,7 @@
     async function loadPayments() {
       const container = document.getElementById('tabPayments')
       showLoading(container, 'Memuat pembayaran...')
-      const { data: payments, error } = await supabase
+      const { data: payments, error } = await supabaseClient
         .from('payments')
         .select('*, bookings!inner(trip_id, invoice_number, trips!inner(title))')
         .eq('bookings.user_id', session.user.id)
@@ -273,7 +273,7 @@
     async function loadTickets() {
       const container = document.getElementById('tabTickets')
       showLoading(container, 'Memuat e-ticket...')
-      const { data: tickets, error } = await supabase
+      const { data: tickets, error } = await supabaseClient
         .from('e_tickets')
         .select('*, bookings!inner(trip_id, invoice_number, trips!inner(title))')
         .eq('bookings.user_id', session.user.id)
@@ -300,7 +300,7 @@
     async function loadCertificates() {
       const container = document.getElementById('tabCertificates')
       showLoading(container, 'Memuat sertifikat...')
-      const { data: certs, error } = await supabase
+      const { data: certs, error } = await supabaseClient
         .from('certificates')
         .select('*, trips(title)')
         .eq('user_id', session.user.id)
@@ -323,7 +323,7 @@
     async function loadMerchandise() {
       const container = document.getElementById('tabMerch')
       showLoading(container, 'Memuat merchandise...')
-      const { data: merch, error } = await supabase
+      const { data: merch, error } = await supabaseClient
         .from('merchandise')
         .select('*, bookings!inner(trip_id, invoice_number, trips!inner(title))')
         .eq('bookings.user_id', session.user.id)
@@ -389,7 +389,7 @@
 
     async function loadBlogPreview() {
       const container = document.getElementById('blogPreview')
-      const { data: posts, error } = await supabase
+      const { data: posts, error } = await supabaseClient
         .from('blog_posts')
         .select('title, slug, excerpt, image_url, published_at')
         .eq('published', true)
@@ -400,7 +400,7 @@
         return
       }
       container.innerHTML = posts.map(p => `
-        <a href="/blog-post.html?slug=${p.slug}" class="blog-card" style="display:flex;text-decoration:none">
+        <a href="blog-post.html?slug=${p.slug}" class="blog-card" style="display:flex;text-decoration:none">
           <div class="thumb"><img src="${p.image_url || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&q=80'}" alt=""/></div>
           <div class="info">
             <h4>${escapeHtml(p.title)}</h4>

@@ -59,7 +59,7 @@
     async function loadTrips() {
       const loading = document.getElementById('tripLoading')
       loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
-      const { data, error } = await supabase.from('trips').select('*').order('date', { ascending: true })
+      const { data, error } = await supabaseClient.from('trips').select('*').order('date', { ascending: true })
       loading.innerHTML = ''
       if (error) { showToast(error.message, 'error'); return }
       document.getElementById('tripTable').innerHTML = (data || []).map(t => `
@@ -107,14 +107,14 @@
     }
 
     async function editTrip(id) {
-      const { data, error } = await supabase.from('trips').select('*').eq('id', id).single()
+      const { data, error } = await supabaseClient.from('trips').select('*').eq('id', id).single()
       if (error || !data) { showToast('Trip tidak ditemukan', 'error'); return }
       openTripModal(data)
     }
 
     async function deleteTrip(id) {
       if (!confirm('Hapus trip ini?')) return
-      const { error } = await supabase.from('trips').delete().eq('id', id)
+      const { error } = await supabaseClient.from('trips').delete().eq('id', id)
       if (error) { showToast(error.message, 'error'); return }
       showToast('Trip berhasil dihapus')
       loadTrips()
@@ -135,8 +135,8 @@
         description: document.getElementById('tDesc').value
       }
       const { error } = id
-        ? await supabase.from('trips').update(data).eq('id', id)
-        : await supabase.from('trips').insert(data)
+        ? await supabaseClient.from('trips').update(data).eq('id', id)
+        : await supabaseClient.from('trips').insert(data)
       if (error) { showToast(error.message, 'error'); return }
       showToast(id ? 'Trip berhasil diupdate' : 'Trip berhasil ditambahkan')
       closeTripModal()

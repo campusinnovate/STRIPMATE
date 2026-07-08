@@ -54,7 +54,7 @@
     async function loadMedia() {
       const loading = document.getElementById('mediaLoading')
       loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
-      const { data, error } = await supabase.from('media_assets').select('*').order('created_at', { ascending: false })
+      const { data, error } = await supabaseClient.from('media_assets').select('*').order('created_at', { ascending: false })
       loading.innerHTML = ''
       if (error) { showToast(error.message, 'error'); return }
       document.getElementById('mediaTable').innerHTML = (data || []).map(m => `
@@ -100,14 +100,14 @@
     }
 
     async function editMedia(id) {
-      const { data, error } = await supabase.from('media_assets').select('*').eq('id', id).single()
+      const { data, error } = await supabaseClient.from('media_assets').select('*').eq('id', id).single()
       if (error || !data) { showToast('Media tidak ditemukan', 'error'); return }
       openMediaModal(data)
     }
 
     async function deleteMedia(id) {
       if (!confirm('Hapus media ini?')) return
-      const { error } = await supabase.from('media_assets').delete().eq('id', id)
+      const { error } = await supabaseClient.from('media_assets').delete().eq('id', id)
       if (error) { showToast(error.message, 'error'); return }
       showToast('Media berhasil dihapus')
       loadMedia()
@@ -123,8 +123,8 @@
         downloadable: document.getElementById('mDownloadable').checked
       }
       const { error } = id
-        ? await supabase.from('media_assets').update(data).eq('id', id)
-        : await supabase.from('media_assets').insert(data)
+        ? await supabaseClient.from('media_assets').update(data).eq('id', id)
+        : await supabaseClient.from('media_assets').insert(data)
       if (error) { showToast(error.message, 'error'); return }
       showToast(id ? 'Media berhasil diupdate' : 'Media berhasil ditambahkan')
       closeMediaModal()

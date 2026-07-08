@@ -34,7 +34,7 @@ async function logout() {
   } catch (e) {
     console.error('Logout error:', e)
   }
-  window.location.href = '/login.html'
+  window.location.href = 'login.html'
 }
 
 async function getCurrentUser() {
@@ -55,7 +55,7 @@ async function getProfile(userId) {
   return data
 }
 
-async function requireAuth(redirectTo = '/login.html') {
+async function requireAuth(redirectTo = 'login.html') {
   const user = await getCurrentUser()
   if (!user) {
     window.location.href = redirectTo
@@ -76,10 +76,10 @@ async function requireAuth(redirectTo = '/login.html') {
 }
 
 async function requireAdmin() {
-  const session = await requireAuth('/login.html')
+  const session = await requireAuth()
   if (!session) return null
   if (!session.profile || session.profile.role !== 'admin') {
-    window.location.href = '/dashboard.html'
+    window.location.href = 'dashboard.html'
     return null
   }
   return session
