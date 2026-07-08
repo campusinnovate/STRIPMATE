@@ -85,8 +85,8 @@
     .trip-card .status{position:absolute;top:0.75rem;left:0.75rem;background:var(--green);color:#fff;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:700;letter-spacing:0.02em}
     .trip-card .status.full{background:var(--text-muted)}
     .trip-card .status.closed{background:#ef4444}
-    .trip-card.full{opacity:0.7;pointer-events:none}
-    .trip-card.full .btn-book{background:var(--text-muted);pointer-events:none}
+    .trip-card.full,.trip-card.closed{opacity:0.7;pointer-events:none}
+    .trip-card.full .btn-book,.trip-card.closed .btn-book{background:var(--text-muted);pointer-events:none}
     .trip-card .body{padding:1.25rem 1.5rem 1.5rem}
     .trip-card .body h3{font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:0.2rem}
     .trip-card .body .trip-loc{font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem}
