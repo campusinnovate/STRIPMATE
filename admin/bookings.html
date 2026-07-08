@@ -23,7 +23,7 @@
     <main class="admin-main">
       <div class="admin-header">
         <h1>Manage Bookings</h1>
-        <select id="statusFilter" onchange="loadBookings()" style="padding:0.55rem 1rem;border-radius:999px;border:1.5px solid var(--gray);font-family:inherit;font-size:0.82rem">
+        <select id="statusFilter" class="filter-select" onchange="loadBookings()">
           <option value="">Semua Status</option>
           <option value="pending">Pending</option>
           <option value="confirmed">Confirmed</option>

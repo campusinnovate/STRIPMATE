@@ -16,8 +16,10 @@ function injectSidebar(activePage) {
       <span>${item.icon}</span> ${item.label}
     </a>
   `).join('') + `
-    <a href="index.html" target="_blank" style="margin-top:auto">🌐 Lihat Site</a>
-    <a href="#" class="logout-link" onclick="logout()">🚪 Logout</a>
+    <div class="nav-bottom">
+      <a href="index.html" target="_blank">🌐 Lihat Site</a>
+      <a href="#" class="logout-link" onclick="logout()">🚪 Logout</a>
+    </div>
   `
 }
 

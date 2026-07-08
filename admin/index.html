@@ -63,7 +63,7 @@
 
         const recentB = document.getElementById('recentBookings')
         if (bookings.count > 0) {
-          const { data: recentBookingData } = await supabase
+          const { data: recentBookingData } = await supabaseClient
             .from('bookings')
             .select('invoice_number, status, total_amount, created_at, profiles(full_name)')
             .order('created_at', { ascending: false })
