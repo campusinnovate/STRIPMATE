@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base href="/STRIPMATE/" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Channels - Admin STRIPMATE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/utils.js"></script>
+  <script>const PAGE = 'channels'</script>
+  <script src="assets/js/admin.js" defer></script>
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="logo">STRIP<span>MATE</span></div>
+      <nav></nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header"><h1>Payment Channels</h1></div>
+      <div style="padding:0 2rem 2rem">
+        <button class="btn-primary" onclick="showAddChannel()" style="margin-bottom:1.5rem">+ Tambah Channel</button>
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead><tr><th>Nama</th><th>Metode</th><th>Atas Nama</th><th>No Rekening</th><th>Aktif</th><th>Aksi</th></tr></thead>
+            <tbody id="channelBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="channelModal"><div class="modal">
+    <button class="modal-close" onclick="closeModal('channelModal')">&times;</button>
+    <h2 id="channelModalTitle">Tambah Channel</h2>
+    <form id="channelForm" onsubmit="saveChannel(event)" style="display:grid;gap:1rem;margin-top:1rem">
+      <input type="hidden" id="channelId" />
+      <div><label style="font-size:0.85rem;font-weight:600">Nama Channel</label><input id="chName" required class="form-input" placeholder="BCA Transfer" /></div>
+      <div><label style="font-size:0.85rem;font-weight:600">Metode</label>
+        <select id="chMethod" class="form-input" required>
+          <option value="transfer">Transfer</option>
+          <option value="qris">QRIS</option>
+          <option value="va">Virtual Account</option>
+          <option value="ewallet">E-Wallet</option>
+        </select>
+      </div>
+      <div><label style="font-size:0.85rem;font-weight:600">Atas Nama</label><input id="chAccountName" class="form-input" placeholder="PT STRIPMATE" /></div>
+      <div><label style="font-size:0.85rem;font-weight:600">Nomor Rekening</label><input id="chAccountNumber" class="form-input" placeholder="1234567890" /></div>
+      <div><label style="font-size:0.85rem;font-weight:600">Icon URL</label><input id="chIconUrl" class="form-input" placeholder="https://..." /></div>
+      <div><label style="font-size:0.85rem;font-weight:600">Urutan</label><input id="chSortOrder" type="number" class="form-input" value="0" /></div>
+      <button type="submit" class="btn-primary">Simpan</button>
+    </form>
+  </div></div>
+
+  <script>
+    let channels = []
+
+    async function loadChannels() {
+      const { data, error } = await supabaseClient.from('payment_channels').select('*').order('sort_order')
+      if (error) return showToast('Gagal memuat channel','error')
+      channels = data || []
+      renderChannels()
+    }
+
+    function renderChannels() {
+      const tbody = document.getElementById('channelBody')
+      tbody.innerHTML = channels.map(c => `<tr>
+        <td><strong>${c.name}</strong></td>
+        <td><span class="badge badge-${c.method}">${c.method.toUpperCase()}</span></td>
+        <td>${c.account_name || '-'}</td>
+        <td>${c.account_number || '-'}</td>
+        <td><span class="badge ${c.is_active ? 'badge-success' : 'badge-secondary'}">${c.is_active ? 'Aktif' : 'Nonaktif'}</span></td>
+        <td>
+          <button class="btn-sm" onclick="editChannel('${c.id}')">Edit</button>
+          <button class="btn-sm btn-danger" onclick="deleteChannel('${c.id}')">Hapus</button>
+        </td>
+      </tr>`).join('')
+    }
+
+    function showAddChannel() {
+      document.getElementById('channelModalTitle').textContent = 'Tambah Channel'
+      document.getElementById('channelForm').reset()
+      document.getElementById('channelId').value = ''
+      openModal('channelModal')
+    }
+
+    function editChannel(id) {
+      const c = channels.find(x => x.id === id); if (!c) return
+      document.getElementById('channelModalTitle').textContent = 'Edit Channel'
+      document.getElementById('channelId').value = c.id
+      document.getElementById('chName').value = c.name
+      document.getElementById('chMethod').value = c.method
+      document.getElementById('chAccountName').value = c.account_name || ''
+      document.getElementById('chAccountNumber').value = c.account_number || ''
+      document.getElementById('chIconUrl').value = c.icon_url || ''
+      document.getElementById('chSortOrder').value = c.sort_order || 0
+      openModal('channelModal')
+    }
+
+    async function saveChannel(e) {
+      e.preventDefault()
+      const id = document.getElementById('channelId').value
+      const payload = {
+        name: document.getElementById('chName').value,
+        method: document.getElementById('chMethod').value,
+        account_name: document.getElementById('chAccountName').value,
+        account_number: document.getElementById('chAccountNumber').value,
+        icon_url: document.getElementById('chIconUrl').value,
+        sort_order: parseInt(document.getElementById('chSortOrder').value) || 0
+      }
+      const { error } = id
+        ? await supabaseClient.from('payment_channels').update(payload).eq('id', id)
+        : await supabaseClient.from('payment_channels').insert(payload)
+      if (error) return showToast('Gagal menyimpan channel: ' + error.message, 'error')
+      showToast('Channel berhasil disimpan', 'success')
+      closeModal('channelModal')
+      loadChannels()
+    }
+
+    async function deleteChannel(id) {
+      if (!confirm('Hapus channel ini?')) return
+      const { error } = await supabaseClient.from('payment_channels').delete().eq('id', id)
+      if (error) return showToast('Gagal menghapus','error')
+      showToast('Channel dihapus','success')
+      loadChannels()
+    }
+
+    (async function() {
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
+      loadChannels()
+    })()
+  </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base href="/STRIPMATE/" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Peserta - Admin STRIPMATE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/utils.js"></script>
+  <script>const PAGE = 'participants'</script>
+  <script src="assets/js/admin.js" defer></script>
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="logo">STRIP<span>MATE</span></div>
+      <nav></nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Data Peserta</h1>
+        <div style="display:flex;gap:0.75rem">
+          <button class="btn-primary" onclick="exportCSV()">Export CSV</button>
+        </div>
+      </div>
+      <div style="padding:0 2rem 2rem">
+        <div class="table-wrapper">
+          <table class="admin-table">
+            <thead><tr><th>Nama</th><th>Email</th><th>No HP</th><th>Sekolah</th><th>Domisili</th><th>Trip</th><th>Invoice</th><th>Status</th><th>KTP</th></tr></thead>
+            <tbody id="participantBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let _allBookings = []
+    let _page = 0
+    const PAGE_SIZE = 50
+
+    async function loadParticipants() {
+      _page = 0
+      await fetchParticipants()
+    }
+
+    async function fetchParticipants() {
+      const tbody = document.getElementById('participantBody')
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem">Memuat...</td></tr>'
+
+      if (_page === 0) {
+        const { data: bookings, error: bErr } = await supabaseClient
+          .from('bookings')
+          .select('id, user_id, trip_id, invoice_number, status, payment_status, trips(title)')
+          .order('created_at', { ascending: false })
+        if (bErr) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--danger)">Gagal memuat data.</td></tr>'; return }
+        _allBookings = bookings || []
+      }
+
+      const pageData = _allBookings.slice(_page * PAGE_SIZE, (_page + 1) * PAGE_SIZE)
+
+      const userIds = [...new Set(pageData.map(b => b.user_id))]
+      const { data: profiles } = await supabaseClient
+        .from('profiles')
+        .select('id, full_name, email, phone, school, domisili, avatar_url, ktp_url')
+        .in('id', userIds)
+
+      const profileMap = {}
+      ;(profiles || []).forEach(p => { profileMap[p.id] = p })
+
+      const totalPages = Math.ceil(_allBookings.length / PAGE_SIZE)
+      tbody.innerHTML = pageData.map(b => {
+        const p = profileMap[b.user_id] || {}
+        const name = p.full_name || '(tanpa nama)'
+        const tripTitle = b.trips?.title || '(trip dihapus)'
+        const statusClass = b.status === 'confirmed' ? 'badge-success' : b.status === 'cancelled' ? 'badge-danger' : 'badge-warning'
+        return `<tr>
+          <td><strong>${escapeHtml(name)}</strong></td>
+          <td>${escapeHtml(p.email || '-')}</td>
+          <td>${escapeHtml(p.phone || '-')}</td>
+          <td>${escapeHtml(p.school || '-')}</td>
+          <td>${escapeHtml(p.domisili || '-')}</td>
+          <td>${escapeHtml(tripTitle)}</td>
+          <td>${escapeHtml(b.invoice_number)}</td>
+          <td><span class="badge ${statusClass}">${b.status} / ${b.payment_status}</span></td>
+          <td>${p.ktp_url ? `<a href="${p.ktp_url}" target="_blank" class="btn-sm" download>Download</a>` : '-'}</td>
+        </tr>`
+      }).join('') + `
+      <tr><td colspan="9" style="text-align:center;padding:0.75rem;background:var(--glass-bg)">
+        <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.85rem">
+          <button class="btn-sm" onclick="changePage(-1)" ${_page === 0 ? 'disabled style="opacity:0.4"' : ''}>Sebelum</button>
+          <span>Halaman ${_page + 1} dari ${totalPages || 1}</span>
+          <button class="btn-sm" onclick="changePage(1)" ${_page >= totalPages - 1 ? 'disabled style="opacity:0.4"' : ''}>Berikut</button>
+        </div>
+      </td></tr>`
+    }
+
+    function changePage(delta) {
+      _page += delta
+      fetchParticipants()
+    }
+
+    function exportCSV() {
+      const rows = document.querySelectorAll('#participantBody tr')
+      const data = [['Nama','Email','No HP','Sekolah','Domisili','Trip','Invoice','Status']]
+      rows.forEach(tr => {
+        const tds = tr.querySelectorAll('td')
+        if (tds.length < 8) return
+        data.push(Array.from(tds).slice(0,8).map(td => td.textContent.trim()))
+      })
+      downloadCSV('data-peserta.csv', data)
+    }
+
+    (async function() {
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
+      loadParticipants()
+    })()
+  </script>
+</body>
+</html>

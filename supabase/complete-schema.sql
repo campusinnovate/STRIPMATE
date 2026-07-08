@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   domisili TEXT DEFAULT '',
   role TEXT DEFAULT 'peserta' CHECK (role IN ('peserta', 'admin')),
   avatar_url TEXT DEFAULT '',
+  ktp_url TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -173,13 +174,52 @@ DO $$
 DECLARE
   tbl TEXT;
 BEGIN
-  FOR tbl IN SELECT unnest(ARRAY['profiles','trips','bookings','payments','blog_posts','merchandise','media_assets','testimonials'])
+  FOR tbl IN SELECT unnest(ARRAY['profiles','trips','bookings','payments','blog_posts','merchandise','media_assets','testimonials','payment_channels'])
   LOOP
     EXECUTE format('DROP TRIGGER IF EXISTS trg_%s_updated_at ON %s', tbl, tbl);
     EXECUTE format('CREATE TRIGGER trg_%s_updated_at BEFORE UPDATE ON %s FOR EACH ROW EXECUTE FUNCTION update_updated_at()', tbl, tbl);
   END LOOP;
 END;
 $$;
+
+-- PAYMENT_CHANNELS
+CREATE TABLE IF NOT EXISTS payment_channels (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL DEFAULT '',
+  method TEXT DEFAULT 'transfer' CHECK (method IN ('transfer', 'qris', 'va', 'ewallet')),
+  account_name TEXT DEFAULT '',
+  account_number TEXT DEFAULT '',
+  icon_url TEXT DEFAULT '',
+  is_active BOOLEAN DEFAULT true,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- AUTO trip status = 'full' when confirmed bookings >= kuota
+CREATE OR REPLACE FUNCTION check_trip_full()
+RETURNS TRIGGER AS $$
+DECLARE
+  t_kuota INTEGER;
+  confirmed_count INTEGER;
+BEGIN
+  SELECT kuota INTO t_kuota FROM trips WHERE id = NEW.trip_id;
+  SELECT COUNT(*) INTO confirmed_count
+    FROM bookings
+    WHERE trip_id = NEW.trip_id AND status = 'confirmed';
+  IF confirmed_count >= t_kuota AND t_kuota > 0 THEN
+    UPDATE trips SET status = 'full' WHERE id = NEW.trip_id;
+  ELSE
+    UPDATE trips SET status = 'open' WHERE id = NEW.trip_id AND status = 'full';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_check_trip_full ON bookings;
+CREATE TRIGGER trg_check_trip_full
+  AFTER INSERT OR UPDATE OF status ON bookings
+  FOR EACH ROW EXECUTE FUNCTION check_trip_full();
 
 -- ============================================
 -- 4. RLS POLICIES (idempotent)
@@ -258,12 +298,25 @@ DROP POLICY IF EXISTS "media_insert_admin" ON media_assets; CREATE POLICY "media
 DROP POLICY IF EXISTS "media_update_admin" ON media_assets; CREATE POLICY "media_update_admin" ON media_assets FOR UPDATE USING (public.is_admin());
 DROP POLICY IF EXISTS "media_delete_admin" ON media_assets; CREATE POLICY "media_delete_admin" ON media_assets FOR DELETE USING (public.is_admin());
 
+-- PAYMENT_CHANNELS
+ALTER TABLE payment_channels ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "pc_select_active" ON payment_channels; CREATE POLICY "pc_select_active" ON payment_channels FOR SELECT USING (is_active = true OR public.is_admin());
+DROP POLICY IF EXISTS "pc_insert_admin" ON payment_channels; CREATE POLICY "pc_insert_admin" ON payment_channels FOR INSERT WITH CHECK (public.is_admin());
+DROP POLICY IF EXISTS "pc_update_admin" ON payment_channels; CREATE POLICY "pc_update_admin" ON payment_channels FOR UPDATE USING (public.is_admin());
+DROP POLICY IF EXISTS "pc_delete_admin" ON payment_channels; CREATE POLICY "pc_delete_admin" ON payment_channels FOR DELETE USING (public.is_admin());
+
 -- TESTIMONIALS
 ALTER TABLE testimonials ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "testi_select_all" ON testimonials; CREATE POLICY "testi_select_all" ON testimonials FOR SELECT USING (true);
 DROP POLICY IF EXISTS "testi_insert_admin" ON testimonials; CREATE POLICY "testi_insert_admin" ON testimonials FOR INSERT WITH CHECK (public.is_admin());
 DROP POLICY IF EXISTS "testi_update_admin" ON testimonials; CREATE POLICY "testi_update_admin" ON testimonials FOR UPDATE USING (public.is_admin());
 DROP POLICY IF EXISTS "testi_delete_admin" ON testimonials; CREATE POLICY "testi_delete_admin" ON testimonials FOR DELETE USING (public.is_admin());
+
+-- Create avatars bucket (run once in Supabase Dashboard → Storage)
+-- INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT DO NOTHING;
+-- CREATE POLICY "avatars_public_select" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+-- CREATE POLICY "avatars_auth_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+-- CREATE POLICY "avatars_own_update" ON storage.objects FOR UPDATE USING (bucket_id = 'avatars' AND owner = auth.uid());
 
 -- ============================================
 -- 5. SAMPLE DATA (testing purposes)

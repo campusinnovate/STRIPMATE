@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base href="/STRIPMATE/" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalender - Admin STRIPMATE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/utils.js"></script>
+  <script>const PAGE = 'calendar'</script>
+  <script src="assets/js/admin.js" defer></script>
+  <style>
+    .calendar-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+    .calendar-nav h2{font-size:1.2rem}
+    .calendar-nav button{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:0.5rem;padding:0.4rem 0.8rem;cursor:pointer;font-family:inherit;font-weight:600;transition:all.2s}
+    .calendar-nav button:hover{background:var(--orange);color:#fff;border-color:var(--orange)}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.4rem}
+    .calendar-grid .day-header{text-align:center;font-weight:700;font-size:0.78rem;color:var(--text-muted);padding:0.5rem 0}
+    .calendar-grid .day-cell{background:var(--glass-bg);backdrop-filter:blur(4px);border-radius:0.5rem;min-height:80px;padding:0.4rem;border:1px solid var(--glass-border);font-size:0.78rem;position:relative;transition:all.2s}
+    .calendar-grid .day-cell:hover{background:rgba(255,255,255,0.9);box-shadow:0 2px 12px rgba(0,0,0,0.04)}
+    .calendar-grid .day-cell.other-month{opacity:0.3}
+    .calendar-grid .day-cell.today{background:rgba(249,115,22,0.08);border-color:var(--orange)}
+    .calendar-grid .day-num{font-weight:700;margin-bottom:0.2rem}
+    .trip-dot{display:block;background:var(--green);color:#fff;border-radius:0.3rem;padding:0.1rem 0.3rem;font-size:0.65rem;margin-bottom:0.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+    .trip-dot:hover{filter:brightness(1.1)}
+    .loading{text-align:center;padding:3rem}
+  </style>
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="logo">STRIP<span>MATE</span></div>
+      <nav></nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header"><h1>Kalender Trip</h1></div>
+      <div style="padding:0 2rem 2rem">
+        <div class="calendar-nav">
+          <button onclick="changeMonth(-1)">&larr; Sebelum</button>
+          <h2 id="monthLabel"></h2>
+          <button onclick="changeMonth(1)">Berikut &rarr;</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let currentDate = new Date()
+    let trips = []
+
+    async function loadTrips() {
+      const { data, error } = await supabaseClient.from('trips').select('id, title, date, location, kuota, status').not('date', 'is', null)
+      if (error) return
+      trips = data || []
+      renderCalendar()
+    }
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta)
+      renderCalendar()
+    }
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear()
+      const month = currentDate.getMonth()
+      document.getElementById('monthLabel').textContent = new Intl.DateTimeFormat('id-ID', { month:'long', year:'numeric' }).format(currentDate)
+
+      const firstDay = new Date(year, month, 1)
+      const lastDay = new Date(year, month + 1, 0)
+      const startOffset = firstDay.getDay()
+      const daysInMonth = lastDay.getDate()
+
+      const prevLastDay = new Date(year, month, 0).getDate()
+      const todayStr = new Date().toISOString().slice(0,10)
+
+      const dayNames = ['Min','Sen','Sel','Rab','Kam','Jum','Sab']
+      let html = dayNames.map(d => `<div class="day-header">${d}</div>`).join('')
+
+      const totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7
+
+      for (let i = 0; i < totalCells; i++) {
+        let dayNum, isOther = false
+        if (i < startOffset) { dayNum = prevLastDay - startOffset + 1 + i; isOther = true }
+        else if (i >= startOffset + daysInMonth) { dayNum = i - startOffset - daysInMonth + 1; isOther = true }
+        else { dayNum = i - startOffset + 1 }
+
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`
+        const isToday = dateStr === todayStr
+        const dayTrips = trips.filter(t => t.date && t.date.slice(0,10) === dateStr)
+
+        html += `<div class="day-cell ${isOther?'other-month':''} ${isToday?'today':''}">
+          <div class="day-num">${dayNum}</div>
+          ${dayTrips.map(t => `<span class="trip-dot" style="background:${t.status==='full'?'var(--text-muted)':'var(--green)'}" title="${t.title} (${t.kuota}pax) - ${t.location}">${t.title}</span>`).join('')}
+        </div>`
+      }
+
+      document.getElementById('calendarGrid').innerHTML = html
+    }
+
+    (async function() {
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
+      loadTrips()
+    })()
+  </script>
+</body>
+</html>

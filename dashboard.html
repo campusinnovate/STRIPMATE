@@ -425,6 +425,17 @@
       container.innerHTML = `
         <div class="card">
           <div class="profile-form">
+            <div class="form-group full" style="display:flex;align-items:center;gap:1rem">
+              <div style="position:relative">
+                <img id="avatarPreview" src="${p.avatar_url || 'https://i.pravatar.cc/80?img=' + Math.floor(Math.random()*70)}" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--glass-border)" />
+                <label for="avatarUpload" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;cursor:pointer;border:2px solid #fff">&#9998;</label>
+                <input type="file" accept="image/*" id="avatarUpload" style="display:none" onchange="uploadAvatar(this)" />
+              </div>
+              <div>
+                <strong style="font-size:1.1rem">${escapeHtml(p.full_name || '')}</strong>
+                <p style="font-size:0.8rem;color:var(--text-muted)">${escapeHtml(p.email || '')}</p>
+              </div>
+            </div>
             <div class="form-group">
               <label>Nama Lengkap</label>
               <input type="text" id="pName" value="${escapeHtml(p.full_name || '')}" />
@@ -484,6 +495,24 @@
           </div>
         </a>
       `).join('')
+    }
+
+    async function uploadAvatar(input) {
+      const file = input.files[0]; if (!file) return
+      try {
+        const ext = file.name.split('.').pop()
+        const path = `avatars/${session.user.id}_${Date.now()}.${ext}`
+        const { error: upErr } = await supabaseClient.storage.from('avatars').upload(path, file, { upsert: true })
+        if (upErr) throw upErr
+        const { data: { publicUrl } } = supabaseClient.storage.from('avatars').getPublicUrl(path)
+        const { error: updateErr } = await supabaseClient.from('profiles').update({ avatar_url: publicUrl }).eq('id', session.user.id)
+        if (updateErr) throw updateErr
+        document.getElementById('avatarPreview').src = publicUrl + '?t=' + Date.now()
+        session.profile.avatar_url = publicUrl
+        showToast('Foto profil berhasil diupdate!', 'success')
+      } catch(e) {
+        showToast('Gagal upload foto: ' + e.message, 'error')
+      }
     }
 
     async function saveProfile() {

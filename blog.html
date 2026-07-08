@@ -10,7 +10,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/auth.js"></script>
   <script src="assets/js/utils.js"></script>
+  <script src="assets/js/whatsapp.js"></script>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{--navy:#1B2A4A;--green:#2D6A4F;--orange:#F97316;--cream:#FFF8F0;--gray:#E9ECEF;--gray-light:#F8F9FA;--text:#0F172A;--text-muted:#64748B;--white:#FFFFFF;--glass-bg:rgba(255,255,255,0.78);--glass-border:rgba(255,255,255,0.3);--glass-shadow:0 8px 32px rgba(0,0,0,0.06);--shadow:0 4px 24px rgba(0,0,0,0.06);--shadow-lg:0 12px 48px rgba(0,0,0,0.08);--radius:1rem;--radius-sm:0.6rem}
@@ -63,9 +65,9 @@
     <div class="container">
       <a href="index.html" class="logo">STRIP<span>MATE</span></a>
       <ul>
-        <li><a href="index.html">Beranda</a></li>
+        <li><a href="index.html" onclick="pageTransition(this.href);return false">Beranda</a></li>
         <li><a href="blog.html" style="color:var(--navy);font-weight:600">Blog</a></li>
-        <li><a href="login.html" class="nav-cta">Dashboard</a></li>
+        <li><a href="login.html" class="nav-cta" onclick="pageTransition(this.href);return false">Dashboard</a></li>
       </ul>
     </div>
   </nav>
@@ -83,6 +85,16 @@
   </main>
 
   <script>
+    (async function() {
+      try {
+        const user = await getCurrentUser()
+        if (user) {
+          const cta = document.querySelector('nav ul a.nav-cta')
+          if (cta) { cta.href = 'dashboard.html'; cta.textContent = 'My Dashboard'; cta.onclick = function(e){ e.preventDefault(); pageTransition(this.href) } }
+        }
+      } catch(e) {}
+    })()
+
     async function loadBlog() {
       const container = document.getElementById('blogList')
       const { data: posts, error } = await supabaseClient

@@ -42,7 +42,7 @@
     <input type="hidden" id="bId" />
     <div class="form-group"><label>Status</label><select id="bStatus"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="cancelled">Cancelled</option></select></div>
     <div class="form-group"><label>Payment Status</label><select id="bPayStatus"><option value="dp">DP</option><option value="paid">Paid</option><option value="refund">Refund</option></select></div>
-    <div style="display:flex;gap:0.5rem"><button class="btn btn-primary" onclick="updateBooking()">Simpan</button><button class="btn btn-secondary" onclick="closeModal()">Batal</button></div>
+    <div style="display:flex;gap:0.5rem"><button class="btn btn-primary" onclick="updateBooking()">Simpan</button><button class="btn btn-secondary" onclick="closeModal('bookingModal')">Batal</button></div>
   </div></div>
 
   <script>
@@ -57,7 +57,7 @@
       const loading = document.getElementById('bookingLoading')
       loading.innerHTML = '<div class="loading"><div class="spinner"></div>Memuat data...</div>'
       const filter = document.getElementById('statusFilter').value
-      let query = supabaseClient.from('bookings').select('*, profiles(full_name, email), trips(title)').order('created_at', { ascending: false })
+      let query = supabaseClient.from('bookings').select('*, profiles:user_id(full_name, email), trips:trips(title)').order('created_at', { ascending: false })
       if (filter) query = query.eq('status', filter)
       const { data, error } = await query
       loading.innerHTML = ''
@@ -82,10 +82,6 @@
       document.getElementById('bookingModal').classList.add('open')
     }
 
-    function closeModal() {
-      document.getElementById('bookingModal').classList.remove('open')
-    }
-
     async function updateBooking() {
       const id = document.getElementById('bId').value
       const { error } = await supabaseClient.from('bookings').update({
@@ -94,7 +90,7 @@
       }).eq('id', id)
       if (error) { showToast(error.message, 'error'); return }
       showToast('Booking berhasil diupdate')
-      closeModal()
+      closeModal('bookingModal')
       loadBookings()
     }
 

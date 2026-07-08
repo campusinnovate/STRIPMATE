@@ -47,18 +47,19 @@
       document.getElementById('adminInfo').textContent = session.profile.full_name || 'Admin'
 
       try {
-        const [users, bookings, payments, trips] = await Promise.all([
+        const [users, bookings, payments, trips, channels] = await Promise.all([
           supabaseClient.from('profiles').select('id', { count: 'exact', head: true }),
           supabaseClient.from('bookings').select('id', { count: 'exact', head: true }),
           supabaseClient.from('payments').select('id, amount, status, created_at, booking_id', { count: 'exact' }).order('created_at', { ascending: false }).limit(10),
-          supabaseClient.from('trips').select('title, date, status').order('date', { ascending: true }).limit(5)
+          supabaseClient.from('trips').select('title, date, status').order('date', { ascending: true }).limit(5),
+          supabaseClient.from('payment_channels').select('id', { count: 'exact', head: true }).eq('is_active', true)
         ])
 
         document.getElementById('statCards').innerHTML = `
-          <div class="stat-card"><div class="label">Total Peserta</div><div class="value">${users.count || 0}</div></div>
-          <div class="stat-card"><div class="label">Total Booking</div><div class="value">${bookings.count || 0}</div></div>
-          <div class="stat-card"><div class="label">Total Payment</div><div class="value">${payments.count || 0}</div></div>
-          <div class="stat-card"><div class="label">Total Revenue</div><div class="value">${formatCurrency(payments.data ? payments.data.reduce((s, p) => s + (p.amount || 0), 0) : 0)}</div></div>
+          <a href="admin/participants.html" class="stat-card"><div class="label">Total Peserta</div><div class="value">${users.count || 0}</div></a>
+          <a href="admin/bookings.html" class="stat-card"><div class="label">Total Booking</div><div class="value">${bookings.count || 0}</div></a>
+          <a href="admin/payment-channels.html" class="stat-card"><div class="label">Channel Aktif</div><div class="value">${channels.count || 0}</div></a>
+          <a href="admin/calendar.html" class="stat-card"><div class="label">Revenue</div><div class="value">${formatCurrency(payments.data ? payments.data.reduce((s, p) => s + (p.amount || 0), 0) : 0)}</div></a>
         `
 
         const recentB = document.getElementById('recentBookings')

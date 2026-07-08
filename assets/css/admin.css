@@ -243,6 +243,39 @@ tbody tr:hover td{background:rgba(249,115,22,0.03)}
 .badge-draft{background:rgba(148,163,184,0.12);color:var(--text-muted)}
 .badge-published{background:rgba(45,106,79,0.1);color:var(--green)}
 
+.badge-secondary{background:rgba(148,163,184,0.12);color:var(--text-muted)}
+.badge-success{background:rgba(45,106,79,0.1);color:var(--green)}
+.badge-danger,.badge-warning{background:rgba(249,115,22,0.1);color:var(--orange)}
+.badge-transfer{background:rgba(27,42,74,0.08);color:var(--navy)}
+.badge-qris{background:rgba(45,106,79,0.1);color:var(--green)}
+.badge-va{background:rgba(249,115,22,0.1);color:var(--orange)}
+.badge-ewallet{background:rgba(27,42,74,0.08);color:var(--navy)}
+
+.form-input{
+  width:100%;padding:0.65rem 1rem;border-radius:0.5rem;
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);backdrop-filter:blur(4px);
+  font-family:inherit;font-size:0.88rem;color:var(--text);
+  transition:all 0.2s
+}
+.form-input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,0.1);background:rgba(255,255,255,0.9)}
+
+.table-wrapper{overflow-x:auto;border-radius:0.5rem;border:1px solid var(--glass-border);background:var(--glass-bg);backdrop-filter:blur(4px)}
+.admin-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.admin-table th,.admin-table td{padding:0.65rem 0.85rem;text-align:left;border-bottom:1px solid var(--gray)}
+.admin-table th{background:rgba(27,42,74,0.02);font-weight:700;color:var(--navy);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.04em}
+.admin-table tbody tr:hover{background:rgba(249,115,22,0.02)}
+.admin-table tbody tr:last-child td{border-bottom:none}
+
+.btn-submit{
+  display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;
+  width:100%;padding:0.75rem 1.1rem;border-radius:0.5rem;
+  font-weight:700;font-size:0.9rem;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--orange),var(--orange-light));
+  color:#fff;transition:all 0.25s;font-family:inherit
+}
+.btn-submit:hover{box-shadow:0 4px 16px rgba(249,115,22,0.25);transform:translateY(-1px)}
+
 /* ─── Buttons ─── */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;
