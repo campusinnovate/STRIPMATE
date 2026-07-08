@@ -1,9 +1,12 @@
 async function register(email, password, fullName) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { full_name: fullName } }
-  })
+  // SEBELUMNYA (Akan error):
+// const { data, error } = await supabase.auth.signInWithPassword(...)
+
+// SESUDAHNYA (Gunakan supabaseClient):
+const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: emailInput,
+    password: passwordInput
+})
   if (error) throw error
 
   if (data?.user) {
