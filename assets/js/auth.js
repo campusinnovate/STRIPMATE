@@ -1,16 +1,15 @@
 async function register(email, password, fullName) {
-  // SEBELUMNYA (Akan error):
-// const { data, error } = await supabase.auth.signInWithPassword(...)
-
-// SESUDAHNYA (Gunakan supabaseClient):
-const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: emailInput,
-    password: passwordInput
-})
+  // Gunakan signUp untuk mendaftar, bukan signInWithPassword
+  const { data, error } = await supabaseClient.auth.signUp({
+    email: email,
+    password: password
+  })
+  
   if (error) throw error
 
   if (data?.user) {
-    await supabase.from('profiles').insert({
+    // Pastikan pakai supabaseClient
+    await supabaseClient.from('profiles').insert({
       id: data.user.id,
       full_name: fullName,
       email: email,
@@ -22,14 +21,16 @@ const { data, error } = await supabaseClient.auth.signInWithPassword({
 }
 
 async function login(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  // Pastikan pakai supabaseClient
+  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
   if (error) throw error
   return data
 }
 
 async function logout() {
   try {
-    await supabase.auth.signOut()
+    // Pastikan pakai supabaseClient
+    await supabaseClient.auth.signOut()
   } catch (e) {
     console.error('Logout error:', e)
   }
@@ -37,13 +38,15 @@ async function logout() {
 }
 
 async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser()
+  // Pastikan pakai supabaseClient
+  const { data: { user }, error } = await supabaseClient.auth.getUser()
   if (error || !user) return null
   return user
 }
 
 async function getProfile(userId) {
-  const { data, error } = await supabase
+  // Pastikan pakai supabaseClient
+  const { data, error } = await supabaseClient
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -60,7 +63,8 @@ async function requireAuth(redirectTo = '/login.html') {
   }
   let profile = await getProfile(user.id)
   if (!profile) {
-    await supabase.from('profiles').insert({
+    // Pastikan pakai supabaseClient
+    await supabaseClient.from('profiles').insert({
       id: user.id,
       email: user.email,
       full_name: user.user_metadata?.full_name || '',
@@ -82,7 +86,8 @@ async function requireAdmin() {
 }
 
 async function updateProfile(userId, data) {
-  const { error } = await supabase
+  // Pastikan pakai supabaseClient
+  const { error } = await supabaseClient
     .from('profiles')
     .update(data)
     .eq('id', userId)
@@ -90,11 +95,14 @@ async function updateProfile(userId, data) {
 }
 
 async function uploadFile(bucket, file, path) {
-  const { data, error } = await supabase.storage
+  // Pastikan pakai supabaseClient
+  const { data, error } = await supabaseClient.storage
     .from(bucket)
     .upload(path, file)
   if (error) throw error
-  const { data: { publicUrl } } = supabase.storage
+  
+  // Pastikan pakai supabaseClient
+  const { data: { publicUrl } } = supabaseClient.storage
     .from(bucket)
     .getPublicUrl(path)
   return publicUrl

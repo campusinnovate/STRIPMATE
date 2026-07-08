@@ -108,11 +108,14 @@
       const email = document.getElementById('loginEmail').value.trim()
       const password = document.getElementById('loginPassword').value
       if (!email || !password) return showMsg('Isi email dan password.', 'error')
+      
       try {
         const data = await login(email, password)
         let profile = await getProfile(data.user.id)
+        
         if (!profile) {
-          await supabase.from('profiles').insert({
+          // UBAH DI SINI: Gunakan supabaseClient, bukan supabase
+          await supabaseClient.from('profiles').insert({
             id: data.user.id,
             email: email,
             full_name: '',
@@ -120,6 +123,7 @@
           }).maybeSingle()
           profile = await getProfile(data.user.id)
         }
+        
         if (profile && profile.role === 'admin') {
           window.location.href = '/admin/index.html'
         } else {
