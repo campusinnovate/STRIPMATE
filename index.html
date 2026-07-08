@@ -10,6 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/utils.js"></script>
   <script src="assets/js/auth.js"></script>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -26,13 +27,16 @@
       --text: #0F172A;
       --text-muted: #64748B;
       --white: #FFFFFF;
+      --glass-bg: rgba(255,255,255,0.78);
+      --glass-border: rgba(255,255,255,0.3);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.06);
       --shadow: 0 4px 24px rgba(0,0,0,0.06);
-      --shadow-lg: 0 12px 48px rgba(0,0,0,0.1);
+      --shadow-lg: 0 12px 48px rgba(0,0,0,0.08);
       --radius: 1rem;
       --radius-sm: 0.6rem;
     }
-    html{scroll-behavior:smooth}
-    body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--cream);color:var(--text)}
+    html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+    body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--cream);background-image:radial-gradient(ellipse at 20% 50%,rgba(249,115,22,0.04) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(45,106,79,0.04) 0%,transparent 50%),radial-gradient(ellipse at 50% 80%,rgba(27,42,74,0.03) 0%,transparent 50%);color:var(--text)}
     h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.03em}
     img{max-width:100%;display:block;height:auto}
     a{text-decoration:none;color:inherit}
@@ -72,8 +76,8 @@
     .section-desc{color:var(--text-muted);max-width:600px;font-size:1rem;line-height:1.7;margin-bottom:2.5rem}
 
     .trip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
-    .trip-card{background:var(--white);border-radius:var(--radius);overflow:hidden;transition:all.3s;cursor:pointer;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
-    .trip-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+    .trip-card{background:var(--glass-bg);backdrop-filter:blur(12px);border-radius:var(--radius);overflow:hidden;transition:all 0.35s;cursor:pointer;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border)}
+    .trip-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
     .trip-card .thumb-wrap{height:200px;overflow:hidden;position:relative}
     .trip-card .thumb-wrap img{width:100%;height:100%;object-fit:cover;transition:transform.5s}
     .trip-card:hover .thumb-wrap img{transform:scale(1.08)}
@@ -96,8 +100,8 @@
     .tentang-tagline{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:700;color:var(--green);font-style:italic}
 
     .value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem}
-    .value-card{text-align:center;padding:2rem 1.5rem;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);transition:transform.3s}
-    .value-card:hover{transform:translateY(-4px)}
+    .value-card{text-align:center;padding:2rem 1.5rem;background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius);box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.3s}
+    .value-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
     .value-icon{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;font-size:1.5rem;margin-bottom:0.75rem}
     .value-card:nth-child(1) .value-icon{background:rgba(45,106,79,0.1)}
     .value-card:nth-child(2) .value-icon{background:rgba(249,115,22,0.1)}
@@ -108,8 +112,8 @@
     .value-card p{font-size:0.85rem;color:var(--text-muted)}
 
     .dest-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem}
-    .dest-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:all.3s}
-    .dest-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+    .dest-card{background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius);overflow:hidden;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.35s}
+    .dest-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
     .dest-card .thumb{height:220px;overflow:hidden}
     .dest-card .thumb img{width:100%;height:100%;object-fit:cover;transition:transform.5s}
     .dest-card:hover .thumb img{transform:scale(1.05)}
@@ -123,29 +127,29 @@
 
     .community-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
     .community-benefits{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
-    .community-benefits li{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.8rem;background:var(--white);border-radius:0.5rem;font-size:0.88rem;color:var(--text);list-style:none;box-shadow:var(--shadow)}
+    .community-benefits li{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.8rem;background:var(--glass-bg);backdrop-filter:blur(4px);border-radius:0.5rem;font-size:0.88rem;color:var(--text);list-style:none;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border)}
     .community-benefits li::before{content:'\2713';color:var(--green);font-weight:700;font-size:1rem}
     .btn-community{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:0.9rem;border:none;background:var(--green);color:#fff;cursor:pointer;transition:all.2s;margin-top:1.5rem}
     .btn-community:hover{background:var(--green-light);box-shadow:0 4px 20px rgba(45,106,79,0.25)}
 
     .private-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
-    .private-item{text-align:center;padding:1.5rem 1rem;background:var(--white);border-radius:var(--radius-sm);box-shadow:var(--shadow);font-size:0.9rem;font-weight:600;color:var(--navy);transition:all.2s}
-    .private-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);background:var(--navy);color:#fff}
+    .private-item{text-align:center;padding:1.5rem 1rem;background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius-sm);box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);font-size:0.9rem;font-weight:600;color:var(--navy);transition:all 0.3s}
+    .private-item:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);background:var(--navy);color:#fff}
     .btn-private{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:0.9rem;border:none;background:var(--navy);color:#fff;cursor:pointer;transition:all.2s;margin-top:1.5rem}
     .btn-private:hover{background:var(--navy-light);box-shadow:0 4px 20px rgba(27,42,74,0.25)}
 
     .corporate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
-    .corporate-item{text-align:center;padding:1.5rem 1rem;background:var(--white);border-radius:var(--radius-sm);box-shadow:var(--shadow);font-size:0.88rem;color:var(--text-muted);transition:all.2s}
+    .corporate-item{text-align:center;padding:1.5rem 1rem;background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius-sm);box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);font-size:0.88rem;color:var(--text-muted);transition:all 0.3s}
     .corporate-item h4{font-size:1rem;color:var(--navy);margin-bottom:0.3rem}
-    .corporate-item:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+    .corporate-item:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
 
     .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem}
     .gallery-grid img{width:100%;height:220px;object-fit:cover;border-radius:0.5rem;transition:transform.3s;cursor:pointer}
     .gallery-grid img:hover{transform:scale(1.03);box-shadow:var(--shadow)}
 
     .testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem}
-    .testi-card{background:var(--white);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);transition:transform.3s}
-    .testi-card:hover{transform:translateY(-3px)}
+    .testi-card{background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.3s}
+    .testi-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
     .testi-card .stars{color:var(--orange);font-size:0.9rem;margin-bottom:0.5rem;letter-spacing:2px}
     .testi-card blockquote{font-style:italic;color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;line-height:1.6}
     .testi-card .author{display:flex;align-items:center;gap:0.75rem}
@@ -154,7 +158,8 @@
     .testi-card .author .trip{font-size:0.75rem;color:var(--text-muted)}
 
     .faq-list{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:0.5rem}
-    .faq-item{border-radius:var(--radius-sm);overflow:hidden;background:var(--white);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
+    .faq-item{border-radius:var(--radius-sm);overflow:hidden;background:var(--glass-bg);backdrop-filter:blur(8px);box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.3s}
+    .faq-item:hover{background:rgba(255,255,255,0.85)}
     .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;background:none;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.92rem;font-weight:600;color:var(--navy);cursor:pointer;text-align:left;transition:background.2s}
     .faq-q:hover{background:var(--gray-light)}
     .faq-q .icon{font-size:1.1rem;color:var(--orange);transition:transform.3s;flex-shrink:0}
@@ -162,7 +167,7 @@
     .faq-a{padding:0 1.25rem;max-height:0;overflow:hidden;transition:all.3s;color:var(--text-muted);font-size:0.9rem;line-height:1.6}
     .faq-item.open .faq-a{padding:0 1.25rem 1rem;max-height:300px}
 
-    .tnc-content{max-width:800px;margin:0 auto;background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
+    .tnc-content{max-width:800px;margin:0 auto;background:var(--glass-bg);backdrop-filter:blur(12px);border-radius:var(--radius);padding:2rem;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border)}
     .tnc-content h4{font-size:1rem;color:var(--navy);margin:1.5rem 0 0.5rem}
     .tnc-content h4:first-child{margin-top:0}
     .tnc-content p,.tnc-content li{font-size:0.88rem;color:var(--text-muted);line-height:1.7}
@@ -171,11 +176,13 @@
     .tnc-content .tnc-badge{display:inline-block;background:rgba(249,115,22,0.1);color:var(--orange);padding:0.15rem 0.6rem;border-radius:999px;font-size:0.7rem;font-weight:700;margin-right:0.5rem}
 
     .media-grid{display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;align-items:center}
-    .media-item{background:var(--white);border-radius:var(--radius-sm);padding:1.5rem 2rem;box-shadow:var(--shadow);font-weight:700;color:var(--text-muted);font-size:0.85rem;border:1px solid rgba(0,0,0,0.04);min-width:140px;text-align:center}
+    .media-item{background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius-sm);padding:1.5rem 2rem;box-shadow:var(--glass-shadow);font-weight:700;color:var(--text-muted);font-size:0.85rem;border:1px solid var(--glass-border);min-width:140px;text-align:center;transition:all 0.3s}
+    .media-item:hover{background:rgba(255,255,255,0.9);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 
     .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
     .contact-info{display:flex;flex-direction:column;gap:1rem}
-    .contact-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--white);border-radius:var(--radius-sm);box-shadow:var(--shadow)}
+    .contact-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius-sm);box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.3s}
+    .contact-item:hover{background:rgba(255,255,255,0.9);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
     .contact-item .icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
     .contact-item:nth-child(1) .icon{background:rgba(45,106,79,0.1)}
     .contact-item:nth-child(2) .icon{background:rgba(249,115,22,0.1)}
@@ -201,10 +208,10 @@
     footer .social a{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);text-decoration:none;font-size:0.7rem;font-weight:700;transition:all.2s}
     footer .social a:hover{background:var(--orange);color:#fff}
 
-    .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.5);opacity:0;visibility:hidden;transition:all.3s;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+    .modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;visibility:hidden;transition:all 0.35s;display:flex;align-items:center;justify-content:center;padding:1.5rem}
     .modal-overlay.open{opacity:1;visibility:visible}
-    .modal{background:var(--white);border-radius:var(--radius);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;position:relative;transform:translateY(20px);transition:transform.3s}
-    .modal-overlay.open .modal{transform:translateY(0)}
+    .modal{background:rgba(255,255,255,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:var(--radius);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;position:relative;transform:translateY(24px) scale(0.97);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);box-shadow:0 24px 64px rgba(0,0,0,0.12);border:1px solid rgba(255,255,255,0.5)}
+    .modal-overlay.open .modal{transform:translateY(0) scale(1)}
     .modal-close{position:absolute;top:1rem;right:1rem;width:36px;height:36px;border-radius:50%;border:none;background:var(--gray);font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background.2s}
     .modal-close:hover{background:var(--gray)}
     .modal h2{font-size:1.4rem;color:var(--navy);margin-bottom:1rem}
@@ -219,12 +226,12 @@
     .modal .facility-list .check{color:var(--green)}
     .modal .facility-list .cross{color:var(--text-muted)}
 
-    .booking-form-wrap{max-width:700px;margin:0 auto;background:var(--white);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
+    .booking-form-wrap{max-width:700px;margin:0 auto;background:var(--glass-bg);backdrop-filter:blur(12px);border-radius:var(--radius);padding:2rem;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border)}
     .booking-form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
     .booking-form .full{grid-column:1/-1}
     .booking-form label{display:block;font-size:0.8rem;font-weight:600;margin-bottom:0.25rem;color:var(--navy)}
-    .booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:0.7rem 1rem;border-radius:0.5rem;border:1.5px solid var(--gray);background:var(--cream);font-family:inherit;font-size:0.9rem;color:var(--text);transition:border-color.2s}
-    .booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{outline:none;border-color:var(--orange)}
+    .booking-form input,.booking-form select,.booking-form textarea{width:100%;padding:0.7rem 1rem;border-radius:0.5rem;border:1px solid var(--glass-border);background:var(--glass-bg);backdrop-filter:blur(4px);font-family:inherit;font-size:0.9rem;color:var(--text);transition:all 0.2s}
+    .booking-form input:focus,.booking-form select:focus,.booking-form textarea:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,0.1);background:rgba(255,255,255,0.9)}
     .booking-form textarea{min-height:70px;resize:vertical}
     .btn-submit{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:0.9rem;border:none;background:var(--orange);color:#fff;cursor:pointer;transition:all.2s;width:100%;margin-top:0.5rem}
     .btn-submit:hover{background:var(--orange-light);box-shadow:0 4px 20px rgba(249,115,22,0.25)}
@@ -933,9 +940,9 @@
           return
         }
         grid.innerHTML = tripsData.map(t => {
-          const price = t.price ? 'Rp' + Number(t.price).toLocaleString('id-ID') : 'Hubungi'
+          const price = t.price != null && !isNaN(t.price) ? 'Rp' + Number(t.price).toLocaleString('id-ID') : 'Hubungi'
           const img = t.image_url || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80'
-          const date = t.date ? new Date(t.date).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' }) : 'TBD'
+          const date = t.date ? formatDate(t.date) : 'TBD'
           const status = t.status || 'open'
           const statusLabel = status === 'open' ? 'Open Registration' : status === 'full' ? 'Full' : status === 'closed' ? 'Closed' : status
           return `<div class="trip-card" onclick="openTripDetail('${t.slug || t.id}')">
@@ -1010,14 +1017,27 @@
       if (!wasOpen) item.classList.add('open');
     }
 
-    function openTripDetail(id) {
-      const trip = tripDetails[id]
-      let tripTitle = '', tripPrice = '', tripStatus = '', tripMeeting = '', tripKuota = ''
-      if (trip) {
-        tripTitle = trip.title; tripPrice = trip.price; tripStatus = trip.status
-        tripMeeting = trip.meetingPoint; tripKuota = trip.kuota
+    function openTripDetail(idOrSlug) {
+      let detail = tripDetails[idOrSlug]
+      let isDbTrip = false
+      if (!detail) {
+        const dbTrip = tripsData.find(t => t.id === idOrSlug || t.slug === idOrSlug)
+        if (dbTrip) {
+          detail = {
+            title: dbTrip.title,
+            img: dbTrip.image_url || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80',
+            about: dbTrip.description || 'Informasi trip akan segera hadir.',
+            location: dbTrip.location || dbTrip.meeting_point || '',
+            status: dbTrip.status === 'open' ? 'Open Registration' : dbTrip.status,
+            meetingPoint: dbTrip.meeting_point || 'TBD',
+            kuota: dbTrip.kuota ? dbTrip.kuota + ' orang' : 'Limited',
+            price: dbTrip.price != null && !isNaN(dbTrip.price) ? 'Rp' + Number(dbTrip.price).toLocaleString('id-ID') : ''
+          }
+          isDbTrip = true
+        } else {
+          detail = { title: 'Trip Details', about: 'Informasi trip akan segera hadir.' }
+        }
       }
-      const detail = trip || {}
       let rundownHtml = ''
       if (detail.rundown) {
         rundownHtml = '<h3 style="font-size:1rem;color:var(--navy);margin:1rem 0 0.4rem">Rundown</h3><ul style="padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.7">' +
@@ -1047,7 +1067,7 @@
         <div class="modal-section"><h3>Meeting Point</h3><p>&#128205; ${escapeHtml(detail.meetingPoint || 'Informasi menyusul')} (lokasi detail akan dikirim H-1 via grup WhatsApp)</p></div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--gray)">
           <span style="font-size:1.3rem;font-weight:800;color:var(--orange)">${detail.price || ''} <small style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">/org</small></span>
-          <button class="btn-book" style="width:auto" onclick="closeModal('tripModal');openBooking('${id}')">Book Now</button>
+          <button class="btn-book" style="width:auto" onclick="closeModal('tripModal');openBooking('${idOrSlug}')">Book Now</button>
         </div>
       `
       document.getElementById('tripModal').classList.add('open')
@@ -1096,11 +1116,12 @@
 
       const invoice = generateInvoice()
 
+      const price = trip.price != null && !isNaN(trip.price) ? Number(trip.price) : 0
       const { data: booking, error: bookError } = await supabaseClient.from('bookings').insert({
         user_id: user.id,
         trip_id: tripId,
         invoice_number: invoice,
-        total_amount: trip.price,
+        total_amount: price,
         status: 'pending',
         payment_status: 'dp'
       }).select('id').maybeSingle()
@@ -1148,7 +1169,7 @@
         booking_id: window._pendingBookingId,
         amount: (() => {
           const trip = tripsData.find(t => t.id === document.getElementById('bTrip').value)
-          return trip ? trip.price : 0
+          return trip && trip.price != null && !isNaN(trip.price) ? Number(trip.price) : 0
         })(),
         method: method,
         status: 'pending',

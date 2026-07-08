@@ -108,36 +108,3 @@ async function uploadFile(bucket, file, path) {
   return publicUrl
 }
 
-function formatCurrency(amount) {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount)
-}
-
-function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString('id-ID', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
-function getStatusBadge(status) {
-  const map = {
-    pending: '<span class="badge badge-pending">Pending</span>',
-    paid: '<span class="badge badge-paid">Paid</span>',
-    confirmed: '<span class="badge badge-paid">Confirmed</span>',
-    cancelled: '<span class="badge badge-cancelled">Cancelled</span>',
-    open: '<span class="badge badge-open">Open Registration</span>',
-    closed: '<span class="badge badge-closed">Closed</span>',
-    full: '<span class="badge badge-closed">Full</span>',
-    dp: '<span class="badge badge-pending">DP</span>',
-    refund: '<span class="badge badge-cancelled">Refund</span>',
-    shipped: '<span class="badge badge-paid">Shipped</span>',
-    received: '<span class="badge badge-open">Received</span>'
-  }
-  return map[status] || `<span class="badge badge-pending">${status}</span>`
-}

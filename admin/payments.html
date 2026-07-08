@@ -51,16 +51,22 @@
       const filter = document.getElementById('payFilter').value
       let query = supabaseClient
         .from('payments')
-        .select('*, bookings!inner(invoice_number, profiles!inner(full_name))')
-        .order('payments.created_at', { ascending: false })
+        .select('*, bookings:booking_id(invoice_number, user_id)')
+        .order('created_at', { ascending: false })
       if (filter) query = query.eq('status', filter)
-      const { data, error } = await query
+      const { data: payments, error } = await query
       loading.innerHTML = ''
       if (error) { showToast(error.message, 'error'); return }
-      document.getElementById('payTable').innerHTML = (data || []).map(p => `
+      const userIds = [...new Set((payments || []).map(p => p.bookings?.user_id).filter(Boolean))]
+      let profileMap = {}
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name').in('id', userIds)
+        if (profiles) profiles.forEach(p => { profileMap[p.id] = p.full_name })
+      }
+      document.getElementById('payTable').innerHTML = (payments || []).map(p => `
         <tr>
           <td>${escapeHtml(p.bookings?.invoice_number || '-')}</td>
-          <td>${escapeHtml(p.bookings?.profiles?.full_name || '-')}</td>
+          <td>${escapeHtml(profileMap[p.bookings?.user_id] || '-')}</td>
           <td>${p.method || '-'}</td>
           <td>${formatCurrency(p.amount)}</td>
           <td>${getStatusBadge(p.status)}</td>

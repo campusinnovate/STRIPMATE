@@ -13,20 +13,16 @@
   <script src="assets/js/utils.js"></script>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    :root{--navy:#1B2A4A;--navy-light:#2C4266;--green:#2D6A4F;--green-light:#40916C;--orange:#F97316;--orange-light:#FB923C;--cream:#FFF8F0;--gray:#E9ECEF;--gray-light:#F8F9FA;--text:#0F172A;--text-muted:#94A3B8;--white:#FFFFFF;--shadow:0 4px 24px rgba(0,0,0,0.06);--shadow-lg:0 12px 48px rgba(0,0,0,0.1);--radius:1rem;--radius-sm:0.6rem;--radius-xs:0.4rem}
+    :root{--navy:#1B2A4A;--navy-light:#2C4266;--green:#2D6A4F;--green-light:#40916C;--orange:#F97316;--orange-light:#FB923C;--cream:#FFF8F0;--gray:#E9ECEF;--gray-light:#F8F9FA;--text:#0F172A;--text-muted:#94A3B8;--white:#FFFFFF;--glass-bg:rgba(255,255,255,0.78);--glass-border:rgba(255,255,255,0.3);--glass-shadow:0 8px 32px rgba(0,0,0,0.06);--shadow:0 4px 24px rgba(0,0,0,0.06);--shadow-lg:0 12px 48px rgba(0,0,0,0.08);--radius:1rem;--radius-sm:0.6rem;--radius-xs:0.4rem}
     html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-    body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--text);min-height:100vh;line-height:1.6}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);background-image:radial-gradient(ellipse at 20% 50%,rgba(249,115,22,0.04) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(45,106,79,0.04) 0%,transparent 50%);color:var(--text);min-height:100vh;line-height:1.6}
     h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1.3}
     a{text-decoration:none;color:inherit}
     img{max-width:100%;display:block}
 
     .dash-header{
       background:linear-gradient(135deg,var(--navy),var(--navy-light));
-      color:#fff;
-      padding:0.75rem 0;
-      position:sticky;
-      top:0;
-      z-index:100;
+      color:#fff;padding:0.75rem 0;position:sticky;top:0;z-index:100;
       box-shadow:0 2px 12px rgba(27,42,74,0.15)
     }
     .dash-header .container{display:flex;align-items:center;justify-content:space-between}
@@ -36,16 +32,10 @@
     .dash-header .nav-right a{color:rgba(255,255,255,0.65);font-size:0.85rem;font-weight:500;transition:all.2s;padding:0.3rem 0.6rem;border-radius:0.4rem}
     .dash-header .nav-right a:hover{color:#fff;background:rgba(255,255,255,0.08)}
     .dash-header .logout-btn{
-      background:rgba(255,255,255,0.06);
-      padding:0.4rem 1.1rem;
-      border-radius:999px;
-      font-size:0.8rem;
-      cursor:pointer;
-      border:1px solid rgba(255,255,255,0.1);
-      color:rgba(255,255,255,0.8);
-      font-family:inherit;
-      font-weight:600;
-      transition:all 0.2s
+      background:rgba(255,255,255,0.06);padding:0.4rem 1.1rem;
+      border-radius:999px;font-size:0.8rem;cursor:pointer;
+      border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);
+      font-family:inherit;font-weight:600;transition:all 0.2s
     }
     .dash-header .logout-btn:hover{background:rgba(249,115,22,0.2);border-color:rgba(249,115,22,0.3);color:var(--orange)}
 
@@ -55,85 +45,49 @@
     .greeting{font-size:1.4rem;color:var(--navy);margin-bottom:0.2rem}
     .greeting-sub{color:var(--text-muted);font-size:0.9rem;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--gray)}
 
-    .tab-nav{
-      display:flex;
-      gap:0.35rem;
-      margin-bottom:1.5rem;
-      flex-wrap:wrap;
-      border-bottom:1px solid var(--gray);
-      padding-bottom:0.5rem
-    }
+    .tab-nav{display:flex;gap:0.35rem;margin-bottom:1.5rem;flex-wrap:wrap;border-bottom:1px solid var(--gray);padding-bottom:0.5rem}
     .tab-nav button{
-      background:none;
-      border:none;
-      padding:0.45rem 1rem;
-      font-family:inherit;
-      font-size:0.85rem;
-      font-weight:600;
-      color:var(--text-muted);
-      cursor:pointer;
-      transition:all 0.2s;
-      border-radius:0.4rem;
-      position:relative
+      background:var(--glass-bg);backdrop-filter:blur(8px);
+      border:1px solid transparent;
+      padding:0.45rem 1rem;font-family:inherit;
+      font-size:0.85rem;font-weight:600;color:var(--text-muted);
+      cursor:pointer;transition:all 0.2s;border-radius:0.4rem;position:relative
     }
-    .tab-nav button:hover{color:var(--text);background:var(--gray)}
-    .tab-nav button.active{
-      color:var(--orange);
-      background:rgba(249,115,22,0.08)
-    }
-    .tab-nav button.active::after{
-      content:'';
-      position:absolute;
-      bottom:-0.5rem;
-      left:50%;
-      transform:translateX(-50%);
-      width:60%;
-      height:2px;
-      background:var(--orange);
-      border-radius:2px
-    }
+    .tab-nav button:hover{color:var(--text);border-color:var(--glass-border);background:rgba(255,255,255,0.5)}
+    .tab-nav button.active{color:var(--orange);background:rgba(249,115,22,0.08);border-color:rgba(249,115,22,0.2)}
+    .tab-nav button.active::after{content:'';position:absolute;bottom:-0.5rem;left:50%;transform:translateX(-50%);width:60%;height:2px;background:var(--orange);border-radius:2px}
     .tab-content{display:none}
     .tab-content.active{display:block}
 
     .card{
-      background:var(--white);
-      border-radius:var(--radius-sm);
-      padding:1.5rem;
-      box-shadow:var(--shadow);
-      margin-bottom:1rem;
-      border:1px solid rgba(0,0,0,0.02);
-      transition:box-shadow 0.2s
+      background:var(--glass-bg);backdrop-filter:blur(12px);
+      border-radius:var(--radius-sm);padding:1.5rem;
+      box-shadow:var(--glass-shadow);margin-bottom:1rem;
+      border:1px solid var(--glass-border);transition:all 0.3s
     }
     .card h3{font-size:1rem;color:var(--navy);margin-bottom:0.75rem}
-    .card:hover{box-shadow:var(--shadow-lg)}
+    .card:hover{box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.88)}
 
     .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem}
     .stat-card{
-      background:var(--white);
-      border-radius:var(--radius-sm);
-      padding:1.25rem 1.5rem;
-      box-shadow:var(--shadow);
-      border-top:3px solid var(--orange);
-      transition:all 0.25s
+      background:var(--glass-bg);backdrop-filter:blur(12px);
+      border-radius:var(--radius-sm);padding:1.25rem 1.5rem;
+      box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);
+      position:relative;overflow:hidden;transition:all 0.3s
     }
-    .stat-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--orange-light))}
+    .stat-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);background:rgba(255,255,255,0.9)}
     .stat-card .label{font-size:0.78rem;color:var(--text-muted);margin-bottom:0.2rem;font-weight:500}
     .stat-card .value{font-size:1.4rem;font-weight:800;color:var(--navy);letter-spacing:-0.02em}
 
     .booking-item{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      flex-wrap:wrap;
-      gap:1rem;
-      padding:1rem 1.25rem;
-      border:1px solid var(--gray);
-      border-radius:var(--radius-sm);
-      margin-bottom:0.6rem;
-      transition:all 0.2s;
-      background:var(--white)
+      display:flex;justify-content:space-between;align-items:center;
+      flex-wrap:wrap;gap:1rem;padding:1rem 1.25rem;
+      background:var(--glass-bg);backdrop-filter:blur(8px);
+      border:1px solid var(--glass-border);border-radius:var(--radius-sm);
+      margin-bottom:0.6rem;transition:all 0.25s
     }
-    .booking-item:hover{box-shadow:var(--shadow);border-color:transparent}
+    .booking-item:hover{box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9);transform:translateY(-1px)}
     .booking-item .info h4{font-size:0.92rem;color:var(--navy);margin-bottom:0.1rem}
     .booking-item .info p{font-size:0.82rem;color:var(--text-muted)}
     .booking-item .right{text-align:right}
@@ -149,27 +103,17 @@
     .badge-received{background:rgba(27,42,74,0.08);color:var(--navy)}
 
     .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:0.3rem;
-      padding:0.45rem 1rem;
-      border-radius:999px;
-      font-weight:600;
-      font-size:0.78rem;
-      border:none;
-      cursor:pointer;
-      transition:all 0.2s;
-      font-family:inherit;
-      white-space:nowrap;
-      line-height:1.4
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:0.3rem;padding:0.45rem 1rem;border-radius:999px;
+      font-weight:600;font-size:0.78rem;border:none;
+      cursor:pointer;transition:all 0.25s;font-family:inherit;white-space:nowrap;line-height:1.4
     }
-    .btn-primary{background:var(--orange);color:#fff;box-shadow:0 2px 8px rgba(249,115,22,0.2)}
-    .btn-primary:hover{background:var(--orange-light);box-shadow:0 4px 12px rgba(249,115,22,0.3);transform:translateY(-1px)}
-    .btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--gray)}
-    .btn-outline:hover{border-color:var(--orange);color:var(--orange);background:rgba(249,115,22,0.04)}
-    .btn-green{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(45,106,79,0.2)}
-    .btn-green:hover{background:var(--green-light);box-shadow:0 4px 12px rgba(45,106,79,0.3);transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-light));color:#fff;box-shadow:0 2px 8px rgba(249,115,22,0.2)}
+    .btn-primary:hover{box-shadow:0 6px 20px rgba(249,115,22,0.35);transform:translateY(-2px)}
+    .btn-outline{background:var(--glass-bg);backdrop-filter:blur(4px);color:var(--text);border:1px solid var(--glass-border)}
+    .btn-outline:hover{border-color:var(--orange);color:var(--orange);background:rgba(249,115,22,0.06)}
+    .btn-green{background:linear-gradient(135deg,var(--green),var(--green-light));color:#fff;box-shadow:0 2px 8px rgba(45,106,79,0.2)}
+    .btn-green:hover{box-shadow:0 6px 20px rgba(45,106,79,0.35);transform:translateY(-2px)}
     .btn-sm{padding:0.35rem 0.8rem;font-size:0.72rem}
 
     .profile-form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -177,34 +121,24 @@
     .form-group{margin-bottom:0}
     .form-group label{display:block;font-size:0.8rem;font-weight:600;margin-bottom:0.3rem;color:var(--text)}
     .form-group input,.form-group textarea{
-      width:100%;
-      padding:0.6rem 0.9rem;
-      border-radius:0.5rem;
-      border:1.5px solid var(--gray);
-      background:var(--white);
-      font-family:inherit;
-      font-size:0.88rem;
-      color:var(--text);
-      transition:all 0.2s
+      width:100%;padding:0.6rem 0.9rem;border-radius:0.5rem;
+      border:1px solid var(--glass-border);
+      background:var(--glass-bg);backdrop-filter:blur(4px);
+      font-family:inherit;font-size:0.88rem;color:var(--text);transition:all 0.2s
     }
     .form-group input:focus,.form-group textarea:focus{
-      outline:none;
-      border-color:var(--orange);
-      box-shadow:0 0 0 3px rgba(249,115,22,0.08)
+      outline:none;border-color:var(--orange);
+      box-shadow:0 0 0 3px rgba(249,115,22,0.1);background:rgba(255,255,255,0.9)
     }
     .form-group input:disabled{background:var(--gray-light);opacity:0.6;cursor:not-allowed}
 
     .blog-card{
-      display:flex;
-      gap:1rem;
-      padding:1rem;
-      border:1px solid var(--gray);
-      border-radius:var(--radius-sm);
-      margin-bottom:0.6rem;
-      transition:all 0.2s;
-      background:var(--white)
+      display:flex;gap:1rem;padding:1rem;
+      background:var(--glass-bg);backdrop-filter:blur(8px);
+      border:1px solid var(--glass-border);border-radius:var(--radius-sm);
+      margin-bottom:0.6rem;transition:all 0.25s
     }
-    .blog-card:hover{box-shadow:var(--shadow);border-color:transparent}
+    .blog-card:hover{box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9);transform:translateY(-1px)}
     .blog-card .thumb{width:140px;height:100px;border-radius:var(--radius-xs);overflow:hidden;flex-shrink:0}
     .blog-card .thumb img{width:100%;height:100%;object-fit:cover}
     .blog-card .info h4{font-size:0.9rem;color:var(--navy);margin-bottom:0.15rem}
@@ -222,11 +156,7 @@
       .stat-row{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
       .dash-main{padding:1rem 0}
     }
-
-    @media(max-width:480px){
-      .tab-nav button{padding:0.35rem 0.75rem;font-size:0.8rem}
-      .card{padding:1rem}
-    }
+    @media(max-width:480px){.tab-nav button{padding:0.35rem 0.75rem;font-size:0.8rem}.card{padding:1rem}}
   </style>
 </head>
 <body>
@@ -358,25 +288,31 @@
     async function loadPayments() {
       const container = document.getElementById('tabPayments')
       showLoading(container, 'Memuat pembayaran...')
+      const bookingIds = bookingsCache.map(b => b.id)
+      if (bookingIds.length === 0) return showEmpty(container, 'Belum ada pembayaran.')
       const { data: payments, error } = await supabaseClient
         .from('payments')
-        .select('*, bookings!inner(trip_id, invoice_number, trips!inner(title))')
-        .eq('bookings.user_id', session.user.id)
-        .order('payments.created_at', { ascending: false })
+        .select('*, bookings:booking_id(invoice_number)')
+        .in('booking_id', bookingIds)
+        .order('created_at', { ascending: false })
       if (error) return showError(container, 'Gagal memuat data.')
       if (!payments || payments.length === 0) return showEmpty(container, 'Belum ada pembayaran.')
-      container.innerHTML = payments.map(p => `
-        <div class="booking-item">
-          <div class="info">
-            <h4>${escapeHtml(p.bookings?.trips?.title || 'Trip')}</h4>
-            <p>${p.method ? 'Metode: ' + p.method.toUpperCase() : ''} &middot; ${getStatusBadge(p.status)}</p>
+      container.innerHTML = payments.map(p => {
+        const booking = bookingsCache.find(b => b.id === p.booking_id)
+        const tripTitle = booking?.trips?.title || 'Trip'
+        return `
+          <div class="booking-item">
+            <div class="info">
+              <h4>${escapeHtml(tripTitle)}</h4>
+              <p>${p.method ? 'Metode: ' + p.method.toUpperCase() : ''} &middot; ${getStatusBadge(p.status)}</p>
+            </div>
+            <div class="right">
+              <div class="price">${formatCurrency(p.amount)}</div>
+              <div class="date">${formatDate(p.created_at)}</div>
+            </div>
           </div>
-          <div class="right">
-            <div class="price">${formatCurrency(p.amount)}</div>
-            <div class="date">${formatDate(p.created_at)}</div>
-          </div>
-        </div>
-      `).join('')
+        `
+      }).join('')
     }
 
     async function loadInvoices() {
@@ -400,28 +336,34 @@
     async function loadTickets() {
       const container = document.getElementById('tabTickets')
       showLoading(container, 'Memuat e-ticket...')
+      const bookingIds = bookingsCache.map(b => b.id)
+      if (bookingIds.length === 0) return showEmpty(container, 'Belum ada e-ticket.')
       const { data: tickets, error } = await supabaseClient
         .from('e_tickets')
-        .select('*, bookings!inner(trip_id, invoice_number, trips!inner(title))')
-        .eq('bookings.user_id', session.user.id)
+        .select('*, bookings:booking_id(invoice_number)')
+        .in('booking_id', bookingIds)
         .order('issued_at', { ascending: false })
       if (error) return showError(container, 'Gagal memuat data.')
       if (!tickets || tickets.length === 0) return showEmpty(container, 'Belum ada e-ticket. E-ticket akan tersedia setelah pembayaran dikonfirmasi.')
-      container.innerHTML = tickets.map(t => `
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-            <div>
-              <h3 style="margin-bottom:0.25rem">${escapeHtml(t.bookings?.trips?.title || 'E-Ticket')}</h3>
-              <p style="font-size:0.85rem;color:var(--text-muted)">Ticket: ${escapeHtml(t.ticket_number)}</p>
-              <p style="font-size:0.8rem;color:var(--text-muted)">Issued: ${formatDate(t.issued_at)}</p>
-            </div>
-            <div style="text-align:center">
-              <div style="width:80px;height:80px;background:var(--gray);border-radius:0.4rem;display:flex;align-items:center;justify-content:center;margin:0 auto 0.3rem;font-size:2rem;color:var(--text-muted)">&#128274;</div>
-              <button class="btn btn-primary btn-sm" onclick="alert('Download QR Code')">Download</button>
+      container.innerHTML = tickets.map(t => {
+        const booking = bookingsCache.find(b => b.id === t.booking_id)
+        const tripTitle = booking?.trips?.title || 'E-Ticket'
+        return `
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+              <div>
+                <h3 style="margin-bottom:0.25rem">${escapeHtml(tripTitle)}</h3>
+                <p style="font-size:0.85rem;color:var(--text-muted)">Ticket: ${escapeHtml(t.ticket_number)}</p>
+                <p style="font-size:0.8rem;color:var(--text-muted)">Issued: ${formatDate(t.issued_at)}</p>
+              </div>
+              <div style="text-align:center">
+                <div style="width:80px;height:80px;background:var(--gray);border-radius:0.4rem;display:flex;align-items:center;justify-content:center;margin:0 auto 0.3rem;font-size:2rem;color:var(--text-muted)">&#128274;</div>
+                <button class="btn btn-primary btn-sm" onclick="alert('Download QR Code')">Download</button>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('')
+        `
+      }).join('')
     }
 
     async function loadCertificates() {
@@ -450,25 +392,31 @@
     async function loadMerchandise() {
       const container = document.getElementById('tabMerch')
       showLoading(container, 'Memuat merchandise...')
+      const bookingIds = bookingsCache.map(b => b.id)
+      if (bookingIds.length === 0) return showEmpty(container, 'Belum ada merchandise.')
       const { data: merch, error } = await supabaseClient
         .from('merchandise')
-        .select('*, bookings!inner(trip_id, invoice_number, trips!inner(title))')
-        .eq('bookings.user_id', session.user.id)
+        .select('*, bookings:booking_id(invoice_number)')
+        .in('booking_id', bookingIds)
         .order('status', { ascending: true })
       if (error) return showError(container, 'Gagal memuat data.')
       if (!merch || merch.length === 0) return showEmpty(container, 'Belum ada merchandise.')
-      container.innerHTML = merch.map(m => `
-        <div class="booking-item">
-          <div class="info">
-            <h4>${escapeHtml(m.item_name)}</h4>
-            <p>${escapeHtml(m.bookings?.trips?.title || '')} &middot; ${getStatusBadge(m.status)}</p>
+      container.innerHTML = merch.map(m => {
+        const booking = bookingsCache.find(b => b.id === m.booking_id)
+        const tripTitle = booking?.trips?.title || ''
+        return `
+          <div class="booking-item">
+            <div class="info">
+              <h4>${escapeHtml(m.item_name)}</h4>
+              <p>${escapeHtml(tripTitle)} &middot; ${getStatusBadge(m.status)}</p>
+            </div>
+            <div class="right">
+              <span class="badge badge-${m.status}">${m.status}</span>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem">Qty: ${m.quantity}</p>
+            </div>
           </div>
-          <div class="right">
-            <span class="badge badge-${m.status}">${m.status}</span>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.2rem">Qty: ${m.quantity}</p>
-          </div>
-        </div>
-      `).join('')
+        `
+      }).join('')
     }
 
     async function loadProfile() {
