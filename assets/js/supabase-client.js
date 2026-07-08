@@ -1,5 +1,5 @@
-const SUPABASE_URL = 'https://jbgzoegggbbmokwignst.supabase.co'
-const SUPABASE_ANON_KEY = 'sb_publishable_VzxQdyc2J8zpVXZE41fB0w_p3AxzVv9'
+const SUPABASE_URL = 'https://jbgzoeggqbbmokwignst.supabase.co'
+const SUPABASE_ANON_KEY = 'sb_publishable_VzxQdyc2J8zpVXZE41fBOw_p3AxzVv9'
 
 // Ubah nama variabel di sini agar tidak bentrok dengan objek bawaan CDN
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
