@@ -159,6 +159,33 @@ CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
 CREATE INDEX IF NOT EXISTS idx_trips_date ON trips(date);
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
 
+-- PAYMENT_CHANNELS (dipindah ke sini supaya ada sebelum DO loop trigger)
+CREATE TABLE IF NOT EXISTS payment_channels (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL DEFAULT '',
+  method TEXT DEFAULT 'transfer' CHECK (method IN ('transfer', 'qris', 'va', 'ewallet')),
+  account_name TEXT DEFAULT '',
+  account_number TEXT DEFAULT '',
+  icon_url TEXT DEFAULT '',
+  is_active BOOLEAN DEFAULT true,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Ensure all tables have updated_at column (safe for existing DB that may lack it)
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE payments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE e_tickets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE certificates ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE merchandise ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE media_assets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE testimonials ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE payment_channels ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
 -- ============================================
 -- 3. AUTO-UPDATE updated_at TRIGGER
 -- ============================================
@@ -181,20 +208,6 @@ BEGIN
   END LOOP;
 END;
 $$;
-
--- PAYMENT_CHANNELS
-CREATE TABLE IF NOT EXISTS payment_channels (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL DEFAULT '',
-  method TEXT DEFAULT 'transfer' CHECK (method IN ('transfer', 'qris', 'va', 'ewallet')),
-  account_name TEXT DEFAULT '',
-  account_number TEXT DEFAULT '',
-  icon_url TEXT DEFAULT '',
-  is_active BOOLEAN DEFAULT true,
-  sort_order INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
 
 -- AUTO trip status = 'full' when confirmed bookings >= kuota
 CREATE OR REPLACE FUNCTION check_trip_full()
