@@ -125,9 +125,9 @@
         }
         
         if (profile && profile.role === 'admin') {
-          window.location.href = '/admin/index.html'
+          window.location.href = 'admin/index.html'
         } else {
-          window.location.href = '/dashboard.html'
+          window.location.href = 'dashboard.html'
         }
       } catch (e) {
         showMsg(e.message || 'Login gagal. Periksa email dan password.', 'error')
