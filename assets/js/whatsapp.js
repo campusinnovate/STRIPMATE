@@ -1,4 +1,4 @@
-(function() {
+function initWhatsApp() {
   const btn = document.createElement('a')
   btn.href = 'https://wa.me/6281234567890?text=Halo%20STRIPMATE%2C%20saya%20mau%20tanya%20trip!'
   btn.target = '_blank'
@@ -27,7 +27,12 @@
     this.style.boxShadow = '0 4px 20px rgba(37,211,102,0.4)'
   }
   document.body.appendChild(btn)
-})()
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWhatsApp)
+} else {
+  initWhatsApp()
+}
 
 const style = document.createElement('style')
 style.textContent = `

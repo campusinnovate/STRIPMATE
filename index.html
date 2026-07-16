@@ -110,17 +110,12 @@
     .tentang-grid .content p{color:var(--text-muted);line-height:1.8;margin-bottom:1rem;font-size:0.95rem}
     .tentang-tagline{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:700;color:var(--green);font-style:italic}
 
-    .value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem}
-    .value-card{text-align:center;padding:2rem 1.5rem;background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius);box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.3s}
-    .value-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
-    .value-icon{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;font-size:1.5rem;margin-bottom:0.75rem}
-    .value-card:nth-child(1) .value-icon{background:rgba(45,106,79,0.1)}
-    .value-card:nth-child(2) .value-icon{background:rgba(249,115,22,0.1)}
-    .value-card:nth-child(3) .value-icon{background:rgba(27,42,74,0.1)}
-    .value-card:nth-child(4) .value-icon{background:rgba(45,106,79,0.1)}
-    .value-card:nth-child(5) .value-icon{background:rgba(249,115,22,0.1)}
-    .value-card h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.3rem}
-    .value-card p{font-size:0.85rem;color:var(--text-muted)}
+    .value-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem}
+    .value-item{background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.3s}
+    .value-item:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
+    .value-item .num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--orange);color:#fff;font-weight:800;font-size:0.85rem;margin-bottom:0.6rem;font-family:'Plus Jakarta Sans',sans-serif}
+    .value-item h3{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.3rem}
+    .value-item p{font-size:0.85rem;color:var(--text-muted);line-height:1.6}
 
     .dest-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem}
     .dest-card{background:var(--glass-bg);backdrop-filter:blur(8px);border-radius:var(--radius);overflow:hidden;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border);transition:all 0.35s}
@@ -360,32 +355,36 @@
     <div class="container">
       <span class="section-label">Kenapa Harus STRIPMATE</span>
       <h2 class="section-title">Lebih dari Sekadar Perjalanan</h2>
-      <p class="section-desc">Kami membantu pelajar dan mahasiswa mendapatkan pengalaman perjalanan yang aman, seru, dan terjangkau.</p>
-      <div class="value-grid">
-        <div class="value-card">
-          <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <h3>Aman</h3>
-          <p>Didampingi Trip Leader profesional, asuransi, dan P3K di setiap perjalanan.</p>
+      <div class="value-list">
+        <div class="value-item">
+          <div class="num">1</div>
+          <h3>Lebih dari Sekadar Perjalanan</h3>
+          <p>Stripmate menghadirkan perjalanan yang membantu pelajar dan mahasiswa sejenak rehat dari rutinitas, menjelajahi tempat baru, dan menciptakan pengalaman yang bermakna.</p>
         </div>
-        <div class="value-card">
-          <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <h3>Seru</h3>
-          <p>Itinerary seru dengan aktivitas outdoor, games, dan pengalaman tak terlupakan.</p>
+        <div class="value-item">
+          <div class="num">2</div>
+          <h3>Perjalanan yang Aman</h3>
+          <p>Setiap trip didampingi Trip Leader dan dirancang agar peserta dapat menikmati perjalanan dengan nyaman dan tenang.</p>
         </div>
-        <div class="value-card">
-          <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-          <h3>Terjangkau</h3>
-          <p>Harga khusus pelajar & mahasiswa dengan sistem DP 50% dan cicilan ringan.</p>
+        <div class="value-item">
+          <div class="num">3</div>
+          <h3>Waktunya Rehat</h3>
+          <p>Lepas sejenak dari tugas, deadline, dan rutinitas kampus atau sekolah. Saatnya mengisi energi dan menikmati perjalanan tanpa beban.</p>
         </div>
-        <div class="value-card">
-          <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-          <h3>Banyak Teman Baru</h3>
-          <p>Bertemu peserta dari berbagai kampus dan sekolah. Pulang jadi teman.</p>
+        <div class="value-item">
+          <div class="num">4</div>
+          <h3>Temukan Mate Baru</h3>
+          <p>Kenalan dengan pelajar dan mahasiswa dari berbagai sekolah dan kampus. Siapa tahu, perjalanan ini menjadi awal dari pertemanan yang bertahan lama.</p>
         </div>
-        <div class="value-card">
-          <div class="value-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
-          <h3>Banyak Cerita Baru</h3>
-          <p>Setiap perjalanan adalah cerita. Dapetin pengalaman yang gak akan kamu lupakan.</p>
+        <div class="value-item">
+          <div class="num">5</div>
+          <h3>Pengalaman yang Berkesan</h3>
+          <p>Setiap destinasi menyimpan cerita. Bukan hanya membawa pulang foto, tetapi juga kenangan dan pengalaman yang akan selalu diingat.</p>
+        </div>
+        <div class="value-item">
+          <div class="num">6</div>
+          <h3>Ramah di Kantong Pelajar</h3>
+          <p>Nikmati pengalaman perjalanan dengan harga yang terjangkau, dilengkapi pilihan DP 50% agar lebih mudah diikuti oleh pelajar dan mahasiswa.</p>
         </div>
       </div>
     </div>
@@ -1221,7 +1220,7 @@
     loadTestimonials()
     loadPaymentChannels()
 
-    gsap.utils.toArray('.trip-card, .dest-card, .value-card, .testi-card, .corporate-item, .private-item').forEach(el => {
+    gsap.utils.toArray('.trip-card, .dest-card, .value-item, .testi-card, .corporate-item, .private-item').forEach(el => {
       gsap.from(el, {
         opacity: 0, y: 40, duration: 0.7, ease: 'power3.out',
         scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },
