@@ -337,11 +337,11 @@ DROP POLICY IF EXISTS "testi_delete_admin" ON testimonials; CREATE POLICY "testi
 
 -- Sample Trips
 INSERT INTO trips (title, slug, description, meeting_point, date, price, kuota, status, image_url) VALUES
-  ('Papandayan STRIPMATE', 'papandayan', 'Gunung Papandayan (2.665 MDPL) di Garut, Jawa Barat. Dikenal dengan Hutan Mati yang surreal dan sunrise di Tegal Alun.', 'Bogor', '2026-08-15', 369000, 17, 'open', 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80'),
-  ('Prau STRIPMATE', 'prau', 'Gunung Prau (2.565 MDPL) di Dieng. Padang rumput luas di puncak dengan pemandangan 7 gunung.', 'Wonosobo', '2026-09-05', 399000, 20, 'open', 'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=600&q=80'),
-  ('Bromo STRIPMATE', 'bromo', 'Gunung Bromo (2.329 MDPL). Sunrise epic, lautan pasir, dan kawah aktif.', 'Malang', '2026-10-10', 499000, 12, 'open', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'),
-  ('Karimunjawa STRIPMATE', 'karimunjawa', 'Karimunjawa, surga tropis dengan pasir putih, snorkeling, dan sunset.', 'Semarang', '2026-07-20', 599000, 15, 'open', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80'),
-  ('Dieng STRIPMATE', 'dieng', 'Dieng Plateau (2.093 MDPL). Candi, kawah, telaga warna, dan golden sunrise.', 'Wonosobo', '2026-08-28', 349000, 20, 'open', 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=600&q=80')
+  ('Gunung Papandayan', 'papandayan', 'Gunung Papandayan (2.665 MDPL) di Garut, Jawa Barat. Dikenal dengan Hutan Mati yang surreal dan sunrise di Tegal Alun.', 'Bogor', '2026-08-15', 369000, 17, 'open', 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80'),
+  ('Gunung Prau', 'prau', 'Gunung Prau (2.565 MDPL) di Dieng. Padang rumput luas di puncak dengan pemandangan 7 gunung.', 'Wonosobo', '2026-09-05', 399000, 20, 'open', 'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=600&q=80'),
+  ('Gunung Bromo', 'bromo', 'Gunung Bromo (2.329 MDPL). Sunrise epic, lautan pasir, dan kawah aktif.', 'Malang', '2026-10-10', 499000, 12, 'open', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'),
+  ('Karimunjawa', 'karimunjawa', 'Karimunjawa, surga tropis dengan pasir putih, snorkeling, dan sunset.', 'Semarang', '2026-07-20', 599000, 15, 'open', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80'),
+  ('Dieng Plateau', 'dieng', 'Dieng Plateau (2.093 MDPL). Candi, kawah, telaga warna, dan golden sunrise.', 'Wonosobo', '2026-08-28', 349000, 20, 'open', 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=600&q=80')
 ON CONFLICT (slug) DO NOTHING;
 
 -- Sample Blog Posts
@@ -367,10 +367,10 @@ ON CONFLICT (slug) DO NOTHING;
 
 -- Sample Testimonials
 INSERT INTO testimonials (name, trip, rating, content, avatar_url) VALUES
-  ('Sarah Azzahra', 'Papandayan STRIPMATE', 5, 'Seru banget! Pertama kali naik gunung, awalnya takut tapi Trip Leadernya asik banget dan selalu ngebimbing. Pemandangan di puncak bener-bener wow!', 'https://i.pravatar.cc/80?img=1'),
-  ('Raka Pratama', 'Bromo STRIPMATE', 5, 'Bromo bareng STRIPMATE pengalaman yang nggak bakal terlupakan. Sunrise-nya juara! Dapet temen baru dari berbagai kampus juga.', 'https://i.pravatar.cc/80?img=3'),
-  ('Dewi Lestari', 'Prau STRIPMATE', 5, 'Prau puncaknya indah banget! Padang rumput luas, cocok buat foto-foto. Thanks STRIPMATE udah bikin trip yang aman dan seru!', 'https://i.pravatar.cc/80?img=5'),
-  ('Fajar Ramadhan', 'Dieng STRIPMATE', 4, 'Dieng keren! Telaga Warna dan golden sunrise-nya epic. Satu lagi destinasi yang wajib dikunjungi.', 'https://i.pravatar.cc/80?img=8'),
-  ('Nurul Hidayah', 'Karimunjawa STRIPMATE', 5, 'Karimunjawa surga banget! Snorkeling, island hopping, sunset. All in one trip. Makasih STRIPMATE!', 'https://i.pravatar.cc/80?img=9'),
-  ('Budi Santoso', 'Papandayan STRIPMATE', 5, 'Trip kedua bareng STRIPMATE dan selalu memuaskan. Organisasinya rapi, komunikatif, dan harga terjangkau untuk pelajar.', 'https://i.pravatar.cc/80?img=11')
+  ('Sarah Azzahra', 'Gunung Papandayan', 5, 'Seru banget! Pertama kali naik gunung, awalnya takut tapi Trip Leadernya asik banget dan selalu ngebimbing. Pemandangan di puncak bener-bener wow!', 'https://i.pravatar.cc/80?img=1'),
+  ('Raka Pratama', 'Gunung Bromo', 5, 'Bromo bareng STRIPMATE pengalaman yang nggak bakal terlupakan. Sunrise-nya juara! Dapet temen baru dari berbagai kampus juga.', 'https://i.pravatar.cc/80?img=3'),
+  ('Dewi Lestari', 'Gunung Prau', 5, 'Prau puncaknya indah banget! Padang rumput luas, cocok buat foto-foto. Thanks STRIPMATE udah bikin trip yang aman dan seru!', 'https://i.pravatar.cc/80?img=5'),
+  ('Fajar Ramadhan', 'Dieng Plateau', 4, 'Dieng keren! Telaga Warna dan golden sunrise-nya epic. Satu lagi destinasi yang wajib dikunjungi.', 'https://i.pravatar.cc/80?img=8'),
+  ('Nurul Hidayah', 'Karimunjawa', 5, 'Karimunjawa surga banget! Snorkeling, island hopping, sunset. All in one trip. Makasih STRIPMATE!', 'https://i.pravatar.cc/80?img=9'),
+  ('Budi Santoso', 'Gunung Papandayan', 5, 'Trip kedua bareng STRIPMATE dan selalu memuaskan. Organisasinya rapi, komunikatif, dan harga terjangkau untuk pelajar.', 'https://i.pravatar.cc/80?img=11')
 ON CONFLICT DO NOTHING;

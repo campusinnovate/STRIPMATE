@@ -17,8 +17,8 @@
     body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
     h1,h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.03em}
     .auth-wrap{max-width:440px;width:100%;background:var(--white);border-radius:var(--radius);padding:2.5rem;box-shadow:var(--shadow)}
-    .logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:800;color:var(--navy);text-align:center;margin-bottom:0.5rem}
-    .logo span{color:var(--orange)}
+    .logo{text-align:center;margin-bottom:0.5rem}
+    .logo img{height:36px;width:auto;display:inline-block}
     .subtitle{text-align:center;font-size:0.88rem;color:var(--text-muted);margin-bottom:2rem}
     .tab{display:flex;border:1px solid var(--gray);border-radius:0.5rem;overflow:hidden;margin-bottom:1.5rem}
     .tab button{flex:1;padding:0.6rem;border:none;background:transparent;font-family:inherit;font-weight:600;font-size:0.85rem;cursor:pointer;transition:all.2s;color:var(--text-muted)}
@@ -42,7 +42,7 @@
 </head>
 <body>
   <div class="auth-wrap">
-    <a href="index.html" class="logo" onclick="pageTransition(this.href);return false">STRIP<span>MATE</span></a>
+    <a href="index.html" class="logo" onclick="pageTransition(this.href);return false"><img src="Logo stripmate.png" alt="STRIPMATE" style="height:36px;width:auto;display:inline-block"/></a>
     <p class="subtitle">Masuk ke dashboard peserta STRIPMATE</p>
 
     <div class="tab">

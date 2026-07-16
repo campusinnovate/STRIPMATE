@@ -23,8 +23,8 @@
 
     nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 0;background:rgba(255,255,255,0.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(27,42,74,0.06)}
     nav .container{max-width:800px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between}
-    .logo{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.35rem;font-weight:800;color:var(--navy)}
-    .logo span{color:var(--orange)}
+    .logo{display:flex;align-items:center}
+    .logo img{height:32px;width:auto;display:block}
     nav a{color:var(--text-muted);font-size:0.85rem;font-weight:500}
     nav a:hover{color:var(--navy)}
 
@@ -63,7 +63,7 @@
 <body>
   <nav>
     <div class="container">
-      <a href="index.html" class="logo" onclick="pageTransition(this.href);return false">STRIP<span>MATE</span></a>
+      <a href="index.html" class="logo" onclick="pageTransition(this.href);return false"><img src="Logo stripmate.png" alt="STRIPMATE" style="height:32px;width:auto;display:block"/></a>
       <a href="blog.html" onclick="pageTransition(this.href);return false">Blog</a>
     </div>
   </nav>
