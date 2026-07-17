@@ -127,11 +127,30 @@
     }
 
     async function deleteTrip(id) {
-      if (!confirm('Hapus trip ini? Semua data booking, pembayaran, e-ticket, dan sertifikat terkait juga akan terhapus.')) return
-      const { error } = await supabaseClient.from('trips').delete().eq('id', id)
-      if (error) { showToast(error.message, 'error'); return }
-      showToast('Trip dan semua data terkait berhasil dihapus')
-      loadTrips()
+      if (!confirm('Hapus trip ini? Semua data booking, pembayaran, e-ticket, merchandise, dan sertifikat terkait juga akan terhapus. Tindakan ini tidak bisa dibatalkan.')) return
+
+      try {
+        const { data: bookings } = await supabaseClient
+          .from('bookings').select('id').eq('trip_id', id)
+        const ids = (bookings || []).map(b => b.id)
+
+        if (ids.length > 0) {
+          await supabaseClient.from('payments').delete().in('booking_id', ids)
+          await supabaseClient.from('e_tickets').delete().in('booking_id', ids)
+          await supabaseClient.from('merchandise').delete().in('booking_id', ids)
+          await supabaseClient.from('bookings').delete().in('id', ids)
+        }
+
+        await supabaseClient.from('certificates').delete().eq('trip_id', id)
+
+        const { error } = await supabaseClient.from('trips').delete().eq('id', id)
+        if (error) throw error
+
+        showToast('Trip dan semua data terkait berhasil dihapus')
+        loadTrips()
+      } catch (e) {
+        showToast(e.message || 'Gagal menghapus trip', 'error')
+      }
     }
 
     function splitLines(val) {
