@@ -87,6 +87,10 @@
   </div>
 
   <script>
+    if (typeof pageTransition !== 'function') {
+      window.pageTransition = function(url) { window.location.href = url }
+    }
+
     function switchTab(tab) {
       document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'))
       document.querySelectorAll('.form-toggle').forEach(f => f.classList.remove('active'))
@@ -144,8 +148,11 @@
       if (!email) return showMsg('Isi email.', 'error')
       if (password.length < 6) return showMsg('Password minimal 6 karakter.', 'error')
       try {
-        await register(email, password, name)
-        showMsg('Pendaftaran berhasil! Silakan cek email untuk konfirmasi. Setelah itu login.', 'success')
+        const data = await register(email, password, name)
+        if (!data?.session) {
+          await login(email, password)
+        }
+        pageTransition('dashboard.html')
       } catch (e) {
         showMsg(e.message || 'Pendaftaran gagal.', 'error')
       }
