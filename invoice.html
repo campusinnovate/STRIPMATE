@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice - STRIPMATE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/supabase-client.js"></script>
+  <script src="/assets/js/utils.js"></script>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--navy:#1B2A4A;--navy-light:#2C4266;--green:#2D6A4F;--green-light:#40916C;--orange:#F97316;--orange-light:#FB923C;--cream:#FFF8F0;--gray:#E9ECEF;--text:#0F172A;--text-muted:#94A3B8;--white:#FFFFFF}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--text);line-height:1.6;padding:2rem}
+    h1,h2,h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1.3}
+    .invoice-wrap{max-width:800px;margin:0 auto;background:#fff;border-radius:1rem;box-shadow:0 8px 32px rgba(0,0,0,0.06);padding:2.5rem}
+    .invoice-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid var(--gray)}
+    .invoice-head .brand{display:flex;align-items:center;gap:0.6rem}
+    .invoice-head .brand .logo{width:44px;height:44px;background:var(--navy);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.1rem;font-family:'Plus Jakarta Sans',sans-serif}
+    .invoice-head .brand h1{font-size:1.6rem;color:var(--navy)}
+    .invoice-head .brand p{font-size:0.8rem;color:var(--text-muted);margin-top:-0.2rem}
+    .invoice-head .title{text-align:right}
+    .invoice-head .title h2{font-size:2rem;color:var(--navy);letter-spacing:0.05em}
+    .invoice-head .title .inv-number{font-size:0.85rem;color:var(--text-muted);margin-top:0.2rem}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+    .info-box h3{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.4rem}
+    .info-box p{font-size:0.95rem;font-weight:500}
+    .info-box p small{font-weight:400;color:var(--text-muted)}
+    table{width:100%;border-collapse:collapse;margin-bottom:2rem}
+    th{text-align:left;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding:0.6rem 0.8rem;border-bottom:2px solid var(--gray);font-weight:600}
+    td{padding:0.8rem;border-bottom:1px solid var(--gray);font-size:0.9rem}
+    td:last-child,th:last-child{text-align:right}
+    td:first-child,th:first-child{padding-left:0}
+    td:last-child{padding-right:0}
+    .total-row td{font-weight:700;font-size:1.1rem;border-bottom:none;padding-top:1rem}
+    .total-row td:last-child{color:var(--orange);font-size:1.3rem}
+    .status-badge{display:inline-flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;border-radius:999px;font-weight:700;font-size:0.85rem}
+    .status-badge.paid{background:#DCFCE7;color:#166534}
+    .status-badge.unpaid{background:#FEE2E2;color:#991B1B}
+    .status-badge.dp{background:#FFEDD5;color:#9A3412}
+    .meta-row{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;padding-top:1rem;border-top:1px solid var(--gray)}
+    .btn-actions{display:flex;gap:1rem;justify-content:center;margin-top:2rem}
+    .btn-print,.btn-back{display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.8rem;border-radius:999px;font-weight:700;font-size:0.9rem;cursor:pointer;transition:all.2s;border:none;font-family:inherit}
+    .btn-print{background:var(--navy);color:#fff}
+    .btn-print:hover{background:var(--navy-light)}
+    .btn-back{background:var(--gray);color:var(--text)}
+    .btn-back:hover{background:#D1D5DB}
+    .loading{text-align:center;padding:3rem;color:var(--text-muted)}
+    .error-msg{text-align:center;padding:3rem;color:#991B1B;background:#FEE2E2;border-radius:1rem}
+    @media print{body{background:#fff;padding:0}.invoice-wrap{box-shadow:none;padding:1.5rem;border-radius:0}.btn-actions{display:none}.no-print{display:none}}
+    @media(max-width:600px){.invoice-wrap{padding:1.5rem}.invoice-head{flex-direction:column;gap:1rem}.invoice-head .title{text-align:left}.info-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="invoice-wrap" id="invoiceWrap">
+    <div id="invoiceContent">
+      <div class="loading">Memuat invoice...</div>
+    </div>
+  </div>
+
+  <div class="btn-actions no-print" id="btnActions" style="display:none">
+    <button class="btn-print" onclick="window.print()">Download PDF</button>
+    <button class="btn-back" onclick="history.back()">Kembali</button>
+  </div>
+
+  <script>
+    async function loadInvoice() {
+      const params = new URLSearchParams(window.location.search)
+      const invoiceNumber = params.get('invoice')
+      const container = document.getElementById('invoiceContent')
+
+      if (!invoiceNumber) {
+        container.innerHTML = '<div class="error-msg">Parameter invoice tidak ditemukan.</div>'
+        return
+      }
+
+      try {
+        const { data: booking, error: bErr } = await supabaseClient
+          .from('bookings')
+          .select('*, trips(*)')
+          .eq('invoice_number', invoiceNumber)
+          .maybeSingle()
+
+        if (bErr || !booking) {
+          container.innerHTML = '<div class="error-msg">Invoice tidak ditemukan.</div>'
+          return
+        }
+
+        const trip = booking.trips || {}
+
+        let profile = {}
+        if (booking.user_id) {
+          const { data: prof } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', booking.user_id)
+            .maybeSingle()
+          if (prof) profile = prof
+        }
+
+        const { data: payments } = await supabaseClient
+          .from('payments')
+          .select('*')
+          .eq('booking_id', booking.id)
+          .order('created_at', { ascending: false })
+
+        const payment = payments && payments.length > 0 ? payments[0] : null
+
+        const paidAt = payment?.paid_at ? new Date(payment.paid_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'
+
+        let statusHtml = ''
+        const pStatus = booking.payment_status || 'dp'
+        if (pStatus === 'paid') {
+          statusHtml = '<span class="status-badge paid">LUNAS</span>'
+        } else if (pStatus === 'dp') {
+          statusHtml = '<span class="status-badge dp">DP</span>'
+        } else {
+          statusHtml = '<span class="status-badge unpaid">BELUM LUNAS</span>'
+        }
+
+        const amount = booking.total_amount != null ? 'Rp' + Number(booking.total_amount).toLocaleString('id-ID') : 'Rp0'
+        const paidAmount = payment?.amount != null ? 'Rp' + Number(payment.amount).toLocaleString('id-ID') : '-'
+
+        container.innerHTML = `
+          <div class="invoice-head">
+            <div class="brand">
+              <div class="logo">SM</div>
+              <div>
+                <h1>STRIPMATE</h1>
+                <p>Petualangan Tanpa Batas</p>
+              </div>
+            </div>
+            <div class="title">
+              <h2>INVOICE</h2>
+              <div class="inv-number">${invoiceNumber}</div>
+              ${statusHtml}
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-box">
+              <h3>Tagihan Kepada</h3>
+              <p>${escapeHtml(profile.full_name || '—')}</p>
+              <p><small>${escapeHtml(profile.email || '')}</small></p>
+              <p><small>WA: ${escapeHtml(profile.phone || '—')}</small></p>
+            </div>
+            <div class="info-box">
+              <h3>Detail Trip</h3>
+              <p>${escapeHtml(trip.title || '—')}</p>
+              <p><small>${trip.date ? new Date(trip.date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) : '—'}</small></p>
+              <p><small>${escapeHtml(trip.location || '')}</small></p>
+              ${trip.meeting_point ? '<p><small>Meeting Point: ' + escapeHtml(trip.meeting_point) + '</small></p>' : ''}
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Jumlah</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${escapeHtml(trip.title || 'Pendakian')} — Biaya Pendakian</td>
+                <td>${amount}</td>
+              </tr>
+              <tr>
+                <td>Dibayar</td>
+                <td>${paidAmount}</td>
+              </tr>
+              <tr class="total-row">
+                <td>Status Pembayaran</td>
+                <td>${statusHtml}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="meta-row">
+            <span>Metode Pembayaran: ${payment ? (payment.method || '—').toUpperCase() : '—'}</span>
+            <span>Tanggal Bayar: ${paidAt}</span>
+          </div>
+        `
+
+        document.getElementById('btnActions').style.display = 'flex'
+      } catch (e) {
+        container.innerHTML = '<div class="error-msg">Terjadi kesalahan saat memuat invoice.</div>'
+        console.error('Invoice load error:', e)
+      }
+    }
+
+    loadInvoice()
+  </script>
+</body>
+</html>

@@ -71,7 +71,7 @@
       }
       document.getElementById('payTable').innerHTML = (payments || []).map(p => `
         <tr>
-          <td>${escapeHtml(p.bookings?.invoice_number || '-')}</td>
+          <td><a href="/invoice.html?invoice=${p.bookings?.invoice_number}" target="_blank" style="color:var(--orange);font-weight:600;text-decoration:underline">${escapeHtml(p.bookings?.invoice_number || '-')}</a></td>
           <td>${escapeHtml(profileMap[p.bookings?.user_id] || '-')}</td>
           <td style="text-transform:capitalize">${p.method || '-'}</td>
           <td>${formatCurrency(p.amount)}</td>
@@ -117,7 +117,14 @@
 
     function viewProof(url) {
       const img = document.getElementById('proofImage')
-      if (img) img.src = url
+      if (img) {
+        img.src = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now()
+        img.onerror = function() {
+          img.src = '';
+          img.alt = 'Gagal memuat gambar. URL: ' + url;
+          showToast('Gagal memuat bukti pembayaran', 'error');
+        };
+      }
       const modal = document.getElementById('proofModal')
       if (modal) modal.classList.add('open')
     }

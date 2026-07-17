@@ -348,6 +348,12 @@ DROP POLICY IF EXISTS "testi_delete_admin" ON testimonials; CREATE POLICY "testi
 -- CREATE POLICY "avatars_auth_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
 -- CREATE POLICY "avatars_own_update" ON storage.objects FOR UPDATE USING (bucket_id = 'avatars' AND owner = auth.uid());
 
+-- Create payments bucket + policies (proof upload)
+-- INSERT INTO storage.buckets (id, name, public) VALUES ('payments', 'payments', true) ON CONFLICT DO NOTHING;
+-- CREATE POLICY "payments_public_select" ON storage.objects FOR SELECT USING (bucket_id = 'payments');
+-- CREATE POLICY "payments_auth_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'payments' AND auth.role() = 'authenticated');
+-- CREATE POLICY "payments_own_update" ON storage.objects FOR UPDATE USING (bucket_id = 'payments' AND owner = auth.uid());
+
 -- ============================================
 -- 5. SAMPLE DATA (testing purposes)
 -- ============================================

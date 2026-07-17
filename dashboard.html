@@ -326,7 +326,7 @@
           </div>
           <div class="right">
             <div class="price">${formatCurrency(b.total_amount)}</div>
-            <button class="btn btn-outline" onclick="alert('Download invoice: ${b.invoice_number}')">Download</button>
+            <a href="/invoice.html?invoice=${b.invoice_number}" target="_blank" class="btn btn-outline">Download</a>
           </div>
         </div>
       `).join('')

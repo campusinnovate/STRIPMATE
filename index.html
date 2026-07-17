@@ -765,7 +765,8 @@
               <p class="dest-loc">${locParts.map(p => escapeHtml(p)).join(' &middot; ')}</p>
               <p>${escapeHtml(t.description || '')}</p>
               ${tags.length ? '<div class="dest-tags">' + tags.map(f => '<span>' + escapeHtml(f) + '</span>').join('') + '</div>' : ''}
-              <p class="dest-tips" onclick="openTripDetail('${t.slug || t.id}')">&#128073; Lihat Detail Trip</p>
+              ${t.price ? '<p style="font-size:1.15rem;font-weight:800;color:var(--orange);margin:0.5rem 0">' + price + ' <small style="font-size:0.7rem;font-weight:400;color:var(--text-muted)">/org</small></p>' : ''}
+              <button class="btn-book" onclick="openBooking('${t.id}')">Daftar Sekarang</button>
             </div>
           </div>`
         }).join('')
@@ -1001,11 +1002,26 @@
       const fileInput = document.getElementById('payUpload')
       let proofUrl = null
 
+      if (method === 'transfer') {
+        if (!fileInput || !fileInput.files[0]) {
+          showToast('Wajib upload bukti pembayaran untuk metode transfer', 'error')
+          return
+        }
+      }
+
+      const btn = document.querySelector('#paymentModal .btn-submit')
+      btn.disabled = true
+      btn.textContent = 'Mengupload...'
+
       if (fileInput && fileInput.files[0]) {
         try {
           proofUrl = await uploadFile('payments', fileInput.files[0], `proof_${window._pendingBookingId}_${Date.now()}`)
         } catch(e) {
           console.error('Upload error:', e)
+          showToast('Gagal upload bukti pembayaran: ' + e.message, 'error')
+          btn.disabled = false
+          btn.textContent = 'Konfirmasi Pembayaran \u2714'
+          return
         }
       }
 
@@ -1020,7 +1036,12 @@
         proof_url: proofUrl
       })
 
-      if (payError) { showToast('Gagal menyimpan pembayaran: ' + payError.message, 'error'); return }
+      if (payError) {
+        showToast('Gagal menyimpan pembayaran: ' + payError.message, 'error')
+        btn.disabled = false
+        btn.textContent = 'Konfirmasi Pembayaran \u2714'
+        return
+      }
 
       closeModal('paymentModal')
       document.getElementById('invoiceNum').textContent = window._pendingInvoice || ''
