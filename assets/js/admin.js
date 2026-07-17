@@ -1,14 +1,14 @@
 const ADMIN_SIDEBAR = [
-  { page: 'dashboard', label: 'Dashboard', icon: '📊', href: 'admin/index.html' },
-  { page: 'trips', label: 'Trips', icon: '🗺️', href: 'admin/trips.html' },
-  { page: 'bookings', label: 'Bookings', icon: '📋', href: 'admin/bookings.html' },
-  { page: 'payments', label: 'Payments', icon: '💰', href: 'admin/payments.html' },
-  { page: 'participants', label: 'Peserta', icon: '👥', href: 'admin/participants.html' },
-  { page: 'channels', label: 'Pembayaran', icon: '🏦', href: 'admin/payment-channels.html' },
-  { page: 'calendar', label: 'Kalender', icon: '📅', href: 'admin/calendar.html' },
-  { page: 'blog', label: 'Blog', icon: '📰', href: 'admin/blog.html' },
-  { page: 'media', label: 'Media', icon: '📷', href: 'admin/media.html' },
-  { page: 'testimonials', label: 'Testimonials', icon: '💬', href: 'admin/testimonials.html' },
+  { page: 'dashboard', label: 'Dashboard', icon: '📊', href: '/admin/index.html' },
+  { page: 'trips', label: 'Trips', icon: '🗺️', href: '/admin/trips.html' },
+  { page: 'bookings', label: 'Bookings', icon: '📋', href: '/admin/bookings.html' },
+  { page: 'payments', label: 'Payments', icon: '💰', href: '/admin/payments.html' },
+  { page: 'participants', label: 'Peserta', icon: '👥', href: '/admin/participants.html' },
+  { page: 'channels', label: 'Pembayaran', icon: '🏦', href: '/admin/payment-channels.html' },
+  { page: 'calendar', label: 'Kalender', icon: '📅', href: '/admin/calendar.html' },
+  { page: 'blog', label: 'Blog', icon: '📰', href: '/admin/blog.html' },
+  { page: 'media', label: 'Media', icon: '📷', href: '/admin/media.html' },
+  { page: 'testimonials', label: 'Testimonials', icon: '💬', href: '/admin/testimonials.html' },
 ]
 
 function injectSidebar(activePage) {
@@ -20,7 +20,7 @@ function injectSidebar(activePage) {
     </a>
   `).join('') + `
     <div class="nav-bottom">
-      <a href="index.html" target="_blank">🌐 Lihat Site</a>
+      <a href="/index.html" target="_blank">🌐 Lihat Site</a>
       <a href="#" class="logout-link" onclick="logout()">🚪 Logout</a>
     </div>
   `
