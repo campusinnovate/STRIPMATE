@@ -38,6 +38,8 @@
     .back-link a{color:var(--orange);font-weight:600;text-decoration:none}
     .form-toggle{display:none}
     .form-toggle.active{display:block}
+    .shake{animation:shake .4s ease}
+    @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
   </style>
 </head>
 <body>
@@ -49,8 +51,6 @@
       <button class="active" onclick="switchTab('login')">Masuk</button>
       <button onclick="switchTab('register')">Daftar</button>
     </div>
-
-    <div id="msg" class="msg"></div>
 
     <div id="loginForm" class="form-toggle active">
       <div class="form-group">
@@ -100,26 +100,45 @@
         document.querySelector('.tab button:last-child').classList.add('active')
         document.getElementById('registerForm').classList.add('active')
       }
-      document.getElementById('msg').style.display = 'none'
+      const m = document.getElementById('msg')
+      if (m) m.style.display = 'none'
     }
 
-    function showMsg(text, type) {
-      const msg = document.getElementById('msg')
-      msg.textContent = text
-      msg.className = 'msg ' + type
+    function showLoadingOverlay(redirectUrl) {
+      const overlay = document.createElement('div')
+      overlay.id = 'loadingOverlay'
+      Object.assign(overlay.style, {
+        position:'fixed', inset:'0', zIndex:'99999',
+        background:'rgba(27,42,74,0.85)', backdropFilter:'blur(8px)',
+        display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+        gap:'1rem', opacity:'0', transition:'opacity 0.4s ease'
+      })
+      overlay.innerHTML = '<style>@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}</style><div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.15);border-top:4px solid #F97316;border-radius:50%;animation:spin 0.8s linear infinite"></div><p style="color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-size:1.1rem;font-weight:600;animation:pulse 1.5s ease-in-out infinite">Tunggu sebentar, anda akan dialihkan ke dashboard...</p>'
+      document.body.appendChild(overlay)
+      requestAnimationFrame(() => overlay.style.opacity = '1')
+      setTimeout(() => { window.location.href = redirectUrl }, 1500)
+    }
+
+    function shakeForm(id) {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.classList.add('shake')
+      setTimeout(() => el.classList.remove('shake'), 500)
     }
 
     async function handleLogin() {
       const email = document.getElementById('loginEmail').value.trim()
       const password = document.getElementById('loginPassword').value
-      if (!email || !password) return showMsg('Isi email dan password.', 'error')
+      if (!email || !password) {
+        shakeForm('loginForm')
+        return showToast('Isi email dan password.', 'error')
+      }
       
       try {
         const data = await login(email, password)
         let profile = await getProfile(data.user.id)
         
         if (!profile) {
-          // UBAH DI SINI: Gunakan supabaseClient, bukan supabase
           await supabaseClient.from('profiles').insert({
             id: data.user.id,
             email: email,
@@ -130,12 +149,12 @@
         }
         
         if (profile && profile.role === 'admin') {
-          pageTransition('admin/index.html')
+          showLoadingOverlay('admin/index.html')
         } else {
-          pageTransition('dashboard.html')
+          showLoadingOverlay('dashboard.html')
         }
       } catch (e) {
-        showMsg(e.message || 'Login gagal. Periksa email dan password.', 'error')
+        showToast(e.message || 'Login gagal. Periksa email dan password.', 'error')
       }
     }
 
@@ -143,17 +162,26 @@
       const name = document.getElementById('regName').value.trim()
       const email = document.getElementById('regEmail').value.trim()
       const password = document.getElementById('regPassword').value
-      if (!name) return showMsg('Isi nama lengkap.', 'error')
-      if (!email) return showMsg('Isi email.', 'error')
-      if (password.length < 6) return showMsg('Password minimal 6 karakter.', 'error')
+      if (!name) {
+        shakeForm('registerForm')
+        return showToast('Isi nama lengkap.', 'error')
+      }
+      if (!email) {
+        shakeForm('registerForm')
+        return showToast('Isi email.', 'error')
+      }
+      if (password.length < 6) {
+        shakeForm('registerForm')
+        return showToast('Password minimal 6 karakter.', 'error')
+      }
       try {
         const data = await register(email, password, name)
         if (!data?.session) {
           await login(email, password)
         }
-        pageTransition('dashboard.html')
+        showLoadingOverlay('dashboard.html')
       } catch (e) {
-        showMsg(e.message || 'Pendaftaran gagal.', 'error')
+        showToast(e.message || 'Pendaftaran gagal.', 'error')
       }
     }
 
