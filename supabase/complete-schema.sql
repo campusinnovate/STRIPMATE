@@ -103,6 +103,7 @@ CREATE TABLE IF NOT EXISTS certificates (
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   trip_id UUID NOT NULL REFERENCES trips(id) ON DELETE CASCADE,
   certificate_number TEXT UNIQUE NOT NULL DEFAULT '',
+  -- CASCADE handled by the FK constraint above
   issued_at TIMESTAMPTZ DEFAULT NOW(),
   file_url TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -172,6 +173,12 @@ CREATE TABLE IF NOT EXISTS payment_channels (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Fix FK constraints to CASCADE (for existing DBs that lack it)
+ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_trip_id_fkey;
+ALTER TABLE bookings ADD CONSTRAINT bookings_trip_id_fkey FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE;
+ALTER TABLE certificates DROP CONSTRAINT IF EXISTS certificates_trip_id_fkey;
+ALTER TABLE certificates ADD CONSTRAINT certificates_trip_id_fkey FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE;
 
 -- Add detail columns to trips for rich trip info
 ALTER TABLE trips ADD COLUMN IF NOT EXISTS location TEXT DEFAULT '';

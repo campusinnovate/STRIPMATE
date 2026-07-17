@@ -127,10 +127,10 @@
     }
 
     async function deleteTrip(id) {
-      if (!confirm('Hapus trip ini?')) return
+      if (!confirm('Hapus trip ini? Semua data booking, pembayaran, e-ticket, dan sertifikat terkait juga akan terhapus.')) return
       const { error } = await supabaseClient.from('trips').delete().eq('id', id)
       if (error) { showToast(error.message, 'error'); return }
-      showToast('Trip berhasil dihapus')
+      showToast('Trip dan semua data terkait berhasil dihapus')
       loadTrips()
     }
 
