@@ -97,10 +97,7 @@
       if (upErr) { showToast(upErr.message, 'error'); return }
       const { error: bkErr } = await supabaseClient.from('bookings').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', bookingId)
       if (bkErr) { showToast(bkErr.message, 'error'); return }
-      const ticketNum = 'TKT-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2,6).toUpperCase()
-      const { error: tktErr } = await supabaseClient.from('e_tickets').insert({ booking_id: bookingId, ticket_number: ticketNum })
-      if (tktErr) { showToast('Pembayaran confirmed, tapi gagal generate e-ticket: ' + tktErr.message, 'error') }
-      showToast('Pembayaran dikonfirmasi! E-ticket: ' + ticketNum, 'success')
+      showToast('Pembayaran dikonfirmasi! E-ticket otomatis dibuat.', 'success')
       loadPayments()
     }
 

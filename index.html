@@ -766,7 +766,10 @@
               <p>${escapeHtml(t.description || '')}</p>
               ${tags.length ? '<div class="dest-tags">' + tags.map(f => '<span>' + escapeHtml(f) + '</span>').join('') + '</div>' : ''}
               ${t.price ? '<p style="font-size:1.15rem;font-weight:800;color:var(--orange);margin:0.5rem 0">' + price + ' <small style="font-size:0.7rem;font-weight:400;color:var(--text-muted)">/org</small></p>' : ''}
-              <button class="btn-book" onclick="openBooking('${t.id}')">Daftar Sekarang</button>
+              <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.3rem">
+                <button class="btn-book" style="flex:1" onclick="openBooking('${t.id}')">Daftar Sekarang</button>
+                <a style="font-size:0.78rem;color:var(--navy);font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:underline" onclick="openTripDetail('${t.slug || t.id}')">Lihat Detail Trip</a>
+              </div>
             </div>
           </div>`
         }).join('')
@@ -938,6 +941,19 @@
       if (trip.status === 'closed') { showToast('Trip ini sudah ditutup. Tidak dapat melakukan booking.', 'error'); bookingBtn.disabled = false; bookingBtn.textContent = 'Lanjut Pembayaran &#10148;'; return }
 
       await updateProfile(user.id, { full_name: nama, school: sekolah, phone: wa, domisili })
+
+      const ktpFile = document.getElementById('bKartuPelajar')
+      if (ktpFile && ktpFile.files && ktpFile.files[0]) {
+        try {
+          const ktpUrl = await uploadFile('payments', ktpFile.files[0], `ktp_${user.id}_${Date.now()}`)
+          await updateProfile(user.id, { ktp_url: ktpUrl })
+        } catch(e) {
+          showToast('Gagal upload kartu pelajar: ' + e.message, 'error')
+          bookingBtn.disabled = false
+          bookingBtn.textContent = 'Lanjut Pembayaran \u10148'
+          return
+        }
+      }
 
       const invoice = generateInvoice()
 

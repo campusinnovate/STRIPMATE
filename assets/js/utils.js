@@ -154,3 +154,47 @@ function downloadCSV(filename, rows) {
   a.click()
   URL.revokeObjectURL(a.href)
 }
+
+;(function initCookieConsent() {
+  if (window.location.pathname.startsWith('/admin/')) return
+  if (localStorage.getItem('stripmate_cookie_consent')) return
+
+  const style = document.createElement('style')
+  style.textContent = `
+    #cookieConsent{position:fixed;bottom:0;left:0;right:0;z-index:9995;background:rgba(15,10,5,0.92);backdrop-filter:blur(10px);color:#fff;padding:1rem 1.5rem;font-size:0.85rem;line-height:1.6;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.75rem;border-top:1px solid rgba(255,255,255,0.08);transform:translateY(100%);transition:transform 0.45s cubic-bezier(0.16,1,0.3,1)}
+    #cookieConsent.show{transform:translateY(0)}
+    #cookieConsent p{flex:1;min-width:200px;margin:0;color:rgba(255,255,255,0.85)}
+    #cookieConsent .cookie-actions{display:flex;gap:0.5rem;flex-shrink:0}
+    #cookieConsent .btn-cookie{padding:0.5rem 1.25rem;border-radius:999px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all.2s;border:none;font-family:inherit}
+    #cookieConsent .btn-accept{background:var(--orange,#F97316);color:#fff}
+    #cookieConsent .btn-accept:hover{background:var(--orange-light,#FB923C)}
+    #cookieConsent .btn-reject{background:transparent;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.2)}
+    #cookieConsent .btn-reject:hover{background:rgba(255,255,255,0.06);color:#fff}
+  `
+  document.head.appendChild(style)
+
+  const banner = document.createElement('div')
+  banner.id = 'cookieConsent'
+  banner.innerHTML = `
+    <p>Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan melanjutkan, Anda menyetujui penggunaan cookie kami.</p>
+    <div class="cookie-actions">
+      <button class="btn-cookie btn-accept" id="cookieAccept">Terima Semua</button>
+      <button class="btn-cookie btn-reject" id="cookieReject">Tolak</button>
+    </div>
+  `
+  document.body.appendChild(banner)
+
+  requestAnimationFrame(() => banner.classList.add('show'))
+
+  document.getElementById('cookieAccept').addEventListener('click', function() {
+    localStorage.setItem('stripmate_cookie_consent', 'accepted')
+    banner.style.transform = 'translateY(100%)'
+    setTimeout(() => banner.remove(), 450)
+  })
+
+  document.getElementById('cookieReject').addEventListener('click', function() {
+    localStorage.setItem('stripmate_cookie_consent', 'rejected')
+    banner.style.transform = 'translateY(100%)'
+    setTimeout(() => banner.remove(), 450)
+  })
+})()

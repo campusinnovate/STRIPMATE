@@ -251,6 +251,26 @@ CREATE TRIGGER trg_check_trip_full
   AFTER INSERT OR UPDATE OF status ON bookings
   FOR EACH ROW EXECUTE FUNCTION check_trip_full();
 
+-- AUTO generate e-ticket when payment is confirmed
+CREATE OR REPLACE FUNCTION auto_generate_e_ticket()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.payment_status = 'paid' AND (OLD.payment_status IS DISTINCT FROM 'paid') THEN
+    INSERT INTO e_tickets (booking_id, ticket_number)
+    VALUES (
+      NEW.id,
+      'TKT-' || upper(substr(md5(random()::text), 1, 8)) || '-' || upper(substr(md5(random()::text), 1, 4))
+    );
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trg_auto_e_ticket ON bookings;
+CREATE TRIGGER trg_auto_e_ticket
+  AFTER UPDATE OF payment_status ON bookings
+  FOR EACH ROW EXECUTE FUNCTION auto_generate_e_ticket();
+
 -- ============================================
 -- 4. RLS POLICIES (idempotent)
 -- ============================================
@@ -342,17 +362,16 @@ DROP POLICY IF EXISTS "testi_insert_admin" ON testimonials; CREATE POLICY "testi
 DROP POLICY IF EXISTS "testi_update_admin" ON testimonials; CREATE POLICY "testi_update_admin" ON testimonials FOR UPDATE USING (public.is_admin());
 DROP POLICY IF EXISTS "testi_delete_admin" ON testimonials; CREATE POLICY "testi_delete_admin" ON testimonials FOR DELETE USING (public.is_admin());
 
--- Create avatars bucket (run once in Supabase Dashboard → Storage)
--- INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT DO NOTHING;
--- CREATE POLICY "avatars_public_select" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
--- CREATE POLICY "avatars_auth_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
--- CREATE POLICY "avatars_own_update" ON storage.objects FOR UPDATE USING (bucket_id = 'avatars' AND owner = auth.uid());
+-- Create storage buckets (run in Supabase SQL Editor)
+INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT DO NOTHING;
+DROP POLICY IF EXISTS "avatars_public_select" ON storage.objects; CREATE POLICY "avatars_public_select" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+DROP POLICY IF EXISTS "avatars_auth_insert" ON storage.objects; CREATE POLICY "avatars_auth_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "avatars_own_update" ON storage.objects; CREATE POLICY "avatars_own_update" ON storage.objects FOR UPDATE USING (bucket_id = 'avatars' AND owner = auth.uid());
 
--- Create payments bucket + policies (proof upload)
--- INSERT INTO storage.buckets (id, name, public) VALUES ('payments', 'payments', true) ON CONFLICT DO NOTHING;
--- CREATE POLICY "payments_public_select" ON storage.objects FOR SELECT USING (bucket_id = 'payments');
--- CREATE POLICY "payments_auth_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'payments' AND auth.role() = 'authenticated');
--- CREATE POLICY "payments_own_update" ON storage.objects FOR UPDATE USING (bucket_id = 'payments' AND owner = auth.uid());
+INSERT INTO storage.buckets (id, name, public) VALUES ('payments', 'payments', true) ON CONFLICT DO NOTHING;
+DROP POLICY IF EXISTS "payments_public_select" ON storage.objects; CREATE POLICY "payments_public_select" ON storage.objects FOR SELECT USING (bucket_id = 'payments');
+DROP POLICY IF EXISTS "payments_auth_insert" ON storage.objects; CREATE POLICY "payments_auth_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'payments' AND auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "payments_own_update" ON storage.objects; CREATE POLICY "payments_own_update" ON storage.objects FOR UPDATE USING (bucket_id = 'payments' AND owner = auth.uid());
 
 -- ============================================
 -- 5. SAMPLE DATA (testing purposes)
