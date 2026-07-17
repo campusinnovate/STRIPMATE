@@ -173,6 +173,16 @@ CREATE TABLE IF NOT EXISTS payment_channels (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add detail columns to trips for rich trip info
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS location TEXT DEFAULT '';
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS height TEXT DEFAULT '';
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS via TEXT DEFAULT '';
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS route TEXT DEFAULT '';
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS estimate TEXT DEFAULT '';
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS rundown JSONB DEFAULT '[]';
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS facilities JSONB DEFAULT '[]';
+ALTER TABLE trips ADD COLUMN IF NOT EXISTS exclude JSONB DEFAULT '[]';
+
 -- Ensure all tables have updated_at column (safe for existing DB that may lack it)
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE trips ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
@@ -336,12 +346,12 @@ DROP POLICY IF EXISTS "testi_delete_admin" ON testimonials; CREATE POLICY "testi
 -- ============================================
 
 -- Sample Trips
-INSERT INTO trips (title, slug, description, meeting_point, date, price, kuota, status, image_url) VALUES
-  ('Gunung Papandayan', 'papandayan', 'Gunung Papandayan (2.665 MDPL) di Garut, Jawa Barat. Dikenal dengan Hutan Mati yang surreal dan sunrise di Tegal Alun.', 'Bogor', '2026-08-15', 369000, 17, 'open', 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80'),
-  ('Gunung Prau', 'prau', 'Gunung Prau (2.565 MDPL) di Dieng. Padang rumput luas di puncak dengan pemandangan 7 gunung.', 'Wonosobo', '2026-09-05', 399000, 20, 'open', 'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=600&q=80'),
-  ('Gunung Bromo', 'bromo', 'Gunung Bromo (2.329 MDPL). Sunrise epic, lautan pasir, dan kawah aktif.', 'Malang', '2026-10-10', 499000, 12, 'open', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'),
-  ('Karimunjawa', 'karimunjawa', 'Karimunjawa, surga tropis dengan pasir putih, snorkeling, dan sunset.', 'Semarang', '2026-07-20', 599000, 15, 'open', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80'),
-  ('Dieng Plateau', 'dieng', 'Dieng Plateau (2.093 MDPL). Candi, kawah, telaga warna, dan golden sunrise.', 'Wonosobo', '2026-08-28', 349000, 20, 'open', 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=600&q=80')
+INSERT INTO trips (title, slug, description, location, meeting_point, date, price, kuota, status, image_url, height, via, route, estimate, rundown, facilities, exclude) VALUES
+  ('Gunung Papandayan', 'papandayan', 'Gunung Papandayan (2.665 MDPL) di Garut, Jawa Barat. Dikenal dengan Hutan Mati yang surreal dan sunrise di Tegal Alun.', 'Garut, Jawa Barat', 'Bogor', '2026-08-15', 369000, 17, 'open', 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80', '2.665 MDPL', 'Travel Elf dari Meeting Point', 'Mulai dari Warung Haur Luwung, tracking 3-4 jam', 'Pendakian 3-4 jam, turun 2-3 jam', '["18.00 - Meeting Point Bogor","18.30 - Berangkat ke Garut","23.00 - Tiba di Basecamp, briefing","00.00 - Mulai pendakian","04.00 - Tiba di Tegal Alun, rest","05.00 - Sunrise & foto","07.00 - Breakfast & explore Hutan Mati","09.00 - Turun","12.00 - Tiba di basecamp, makan","13.00 - Perjalanan pulang","18.00 - Tiba di Bogor"]', '["Transport PP","Tiket masuk","Konsumsi 1x","Dokumentasi","Tour Leader","P3K"]', '["Pengeluaran pribadi","Obat pribadi","Sewa alat"]'),
+  ('Gunung Prau', 'prau', 'Gunung Prau (2.565 MDPL) di Dieng. Padang rumput luas di puncak dengan pemandangan 7 gunung.', 'Dieng, Jawa Tengah', 'Wonosobo', '2026-09-05', 399000, 20, 'open', 'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=600&q=80', '2.565 MDPL', 'Travel Elf dari Meeting Point', 'Mulai dari Patak Banteng, tracking 1.5-2 jam', 'Pendakian 1.5-2 jam (termudah)', '[]', '["Transport PP","Tiket masuk","Konsumsi 1x","Dokumentasi","Tour Leader","P3K"]', '["Pengeluaran pribadi","Obat pribadi","Sewa tenda"]'),
+  ('Gunung Bromo', 'bromo', 'Gunung Bromo (2.329 MDPL). Sunrise epic, lautan pasir, dan kawah aktif.', 'Malang, Jawa Timur', 'Malang', '2026-10-10', 499000, 12, 'open', 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80', '2.329 MDPL', 'Jeep + Travel dari Meeting Point', 'Jeep dari Cemoro Lawang ke lautan pasir, lalu trek singkat ke kawah', 'Full day explore dengan Jeep', '[]', '["Transport PP","Tiket masuk","Sewa Jeep","Konsumsi 1x","Dokumentasi","Tour Leader","P3K"]', '["Pengeluaran pribadi","Obat pribadi","Sewa jaket"]'),
+  ('Karimunjawa', 'karimunjawa', 'Karimunjawa, surga tropis dengan pasir putih, snorkeling, dan sunset.', 'Jepara, Jawa Tengah', 'Semarang', '2026-07-20', 599000, 15, 'open', 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80', '0 MDPL (Pantai)', 'Bus + Ferry dari Meeting Point', 'Dari Semarang naik bus ke Jepara, lalu ferry ke Karimunjawa', '3 hari 2 malam', '[]', '["Transport PP","Tiket ferry","Penginapan 2 malam","Makan 3x","Snorkeling gear","Tour Guide","Dokumentasi"]', '["Pengeluaran pribadi","Obat pribadi","Souvenir"]'),
+  ('Dieng Plateau', 'dieng', 'Dieng Plateau (2.093 MDPL). Candi, kawah, telaga warna, dan golden sunrise.', 'Wonosobo, Jawa Tengah', 'Wonosobo', '2026-08-28', 349000, 20, 'open', 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=600&q=80', '2.093 MDPL', 'Travel Elf dari Meeting Point', 'Mobil dari Wonosobo, explore berbagai spot dengan kendaraan', '2 hari 1 malam (full explore)', '[]', '["Transport PP","Tiket masuk semua spot","Penginapan 1 malam","Makan 2x","Tour Guide","Dokumentasi","P3K"]', '["Pengeluaran pribadi","Obat pribadi","Sewa jaket"]')
 ON CONFLICT (slug) DO NOTHING;
 
 -- Sample Blog Posts

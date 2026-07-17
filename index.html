@@ -78,28 +78,6 @@
     .section-desc{color:var(--text-muted);max-width:600px;font-size:1rem;line-height:1.7;margin-bottom:2.5rem}
 
     .trip-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
-    .trip-card{background:var(--glass-bg);backdrop-filter:blur(12px);border-radius:var(--radius);overflow:hidden;transition:all 0.35s;cursor:pointer;box-shadow:var(--glass-shadow);border:1px solid var(--glass-border)}
-    .trip-card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg);background:rgba(255,255,255,0.9)}
-    .trip-card .thumb-wrap{height:200px;overflow:hidden;position:relative}
-    .trip-card .thumb-wrap img{width:100%;height:100%;object-fit:cover;transition:transform.5s}
-    .trip-card:hover .thumb-wrap img{transform:scale(1.08)}
-    .trip-card .status{position:absolute;top:0.75rem;left:0.75rem;background:var(--green);color:#fff;padding:0.25rem 0.75rem;border-radius:999px;font-size:0.7rem;font-weight:700;letter-spacing:0.02em}
-    .trip-card .status.full{background:var(--text-muted)}
-    .trip-card .status.closed{background:#ef4444}
-    .trip-card.full,.trip-card.closed{opacity:0.7;pointer-events:none}
-    .trip-card.full .btn-book,.trip-card.closed .btn-book,.trip-card.comingsoon .btn-book{background:var(--text-muted);pointer-events:none}
-    .trip-card.comingsoon{opacity:0.8;cursor:default}
-    .trip-card.comingsoon .body{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:180px}
-    .trip-card.comingsoon .body h3{font-size:1.4rem;color:var(--text-muted);margin-bottom:0.2rem}
-    .trip-card.comingsoon .body p{font-size:0.85rem;color:var(--text-muted)}
-    .trip-card.comingsoon .thumb-wrap{filter:grayscale(0.6) brightness(0.7)}
-    .trip-card .body{padding:1.25rem 1.5rem 1.5rem}
-    .trip-card .body h3{font-size:1.15rem;font-weight:700;color:var(--navy);margin-bottom:0.2rem}
-    .trip-card .body .trip-loc{font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem}
-    .trip-card .body .trip-meta{display:flex;flex-direction:column;gap:0.35rem;font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem}
-    .trip-card .body .trip-meta span{display:flex;align-items:center;gap:0.4rem}
-    .trip-card .body .trip-price{font-size:1.25rem;font-weight:800;color:var(--orange);margin-bottom:1rem}
-    .trip-card .body .trip-price small{font-size:0.75rem;font-weight:400;color:var(--text-muted)}
     .btn-book{display:inline-flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.65rem 1.5rem;border-radius:999px;font-weight:700;font-size:0.85rem;border:none;background:var(--orange);color:#fff;cursor:pointer;transition:all.2s;width:100%}
     .btn-book:hover{background:var(--orange-light);box-shadow:0 4px 16px rgba(249,115,22,0.25)}
 
@@ -329,7 +307,7 @@
       <span class="section-label">Upcoming Trip</span>
       <h2 class="section-title">Keberangkatan Terdekat</h2>
       <p class="section-desc">Pilih petualanganmu berikutnya. Slot terbatas, segera booking!</p>
-      <div class="trip-grid" id="tripGrid">
+      <div class="dest-grid" id="tripGrid">
         <div class="loading" style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)">Memuat trip terbaru...</div>
       </div>
     </div>
@@ -385,103 +363,6 @@
           <div class="num">6</div>
           <h3>Ramah di Kantong Pelajar</h3>
           <p>Nikmati pengalaman perjalanan dengan harga yang terjangkau, dilengkapi pilihan DP 50% agar lebih mudah diikuti oleh pelajar dan mahasiswa.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="destinasi" style="background:var(--white)">
-    <div class="container">
-      <span class="section-label">Destinasi</span>
-      <h2 class="section-title">Jelajahi Destinasi Pilihan</h2>
-      <p class="section-desc">Dari gunung hingga pantai, setiap destinasi punya cerita dan tantangannya sendiri.</p>
-      <div class="dest-grid">
-        <div class="dest-card">
-          <div class="thumb">
-            <img src="https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80" alt="Papandayan" loading="lazy"/>
-          </div>
-          <div class="info">
-            <h3>Gunung Papandayan</h3>
-            <p class="dest-loc">&#128205; Garut, Jawa Barat &middot; &#128207; 2.665 MDPL</p>
-            <p>Gunung dengan pemandangan surreal — hutan mati, padang edelweiss, dan sunrise yang magis. Cocok untuk pendaki pemula maupun berpengalaman.</p>
-            <div class="dest-tags">
-              <span>Hutan Mati</span>
-              <span>Tegal Alun</span>
-              <span>Pondok Saladah</span>
-              <span>Sunrise</span>
-              <span>Edelweiss</span>
-            </div>
-            <p class="dest-tips" onclick="openTripDetail('papandayan')">&#128073; Lihat Detail Trip</p>
-          </div>
-        </div>
-        <div class="dest-card">
-          <div class="thumb">
-            <img src="https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=600&q=80" alt="Prau" loading="lazy"/>
-          </div>
-          <div class="info">
-            <h3>Gunung Prau</h3>
-            <p class="dest-loc">&#128205; Dieng, Jawa Tengah &middot; &#128207; 2.565 MDPL</p>
-            <p>Gunung dengan padang rumput luas dan pemandangan 7 gunung sekaligus. Sunrise di sini juara!</p>
-            <div class="dest-tags">
-              <span>Padang Rumput</span>
-              <span>Sunrise</span>
-              <span>7 Puncak</span>
-              <span>Camping</span>
-            </div>
-            <p class="dest-tips" onclick="openTripDetail('prau')">&#128073; Lihat Detail Trip</p>
-          </div>
-        </div>
-        <div class="dest-card">
-          <div class="thumb">
-            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Bromo" loading="lazy"/>
-          </div>
-          <div class="info">
-            <h3>Gunung Bromo</h3>
-            <p class="dest-loc">&#128205; Malang, Jawa Timur &middot; &#128207; 2.329 MDPL</p>
-            <p>Ikon wisata Indonesia dengan lautan pasir dan sunrise epic. Wajib dikunjungi minimal sekali seumur hidup!</p>
-            <div class="dest-tags">
-              <span>Lautan Pasir</span>
-              <span>Sunrise</span>
-              <span>Kawah</span>
-              <span>Bukit Teletubbies</span>
-            </div>
-            <p class="dest-tips" onclick="openTripDetail('bromo')">&#128073; Lihat Detail Trip</p>
-          </div>
-        </div>
-        <div class="dest-card">
-          <div class="thumb">
-            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80" alt="Karimunjawa" loading="lazy"/>
-          </div>
-          <div class="info">
-            <h3>Karimunjawa</h3>
-            <p class="dest-loc">&#128205; Jepara, Jawa Tengah</p>
-            <p>Surga tropis dengan pasir putih, air biru jernih, dan sunset yang romantis. Snorkeling, island hopping, dan santai di pantai.</p>
-            <div class="dest-tags">
-              <span>Snorkeling</span>
-              <span>Island Hopping</span>
-              <span>Sunset</span>
-              <span>Pantai</span>
-            </div>
-            <p class="dest-tips" onclick="openTripDetail('karimunjawa')">&#128073; Lihat Detail Trip</p>
-          </div>
-        </div>
-        <div class="dest-card">
-          <div class="thumb">
-            <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=600&q=80" alt="Dieng" loading="lazy"/>
-          </div>
-          <div class="info">
-            <h3>Dieng Plateau</h3>
-            <p class="dest-loc">&#128205; Wonosobo, Jawa Tengah &middot; &#128207; 2.093 MDPL</p>
-            <p>Dataran tinggi dengan candi kuno, kawah aktif, telaga warna-warni, dan kebun teh yang luas. Surga fotografi!</p>
-            <div class="dest-tags">
-              <span>Candi</span>
-              <span>Kawah</span>
-              <span>Telaga Warna</span>
-              <span>Kebun Teh</span>
-              <span>Golden Sunrise</span>
-            </div>
-            <p class="dest-tips" onclick="openTripDetail('dieng')">&#128073; Lihat Detail Trip</p>
-          </div>
         </div>
       </div>
     </div>
@@ -855,59 +736,6 @@
       { q: 'Apakah ada asuransi?', a: 'Ya, setiap peserta mendapatkan asuransi perjalanan dasar selama trip berlangsung.' }
     ];
 
-    const tripDetails = {
-      papandayan: {
-        title: 'Gunung Papandayan',
-        img: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80',
-        about: 'Gunung Papandayan (2.665 MDPL) terletak di Garut, Jawa Barat. Dikenal dengan Hutan Mati yang surreal, padang Edelweiss yang luas, dan sunrise di Tegal Alun yang magis.',
-        location: 'Garut, Jawa Barat',
-        height: '2.665 MDPL',
-        via: 'Travel Elf dari Meeting Point',
-        route: 'Mulai dari Warung Haur Luwung, tracking 3-4 jam',
-        estimate: 'Pendakian 3-4 jam, turun 2-3 jam',
-        rundown: ['18.00 - Meeting Point Bogor','18.30 - Berangkat ke Garut','23.00 - Tiba di Basecamp, briefing','00.00 - Mulai pendakian','04.00 - Tiba di Tegal Alun, rest','05.00 - Sunrise & foto','07.00 - Breakfast & explore Hutan Mati','09.00 - Turun','12.00 - Tiba di basecamp, makan','13.00 - Perjalanan pulang','18.00 - Tiba di Bogor'],
-        facilities: ['Transport PP','Tiket masuk','Konsumsi 1x','Dokumentasi','Tour Leader','P3K'],
-        exclude: ['Pengeluaran pribadi','Obat pribadi','Sewa alat'],
-        meetingPoint: 'Bogor', kuota: '17 orang', price: 'Rp369.000', status: 'Open Registration'
-      },
-      prau: {
-        title: 'Gunung Prau', img: 'https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=800&q=80',
-        about: 'Gunung Prau (2.565 MDPL) di Dieng, Jawa Tengah, terkenal dengan padang rumput luas di puncaknya dan pemandangan 7 gunung sekaligus.',
-        location: 'Dieng, Jawa Tengah', height: '2.565 MDPL', via: 'Travel Elf dari Meeting Point', route: 'Mulai dari Patak Banteng, tracking 1.5-2 jam',
-        estimate: 'Pendakian 1.5-2 jam (termudah)',
-        facilities: ['Transport PP','Tiket masuk','Konsumsi 1x','Dokumentasi','Tour Leader','P3K'],
-        exclude: ['Pengeluaran pribadi','Obat pribadi','Sewa tenda'],
-        meetingPoint: 'Wonosobo', kuota: '20 orang', price: 'Rp399.000', status: 'Open Registration'
-      },
-      bromo: {
-        title: 'Gunung Bromo', img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',
-        about: 'Gunung Bromo (2.329 MDPL) adalah ikon wisata Indonesia. Nikmati sunrise epic dari Bukit Penanjakan, lautan pasir yang luas, dan kawah aktif yang megah.',
-        location: 'Malang, Jawa Timur', height: '2.329 MDPL', via: 'Jeep + Travel dari Meeting Point', route: 'Jeep dari Cemoro Lawang ke lautan pasir, lalu trek singkat ke kawah',
-        estimate: 'Full day explore dengan Jeep',
-        facilities: ['Transport PP','Tiket masuk','Sewa Jeep','Konsumsi 1x','Dokumentasi','Tour Leader','P3K'],
-        exclude: ['Pengeluaran pribadi','Obat pribadi','Sewa jaket'],
-        meetingPoint: 'Malang', kuota: '12 orang', price: 'Rp499.000', status: 'Open Registration'
-      },
-      karimunjawa: {
-        title: 'Karimunjawa', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80',
-        about: 'Karimunjawa adalah gugusan pulau di Jepara, Jawa Tengah. Surga tropis dengan pasir putih, air biru jernih, snorkeling, dan sunset yang romantis.',
-        location: 'Jepara, Jawa Tengah', height: '0 MDPL (Pantai)', via: 'Bus + Ferry dari Meeting Point',
-        route: 'Dari Semarang naik bus ke Jepara, lalu ferry ke Karimunjawa', estimate: '3 hari 2 malam',
-        facilities: ['Transport PP','Tiket ferry','Penginapan 2 malam','Makan 3x','Snorkeling gear','Tour Guide','Dokumentasi'],
-        exclude: ['Pengeluaran pribadi','Obat pribadi','Souvenir'],
-        meetingPoint: 'Semarang', kuota: '15 orang', price: 'Rp599.000', status: 'Open Registration'
-      },
-      dieng: {
-        title: 'Dieng Plateau', img: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=800&q=80',
-        about: 'Dieng Plateau (2.093 MDPL) di Wonosobo, Jawa Tengah. Dataran tinggi dengan candi Hindu kuno, Kawah Sikidang, Telaga Warna, kebun teh, dan golden sunrise.',
-        location: 'Wonosobo, Jawa Tengah', height: '2.093 MDPL', via: 'Travel Elf dari Meeting Point', route: 'Mobil dari Wonosobo, explore berbagai spot dengan kendaraan',
-        estimate: '2 hari 1 malam (full explore)',
-        facilities: ['Transport PP','Tiket masuk semua spot','Penginapan 1 malam','Makan 2x','Tour Guide','Dokumentasi','P3K'],
-        exclude: ['Pengeluaran pribadi','Obat pribadi','Sewa jaket'],
-        meetingPoint: 'Wonosobo', kuota: '20 orang', price: 'Rp349.000', status: 'Open Registration'
-      }
-    };
-
     function cleanTitle(title) {
       return title.replace(/\s*STRIPMATE\s*$/i, '').replace(/\s*Trip\s*$/i, '').trim()
     }
@@ -926,38 +754,29 @@
         grid.innerHTML = tripsData.map(t => {
           const price = t.price != null && !isNaN(t.price) ? 'Rp' + Number(t.price).toLocaleString('id-ID') : 'Hubungi'
           const img = t.image_url || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80'
-          const date = t.date ? formatDate(t.date) : 'TBD'
-          const status = t.status || 'open'
-          const statusLabel = status === 'open' ? 'Open Registration' : status === 'full' ? 'Full' : status === 'closed' ? 'Closed' : status
-          const isFull = status === 'full'
-          const isClosed = status === 'closed'
-          return `<div class="trip-card ${isFull ? 'full' : ''} ${isClosed ? 'closed' : ''}" onclick="if('${status}'!=='closed')openTripDetail('${t.slug || t.id}')">
-            <div class="thumb-wrap">
+          const tags = (t.facilities || []).slice(0, 5)
+          const locParts = [t.location, t.height].filter(Boolean)
+          return `<div class="dest-card">
+            <div class="thumb">
               <img src="${img}" alt="${escapeHtml(t.title)}" loading="lazy"/>
-              <span class="status ${status}">${statusLabel}</span>
             </div>
-            <div class="body">
+            <div class="info">
               <h3>${escapeHtml(cleanTitle(t.title))}</h3>
-              <p class="trip-loc">${escapeHtml(t.meeting_point || t.location || '')}</p>
-              <div class="trip-meta">
-                <span>&#128197; ${date}</span>
-                <span>&#128205; ${escapeHtml(t.meeting_point || 'TBD')}</span>
-                <span>&#128100; ${t.kuota ? t.kuota + ' orang' : 'Limited'}</span>
-              </div>
-              <div class="trip-price">${price} <small>/org</small></div>
-              <button class="btn-book" onclick="event.stopPropagation();if('${status}'!=='closed')openBooking('${t.id}')">${status === 'closed' ? 'Closed' : 'Book Now'}</button>
+              <p class="dest-loc">${locParts.map(p => escapeHtml(p)).join(' &middot; ')}</p>
+              <p>${escapeHtml(t.description || '')}</p>
+              ${tags.length ? '<div class="dest-tags">' + tags.map(f => '<span>' + escapeHtml(f) + '</span>').join('') + '</div>' : ''}
+              <p class="dest-tips" onclick="openTripDetail('${t.slug || t.id}')">&#128073; Lihat Detail Trip</p>
             </div>
           </div>`
         }).join('')
 
         grid.innerHTML += `
-          <div class="trip-card comingsoon">
-            <div class="thumb-wrap">
-              <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80" alt="Coming Soon" loading="lazy"/>
-              <span class="status closed">Coming Soon</span>
+          <div class="dest-card" style="opacity:0.7;cursor:default">
+            <div class="thumb" style="display:flex;align-items:center;justify-content:center;background:var(--gray-light)">
+              <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&q=80" alt="Coming Soon" loading="lazy" style="height:100%;object-fit:cover"/>
             </div>
-            <div class="body">
-              <h3>&#128680; Coming Soon</h3>
+            <div class="info" style="text-align:center">
+              <h3 style="color:var(--text-muted)">&#128680; Coming Soon</h3>
               <p>Destinasi rahasia sedang dipersiapkan.<br/>Pantau terus info terbarunya!</p>
             </div>
           </div>`
@@ -1015,58 +834,58 @@
       if (!wasOpen) item.classList.add('open');
     }
 
-    function openTripDetail(idOrSlug) {
-      let detail = tripDetails[idOrSlug]
-      let isDbTrip = false
-      if (!detail) {
-        const dbTrip = tripsData.find(t => t.id === idOrSlug || t.slug === idOrSlug)
-        if (dbTrip) {
-          detail = {
-            title: cleanTitle(dbTrip.title),
-            img: dbTrip.image_url || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80',
-            about: dbTrip.description || 'Informasi trip akan segera hadir.',
-            location: dbTrip.location || dbTrip.meeting_point || '',
-            status: dbTrip.status === 'open' ? 'Open Registration' : dbTrip.status,
-            meetingPoint: dbTrip.meeting_point || 'TBD',
-            kuota: dbTrip.kuota ? dbTrip.kuota + ' orang' : 'Limited',
-            price: dbTrip.price != null && !isNaN(dbTrip.price) ? 'Rp' + Number(dbTrip.price).toLocaleString('id-ID') : ''
-          }
-          isDbTrip = true
-        } else {
-          detail = { title: 'Trip Details', about: 'Informasi trip akan segera hadir.' }
-        }
+    async function openTripDetail(idOrSlug) {
+      let t = tripsData.find(x => x.id === idOrSlug || x.slug === idOrSlug)
+      if (!t) {
+        const { data } = await supabaseClient.from('trips').select('*').or(`id.eq.${idOrSlug},slug.eq.${idOrSlug}`).maybeSingle()
+        t = data
       }
+      if (!t) {
+        showToast('Trip tidak ditemukan.', 'error')
+        return
+      }
+      const title = cleanTitle(t.title)
+      const img = t.image_url || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80'
+      const statusLabel = t.status === 'open' ? 'Open Registration' : t.status === 'full' ? 'Full' : t.status === 'closed' ? 'Closed' : t.status
+      const price = t.price != null && !isNaN(t.price) ? 'Rp' + Number(t.price).toLocaleString('id-ID') : ''
+      const kuota = t.kuota ? t.kuota + ' orang' : 'Limited'
+      const meetingPoint = t.meeting_point || 'Informasi menyusul'
+      const rundown = Array.isArray(t.rundown) ? t.rundown : []
+      const facilities = Array.isArray(t.facilities) ? t.facilities : []
+      const exclude = Array.isArray(t.exclude) ? t.exclude : []
+
       let rundownHtml = ''
-      if (detail.rundown) {
+      if (rundown.length > 0) {
         rundownHtml = '<h3 style="font-size:1rem;color:var(--navy);margin:1rem 0 0.4rem">Rundown</h3><ul style="padding-left:1.25rem;font-size:0.88rem;color:var(--text-muted);line-height:1.7">' +
-          detail.rundown.map(r => `<li>${r}</li>`).join('') + '</ul>'
+          rundown.map(r => `<li>${escapeHtml(r)}</li>`).join('') + '</ul>'
       }
+
       document.getElementById('tripModalContent').innerHTML = `
-        <div class="trip-detail-hero"><img src="${detail.img || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80'}" alt="${escapeHtml(detail.title || 'Trip')}"/></div>
-        <h2>${escapeHtml(detail.title || 'Trip Details')}</h2>
+        <div class="trip-detail-hero"><img src="${img}" alt="${escapeHtml(title)}"/></div>
+        <h2>${escapeHtml(title)}</h2>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem">
-          <span style="background:rgba(45,106,79,0.08);color:var(--green);padding:0.2rem 0.6rem;border-radius:999px;font-size:0.75rem;font-weight:600">${detail.status || 'Open'}</span>
-          <span style="background:rgba(27,42,74,0.06);color:var(--navy);padding:0.2rem 0.6rem;border-radius:999px;font-size:0.75rem;font-weight:600">&#128205; ${escapeHtml(detail.meetingPoint || 'TBD')}</span>
-          <span style="background:rgba(249,115,22,0.08);color:var(--orange);padding:0.2rem 0.6rem;border-radius:999px;font-size:0.75rem;font-weight:600">&#128100; ${detail.kuota || 'Limited'}</span>
+          <span style="background:rgba(45,106,79,0.08);color:var(--green);padding:0.2rem 0.6rem;border-radius:999px;font-size:0.75rem;font-weight:600">${statusLabel}</span>
+          <span style="background:rgba(27,42,74,0.06);color:var(--navy);padding:0.2rem 0.6rem;border-radius:999px;font-size:0.75rem;font-weight:600">&#128205; ${escapeHtml(meetingPoint)}</span>
+          <span style="background:rgba(249,115,22,0.08);color:var(--orange);padding:0.2rem 0.6rem;border-radius:999px;font-size:0.75rem;font-weight:600">&#128100; ${kuota}</span>
         </div>
         <div class="modal-section">
           <h3>Tentang Trip</h3>
-          <p>${detail.about || 'Informasi trip akan segera hadir.'}</p>
+          <p>${escapeHtml(t.description || 'Informasi trip akan segera hadir.')}</p>
         </div>
-        ${detail.location ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem;font-size:0.88rem;color:var(--text-muted)">
-          <span><strong>Lokasi:</strong> ${escapeHtml(detail.location)}</span>
-          ${detail.via ? `<span><strong>Via:</strong> ${detail.via}</span>` : ''}
-          ${detail.height ? `<span><strong>Ketinggian:</strong> ${detail.height}</span>` : ''}
-          ${detail.route ? `<span><strong>Jalur:</strong> ${detail.route}</span>` : ''}
-          ${detail.estimate ? `<span><strong>Estimasi:</strong> ${detail.estimate}</span>` : ''}
+        ${t.location ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem;font-size:0.88rem;color:var(--text-muted)">
+          <span><strong>Lokasi:</strong> ${escapeHtml(t.location)}</span>
+          ${t.via ? `<span><strong>Via:</strong> ${escapeHtml(t.via)}</span>` : ''}
+          ${t.height ? `<span><strong>Ketinggian:</strong> ${escapeHtml(t.height)}</span>` : ''}
+          ${t.route ? `<span><strong>Jalur:</strong> ${escapeHtml(t.route)}</span>` : ''}
+          ${t.estimate ? `<span><strong>Estimasi:</strong> ${escapeHtml(t.estimate)}</span>` : ''}
         </div>` : ''}
         ${rundownHtml}
-        ${detail.facilities ? `<div class="modal-section"><h3>Fasilitas</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem">${detail.facilities.map(f => `<span style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;color:var(--text-muted)"><span style="color:var(--green)">&#10003;</span> ${f}</span>`).join('')}</div></div>` : ''}
-        ${detail.exclude ? `<div class="modal-section"><h3>Tidak Termasuk</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem">${detail.exclude.map(f => `<span style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;color:var(--text-muted)"><span style="color:var(--text-muted)">&#10007;</span> ${f}</span>`).join('')}</div></div>` : ''}
-        <div class="modal-section"><h3>Meeting Point</h3><p>&#128205; ${escapeHtml(detail.meetingPoint || 'Informasi menyusul')} (lokasi detail akan dikirim H-1 via grup WhatsApp)</p></div>
+        ${facilities.length ? `<div class="modal-section"><h3>Fasilitas</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem">${facilities.map(f => `<span style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;color:var(--text-muted)"><span style="color:var(--green)">&#10003;</span> ${escapeHtml(f)}</span>`).join('')}</div></div>` : ''}
+        ${exclude.length ? `<div class="modal-section"><h3>Tidak Termasuk</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem">${exclude.map(f => `<span style="display:flex;align-items:center;gap:0.3rem;font-size:0.85rem;color:var(--text-muted)"><span style="color:var(--text-muted)">&#10007;</span> ${escapeHtml(f)}</span>`).join('')}</div></div>` : ''}
+        <div class="modal-section"><h3>Meeting Point</h3><p>&#128205; ${escapeHtml(meetingPoint)} (lokasi detail akan dikirim H-1 via grup WhatsApp)</p></div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--gray)">
-          <span style="font-size:1.3rem;font-weight:800;color:var(--orange)">${detail.price || ''} <small style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">/org</small></span>
-          <button class="btn-book" style="width:auto" onclick="closeModal('tripModal');openBooking('${idOrSlug}')">Book Now</button>
+          <span style="font-size:1.3rem;font-weight:800;color:var(--orange)">${price} <small style="font-size:0.75rem;font-weight:400;color:var(--text-muted)">/org</small></span>
+          <button class="btn-book" style="width:auto" onclick="closeModal('tripModal');openBooking('${t.id}')">Book Now</button>
         </div>
       `
       document.getElementById('tripModal').classList.add('open')
@@ -1220,7 +1039,7 @@
     loadTestimonials()
     loadPaymentChannels()
 
-    gsap.utils.toArray('.trip-card, .dest-card, .value-item, .testi-card, .corporate-item, .private-item').forEach(el => {
+    gsap.utils.toArray('.dest-card, .value-item, .testi-card, .corporate-item, .private-item').forEach(el => {
       gsap.from(el, {
         opacity: 0, y: 40, duration: 0.7, ease: 'power3.out',
         scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none reverse' },

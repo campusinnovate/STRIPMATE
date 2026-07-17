@@ -41,6 +41,12 @@
       <div class="form-row"><div class="form-group"><label>Kuota</label><input type="number" id="tKuota" /></div><div class="form-group"><label>Meeting Point</label><input type="text" id="tMeeting" /></div></div>
       <div class="form-row"><div class="form-group"><label>Status</label><select id="tStatus"><option value="open">Open</option><option value="closed">Closed</option><option value="full">Full</option></select></div><div class="form-group"><label>Image URL</label><input type="url" id="tImage" placeholder="https://..." /></div></div>
       <div class="form-group"><label>Description</label><textarea id="tDesc" rows="3"></textarea></div>
+      <div class="form-row"><div class="form-group"><label>Location</label><input type="text" id="tLocation" placeholder="Garut, Jawa Barat" /></div><div class="form-group"><label>Height</label><input type="text" id="tHeight" placeholder="2.665 MDPL" /></div></div>
+      <div class="form-row"><div class="form-group"><label>Via</label><input type="text" id="tVia" placeholder="Travel Elf dari Meeting Point" /></div><div class="form-group"><label>Estimate</label><input type="text" id="tEstimate" placeholder="Pendakian 3-4 jam" /></div></div>
+      <div class="form-group"><label>Route</label><textarea id="tRoute" rows="2" placeholder="Jalur pendakian..."></textarea></div>
+      <div class="form-group"><label>Facilities (1 per baris)</label><textarea id="tFacilities" rows="3" placeholder="Transport PP&#10;Tiket masuk&#10;Tour Leader"></textarea></div>
+      <div class="form-group"><label>Exclude / Tidak Termasuk (1 per baris)</label><textarea id="tExclude" rows="2" placeholder="Pengeluaran pribadi&#10;Sewa alat"></textarea></div>
+      <div class="form-group"><label>Rundown / Jadwal (1 per baris)</label><textarea id="tRundown" rows="4" placeholder="18.00 - Meeting Point&#10;18.30 - Berangkat"></textarea></div>
       <div style="display:flex;gap:0.5rem;margin-top:1rem">
         <button type="submit" class="btn btn-primary" id="tripSaveBtn">Simpan</button>
         <button type="button" class="btn btn-secondary" onclick="closeTripModal()">Batal</button>
@@ -64,7 +70,7 @@
       if (error) { showToast(error.message, 'error'); return }
       document.getElementById('tripTable').innerHTML = (data || []).map(t => `
         <tr>
-          <td><strong>${escapeHtml(t.title)}</strong></td>
+          <td><strong>${escapeHtml(t.title)}</strong><br/><span style="font-size:0.75rem;color:var(--text-muted)">${escapeHtml(t.location || '')}</span></td>
           <td>${t.date || '-'}</td>
           <td>${formatCurrency(t.price)}</td>
           <td>${t.kuota || '-'}</td>
@@ -96,6 +102,14 @@
         document.getElementById('tStatus').value = data.status || 'open'
         document.getElementById('tImage').value = data.image_url || ''
         document.getElementById('tDesc').value = data.description || ''
+        document.getElementById('tLocation').value = data.location || ''
+        document.getElementById('tHeight').value = data.height || ''
+        document.getElementById('tVia').value = data.via || ''
+        document.getElementById('tEstimate').value = data.estimate || ''
+        document.getElementById('tRoute').value = data.route || ''
+        document.getElementById('tFacilities').value = (data.facilities || []).join('\n')
+        document.getElementById('tExclude').value = (data.exclude || []).join('\n')
+        document.getElementById('tRundown').value = (data.rundown || []).join('\n')
       } else {
         title.textContent = 'Tambah Trip'
       }
@@ -120,6 +134,10 @@
       loadTrips()
     }
 
+    function splitLines(val) {
+      return val.split('\n').map(s => s.trim()).filter(Boolean)
+    }
+
     async function saveTrip(e) {
       e.preventDefault()
       const id = document.getElementById('tripId').value
@@ -132,7 +150,15 @@
         meeting_point: document.getElementById('tMeeting').value,
         status: document.getElementById('tStatus').value,
         image_url: document.getElementById('tImage').value,
-        description: document.getElementById('tDesc').value
+        description: document.getElementById('tDesc').value,
+        location: document.getElementById('tLocation').value,
+        height: document.getElementById('tHeight').value,
+        via: document.getElementById('tVia').value,
+        estimate: document.getElementById('tEstimate').value,
+        route: document.getElementById('tRoute').value,
+        facilities: splitLines(document.getElementById('tFacilities').value),
+        exclude: splitLines(document.getElementById('tExclude').value),
+        rundown: splitLines(document.getElementById('tRundown').value)
       }
       const { error } = id
         ? await supabaseClient.from('trips').update(data).eq('id', id)
