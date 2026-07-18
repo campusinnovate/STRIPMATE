@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>STRIPMATE — Student Trip Organizer</title>
+  <title>STRIPMATE | Student Trip Organizer</title>
+  <link rel="icon" type="image/png" href="STRIPMATELOGO.png">
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -173,6 +174,7 @@
     .contact-item:nth-child(3) .icon{background:rgba(27,42,74,0.1)}
     .contact-item:nth-child(4) .icon{background:rgba(45,106,79,0.1)}
     .contact-item:nth-child(5) .icon{background:rgba(249,115,22,0.1)}
+    .contact-item:nth-child(6) .icon{background:rgba(27,42,74,0.1)}
     .contact-item .detail h4{font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.15rem}
     .contact-item .detail p{font-size:0.83rem;color:var(--text-muted)}
     .contact-map{border-radius:var(--radius-sm);overflow:hidden;box-shadow:var(--shadow);height:100%;min-height:300px}
@@ -220,12 +222,18 @@
     .btn-submit{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.85rem 2rem;border-radius:999px;font-weight:700;font-size:0.9rem;border:none;background:var(--orange);color:#fff;cursor:pointer;transition:all.2s;width:100%;margin-top:0.5rem}
     .btn-submit:hover{background:var(--orange-light);box-shadow:0 4px 20px rgba(249,115,22,0.25)}
 
+    .payment-total{background:linear-gradient(135deg,rgba(249,115,22,0.08),rgba(45,106,79,0.06));border:1px solid rgba(249,115,22,0.2);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-bottom:1rem;text-align:center}
+    .payment-total .label{font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+    .payment-total .amount{font-size:1.5rem;font-weight:800;color:var(--orange);font-family:'Plus Jakarta Sans',sans-serif}
+    .payment-total .trip-name{font-size:0.82rem;color:var(--navy);font-weight:600;margin-top:0.15rem}
+
     .payment-options{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1rem 0}
     .payment-opt{padding:1rem;border:2px solid var(--gray);border-radius:var(--radius-sm);text-align:center;cursor:pointer;transition:all.2s;font-weight:600;font-size:0.88rem;color:var(--text-muted);background:var(--white)}
     .payment-opt:hover,.payment-opt.active{border-color:var(--orange);color:var(--orange);background:rgba(249,115,22,0.04)}
     .payment-detail{display:none;padding:1rem;background:var(--cream);border-radius:var(--radius-sm);margin:0.75rem 0;font-size:0.88rem;color:var(--text-muted)}
     .payment-detail.show{display:block}
     .payment-detail strong{color:var(--navy)}
+    .payment-detail .pd-amount{display:block;margin-top:0.5rem;padding-top:0.5rem;border-top:1px dashed rgba(0,0,0,0.1);font-size:1rem;font-weight:800;color:var(--orange)}
     .upload-area{border:2px dashed var(--gray);border-radius:var(--radius-sm);padding:1.5rem;text-align:center;cursor:pointer;transition:all.2s;margin:0.75rem 0}
     .upload-area:hover{border-color:var(--orange);background:rgba(249,115,22,0.04)}
     .upload-area input{display:none}
@@ -385,7 +393,7 @@
             <li>Hunting Bareng</li>
             <li>Networking</li>
           </ul>
-          <button class="btn-community" onclick="window.open('https://wa.me/6281234567890?text=Halo%20STRIPMATE%2C%20saya%20mau%20join%20community!','_blank')">Join Community &#10148;</button>
+          <button class="btn-community" onclick="window.open('https://chat.whatsapp.com/Evt9fPwjYAUAZX4h8RXO2n','_blank')">Join Community &#10148;</button>
         </div>
         <div class="image-wrap" style="border-radius:var(--radius);overflow:hidden;height:400px">
           <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80" alt="Community" loading="lazy" style="width:100%;height:100%;object-fit:cover"/>
@@ -409,7 +417,7 @@
       </div>
       <p style="text-align:center;color:var(--text-muted);margin:1.5rem 0 0.5rem;font-size:0.9rem">Contoh kegiatan: Leadership Camp, Makrab, Family Gathering, Company Outing, Study Tour, Field Trip, Camping</p>
       <div style="text-align:center">
-        <button class="btn-private" onclick="window.open('https://wa.me/6281234567890?text=Halo%20STRIPMATE%2C%20saya%20mau%20request%20proposal%20private%20trip!','_blank')">Request Proposal &#10148;</button>
+        <button class="btn-private" onclick="window.open('https://wa.me/6289647188725?text=Halo%20STRIPMATE%2C%20saya%20mau%20request%20proposal%20private%20trip!','_blank')">Request Proposal &#10148;</button>
       </div>
     </div>
   </section>
@@ -427,7 +435,7 @@
         <div class="corporate-item"><h4>Company Gathering</h4><p>Team building dan refreshing untuk karyawan</p></div>
       </div>
       <div style="text-align:center;margin-top:1.5rem">
-        <button class="btn-private" onclick="window.open('https://wa.me/6281234567890?text=Halo%20STRIPMATE%2C%20saya%20mau%20konsultasi%20program%20trip%20institusi!','_blank')">Konsultasi Sekarang &#10148;</button>
+        <button class="btn-private" onclick="window.open('https://wa.me/6289647188725?text=Halo%20STRIPMATE%2C%20saya%20mau%20konsultasi%20program%20trip%20institusi!','_blank')">Konsultasi Sekarang &#10148;</button>
       </div>
     </div>
   </section>
@@ -569,9 +577,13 @@
       <p class="section-desc">Punya pertanyaan atau mau konsultasi? Langsung aja chat atau datang ke basecamp kami.</p>
       <div class="contact-grid">
         <div class="contact-info">
-          <a href="https://wa.me/6281234567890" target="_blank" class="contact-item">
+          <a href="https://wa.me/6289647188725" target="_blank" class="contact-item">
             <div class="icon">&#128242;</div>
-            <div class="detail"><h4>WhatsApp</h4><p>+62 812-3456-7890</p></div>
+            <div class="detail"><h4>WhatsApp Admin 1</h4><p>+62 896-4718-8725</p></div>
+          </a>
+          <a href="https://wa.me/6285559070165" target="_blank" class="contact-item">
+            <div class="icon">&#128242;</div>
+            <div class="detail"><h4>WhatsApp Admin 2</h4><p>+62 855-5907-0165</p></div>
           </a>
           <a href="https://instagram.com/stripamate" target="_blank" class="contact-item">
             <div class="icon">&#128247;</div>
@@ -587,7 +599,7 @@
           </a>
           <div class="contact-item">
             <div class="icon">&#128205;</div>
-            <div class="detail"><h4>Alamat</h4><p>Jl. Petualangan No. 42, Jakarta</p><p style="font-size:0.78rem">Senin - Jumat: 09.00 - 18.00</p></div>
+            <div class="detail"><h4>Alamat</h4><p>Jl Duta Berlian, Kedungbadak, Tanah Sereal, Kota Bogor, Jawa Barat 16164</p><p style="font-size:0.78rem">Senin - Jumat: 09.00 - 18.00</p></div>
           </div>
         </div>
         <div class="contact-map">
@@ -606,14 +618,14 @@
           <div class="social">
             <a href="https://instagram.com/stripamate" target="_blank">IG</a>
             <a href="https://tiktok.com/@stripamate" target="_blank">TT</a>
-            <a href="https://wa.me/6281234567890" target="_blank">WA</a>
+            <a href="https://wa.me/6289647188725" target="_blank">WA</a>
             <a href="mailto:halo@stripamate.com">@</a>
           </div>
         </div>
         <div><h4>Quick Links</h4><ul><li><a href="#upcoming">Upcoming Trip</a></li><li><a href="#destinasi">Destinasi</a></li><li><a href="#community">Community</a></li><li><a href="#gallery">Galeri</a></li><li><a href="#faq">FAQ</a></li><li><a href="blog.html">Blog</a></li></ul></div>
         <div><h4>Info</h4><ul><li><a href="#tnc">Syarat & Ketentuan</a></li><li><a href="#tnc">Kebijakan Privasi</a></li><li><a href="#tnc">Refund Policy</a></li><li><a href="media-center.html">Media Center</a></li><li><a href="#media">Media Kit</a></li><li><a href="#private">Become Partner</a></li></ul></div>
         <div><h4>Program</h4><ul><li><a href="#private">Private Trip</a></li><li><a href="#corporate">Corporate Trip</a></li><li><a href="#community">Community</a></li><li><a href="#upcoming">Open Trip</a></li><li><a href="login.html">Member Login</a></li></ul></div>
-        <div><h4>Kontak</h4><ul><li><a href="https://wa.me/6281234567890">WhatsApp</a></li><li><a href="https://instagram.com/stripamate">Instagram</a></li><li><a href="https://tiktok.com/@stripamate">TikTok</a></li><li><a href="mailto:halo@stripamate.com">Email</a></li></ul></div>
+        <div><h4>Kontak</h4><ul><li><a href="https://wa.me/6289647188725">WhatsApp Admin 1</a></li><li><a href="https://wa.me/6285559070165">WhatsApp Admin 2</a></li><li><a href="https://instagram.com/stripamate">Instagram</a></li><li><a href="https://tiktok.com/@stripamate">TikTok</a></li><li><a href="mailto:halo@stripamate.com">Email</a></li></ul></div>
       </div>
       <div class="bottom">&copy; 2026 STRIPMATE. All rights reserved. | Student Trip Organizer</div>
     </div>
@@ -686,6 +698,11 @@
       <button class="modal-close" onclick="closeModal('paymentModal')">&times;</button>
       <h2>Pilih Metode Pembayaran</h2>
       <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem">Pilih metode yang paling nyaman buat kamu.</p>
+      <div class="payment-total" id="paymentTotal">
+        <div class="label">Total Pembayaran</div>
+        <div class="amount" id="paymentTotalAmount">Rp0</div>
+        <div class="trip-name" id="paymentTotalTrip"></div>
+      </div>
       <div class="payment-options" id="paymentOptions"></div>
       <div class="payment-detail" id="payDetail"></div>
       <div class="upload-area">
@@ -740,6 +757,12 @@
       return title.replace(/\s*STRIPMATE\s*$/i, '').replace(/\s*Trip\s*$/i, '').trim()
     }
 
+    function formatRupiah(n) {
+      const num = Number(n)
+      if (isNaN(num)) return 'Rp0'
+      return 'Rp' + num.toLocaleString('id-ID')
+    }
+
     async function loadTrips() {
       const grid = document.getElementById('tripGrid')
       const select = document.getElementById('bTrip')
@@ -752,7 +775,7 @@
           return
         }
         grid.innerHTML = tripsData.map(t => {
-          const price = t.price != null && !isNaN(t.price) ? 'Rp' + Number(t.price).toLocaleString('id-ID') : 'Hubungi'
+          const price = t.price != null && !isNaN(t.price) ? formatRupiah(t.price) : 'Hubungi'
           const img = t.image_url || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=600&q=80'
           const tags = (t.facilities || []).slice(0, 5)
           const locParts = [t.location, t.height].filter(Boolean)
@@ -786,7 +809,7 @@
           </div>`
 
         select.innerHTML = '<option value="">-- Pilih Trip --</option>' +
-          tripsData.map(t => `<option value="${t.id}">${escapeHtml(cleanTitle(t.title))} ${t.price ? '- Rp' + Number(t.price).toLocaleString('id-ID') : ''}</option>`).join('')
+          tripsData.map(t => `<option value="${t.id}">${escapeHtml(cleanTitle(t.title))} ${t.price ? '- ' + formatRupiah(t.price) : ''}</option>`).join('')
       } catch(e) {
         grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)">Gagal memuat data trip. Coba refresh halaman.</p>'
         console.error('loadTrips error:', e)
@@ -851,7 +874,7 @@
       const title = cleanTitle(t.title)
       const img = t.image_url || 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80'
       const statusLabel = t.status === 'open' ? 'Open Registration' : t.status === 'full' ? 'Full' : t.status === 'closed' ? 'Closed' : t.status
-      const price = t.price != null && !isNaN(t.price) ? 'Rp' + Number(t.price).toLocaleString('id-ID') : ''
+      const price = t.price != null && !isNaN(t.price) ? formatRupiah(t.price) : ''
       const kuota = t.kuota ? t.kuota + ' orang' : 'Limited'
       const meetingPoint = t.meeting_point || 'Informasi menyusul'
       const rundown = Array.isArray(t.rundown) ? t.rundown : []
@@ -912,6 +935,10 @@
       document.getElementById(id).classList.remove('open')
     }
 
+    // Menyimpan harga trip yang sedang dibooking, dipakai untuk menampilkan total tagihan di modal pembayaran
+    window._pendingTripPrice = 0
+    window._pendingTripName = ''
+
     async function handleBooking(e) {
       e.preventDefault()
 
@@ -971,6 +998,15 @@
 
       window._pendingBookingId = booking?.id
       window._pendingInvoice = invoice
+      window._pendingTripPrice = price
+      window._pendingTripName = cleanTitle(trip.title)
+
+      // Tampilkan total tagihan di modal pembayaran
+      document.getElementById('paymentTotalAmount').textContent = formatRupiah(price)
+      document.getElementById('paymentTotalTrip').textContent = 'untuk trip ' + window._pendingTripName
+      document.querySelectorAll('.payment-opt').forEach(o => o.classList.remove('active'))
+      document.getElementById('payDetail').classList.remove('show')
+      document.getElementById('payDetail').innerHTML = ''
 
       closeModal('bookingModal')
       document.getElementById('paymentModal').classList.add('open')
@@ -998,13 +1034,15 @@
       el.classList.add('active')
       const channel = paymentChannels.find(c => c.id === el.dataset.channelId)
       const detail = document.getElementById('payDetail')
+      const amountLine = `<span class="pd-amount">Total yang harus dibayar: ${formatRupiah(window._pendingTripPrice || 0)}</span>`
       if (channel) {
-        detail.innerHTML = channel.account_number
+        detail.innerHTML = (channel.account_number
           ? `<strong>${channel.name}</strong><br/>a.n. ${channel.account_name || '-'}<br/>No. Rek: ${channel.account_number}`
-          : `<strong>${channel.name}</strong><br/>${channel.account_name || ''}`
+          : `<strong>${channel.name}</strong><br/>${channel.account_name || ''}`) + amountLine
         detail.classList.add('show')
       } else {
-        detail.classList.remove('show')
+        detail.innerHTML = amountLine
+        detail.classList.add('show')
       }
     }
 
@@ -1043,10 +1081,7 @@
 
       const { error: payError } = await supabaseClient.from('payments').insert({
         booking_id: window._pendingBookingId,
-        amount: (() => {
-          const trip = tripsData.find(t => t.id === document.getElementById('bTrip').value)
-          return trip && trip.price != null && !isNaN(trip.price) ? Number(trip.price) : 0
-        })(),
+        amount: window._pendingTripPrice || 0,
         method: method,
         status: 'pending',
         proof_url: proofUrl
@@ -1063,6 +1098,8 @@
       document.getElementById('invoiceNum').textContent = window._pendingInvoice || ''
       document.getElementById('confirmModal').classList.add('open')
       window._pendingBookingId = null
+      window._pendingTripPrice = 0
+      window._pendingTripName = ''
     }
 
     document.getElementById('hamburger').addEventListener('click', () => {
