@@ -1,6 +1,6 @@
 function initWhatsApp() {
   const btn = document.createElement('a')
-  btn.href = 'https://wa.me/6281234567890?text=Halo%20STRIPMATE%2C%20saya%20mau%20tanya%20trip!'
+  btn.href = 'https://wa.me/6289647188725?text=Halo%20STRIPMATE%2C%20saya%20mau%20tanya%20trip!'
   btn.target = '_blank'
   btn.rel = 'noopener'
   btn.setAttribute('aria-label', 'Chat WhatsApp')
