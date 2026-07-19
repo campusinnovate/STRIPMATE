@@ -13,8 +13,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STRIPMATE - Blog</title>
-  <link rel="icon" type="image/png" href="STRIPMATELOGO.png">
   <meta name="description" content="Baca artikel menarik dari STRIPMATE." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://stripmate.id/blog-post.html" />
+  <link rel="icon" type="image/png" href="STRIPMATELOGO.png" />
+  <link rel="apple-touch-icon" href="STRIPMATELOGO.png" />
+  <meta property="og:title" content="STRIPMATE - Blog" />
+  <meta property="og:description" content="Baca artikel menarik dari STRIPMATE." />
+  <meta property="og:image" content="https://stripmate.id/STRIPMATELOGO.png" />
+  <meta property="og:url" content="https://stripmate.id/blog-post.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="id_ID" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="STRIPMATE - Blog" />
+  <meta name="twitter:description" content="Baca artikel menarik dari STRIPMATE." />
+  <meta name="twitter:image" content="https://stripmate.id/STRIPMATELOGO.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -105,6 +118,35 @@
       document.title = `${escapeHtml(post.title)} - STRIPMATE`
       const meta = document.querySelector('meta[name="description"]')
       if (meta) meta.content = post.excerpt || ''
+      const ogTitle = document.querySelector('meta[property="og:title"]')
+      const ogDesc = document.querySelector('meta[property="og:description"]')
+      const ogImg = document.querySelector('meta[property="og:image"]')
+      const ogUrl = document.querySelector('meta[property="og:url"]')
+      const twTitle = document.querySelector('meta[name="twitter:title"]')
+      const twDesc = document.querySelector('meta[name="twitter:description"]')
+      if (ogTitle) ogTitle.content = `${escapeHtml(post.title)} - STRIPMATE`
+      if (ogDesc) ogDesc.content = post.excerpt || ''
+      if (ogImg) ogImg.content = post.image_url || 'https://stripmate.id/STRIPMATELOGO.png'
+      if (ogUrl) ogUrl.content = `https://stripmate.id/blog-post.html?slug=${post.slug}`
+      if (twTitle) twTitle.content = `${escapeHtml(post.title)} - STRIPMATE`
+      if (twDesc) twDesc.content = post.excerpt || ''
+
+      const existingLD = document.getElementById('ldArticle')
+      if (existingLD) existingLD.remove()
+      const ld = document.createElement('script')
+      ld.id = 'ldArticle'
+      ld.type = 'application/ld+json'
+      ld.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": post.title,
+        "description": post.excerpt || '',
+        "image": post.image_url || 'https://stripmate.id/STRIPMATELOGO.png',
+        "author": { "@type": "Person", "name": post.author || 'STRIPMATE' },
+        "datePublished": post.published_at || post.created_at,
+        "publisher": { "@type": "Organization", "name": "STRIPMATE", "logo": { "@type": "ImageObject", "url": "https://stripmate.id/STRIPMATELOGO.png" } }
+      })
+      document.head.appendChild(ld)
 
       document.getElementById('loadingPost').style.display = 'none'
       const container = document.getElementById('postContent')

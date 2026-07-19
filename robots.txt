@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard.html
+Disallow: /login.html
+Disallow: /invoice.html
+
+Sitemap: https://stripmate.id/sitemap.xml

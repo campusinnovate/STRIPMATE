@@ -13,7 +13,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>STRIPMATE | Student Trip Organizer</title>
-  <link rel="icon" type="image/png" href="STRIPMATELOGO.png">
+  <meta name="description" content="STRIPMATE — student trip organizer untuk pelajar dan mahasiswa Indonesia. Open trip gunung, pendakian, dan perjalanan seru dengan harga terjangkau. Join petualanganmu sekarang!" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://stripmate.id/" />
+  <link rel="icon" type="image/png" href="STRIPMATELOGO.png" />
+  <link rel="apple-touch-icon" href="STRIPMATELOGO.png" />
+  <meta property="og:title" content="STRIPMATE | Student Trip Organizer" />
+  <meta property="og:description" content="STRIPMATE — student trip organizer untuk pelajar dan mahasiswa Indonesia. Open trip gunung, pendakian, dan perjalanan seru dengan harga terjangkau." />
+  <meta property="og:image" content="https://stripmate.id/STRIPMATELOGO.png" />
+  <meta property="og:url" content="https://stripmate.id/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="id_ID" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="STRIPMATE | Student Trip Organizer" />
+  <meta name="twitter:description" content="STRIPMATE — student trip organizer untuk pelajar dan mahasiswa Indonesia. Open trip gunung, pendakian, dan perjalanan seru." />
+  <meta name="twitter:image" content="https://stripmate.id/STRIPMATELOGO.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -23,6 +37,92 @@
   <script src="/assets/js/utils.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/whatsapp.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "STRIPMATE",
+    "url": "https://stripmate.id/",
+    "logo": "https://stripmate.id/STRIPMATELOGO.png",
+    "description": "Student trip organizer untuk pelajar dan mahasiswa Indonesia. Menyediakan open trip gunung, pendakian, dan perjalanan seru.",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+62-896-4718-8725",
+      "contactType": "customer service",
+      "availableLanguage": ["Indonesian"]
+    },
+    "sameAs": [
+      "https://www.instagram.com/stripmate.id/",
+      "https://www.tiktok.com/@stripmate.id",
+      "https://wa.me/6289647188725"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "STRIPMATE",
+    "url": "https://stripmate.id/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://stripmate.id/blog.html?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": "Apa itu STRIPMATE?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "STRIPMATE adalah student trip organizer yang menyediakan open trip gunung, pendakian, dan perjalanan seru untuk pelajar dan mahasiswa Indonesia dengan harga terjangkau."
+      }
+    }, {
+      "@type": "Question",
+      "name": "Bagaimana cara mendaftar trip?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kamu bisa mendaftar trip melalui website stripmate.id dengan memilih trip yang tersedia, melakukan pendaftaran, dan menyelesaikan pembayaran DP atau lunas."
+      }
+    }, {
+      "@type": "Question",
+      "name": "Apakah STRIPMATE menyediakan trip privat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ya, STRIPMATE menyediakan trip privat untuk kelompok, komunitas, dan institusi seperti sekolah dan universitas. Hubungi kami melalui WhatsApp untuk info lebih lanjut."
+      }
+    }, {
+      "@type": "Question",
+      "name": "Apa saja yang termasuk dalam paket trip?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Paket trip biasanya mencakup transportasi PP, tiket masuk, konsumsi, dokumentasi, tour leader, dan P3K. Detail lengkap ada di halaman setiap trip."
+      }
+    }, {
+      "@type": "Question",
+      "name": "Bagaimana sistem pembayarannya?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kami menyediakan sistem pembayaran DP dan pelunasan. Pembayaran dapat dilakukan melalui transfer bank, QRIS, virtual account, atau e-wallet."
+      }
+    }, {
+      "@type": "Question",
+      "name": "Apakah ada sertifikat setelah trip?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ya, setiap peserta akan mendapatkan sertifikat elektronik setelah menyelesaikan trip sebagai bukti partisipasi."
+      }
+    }]
+  }
+  </script>
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root {
@@ -305,7 +405,8 @@
     })()
   </script>
 
-  <section id="hero">
+  <main>
+    <section id="hero">
     <div class="bg" id="heroBg"></div>
     <div class="overlay"></div>
     <div class="container">
@@ -455,14 +556,14 @@
       <h2 class="section-title">Momen Perjalanan</h2>
       <p class="section-desc">Cuplikan petualangan STRIPMATE dari berbagai destinasi. Instagram: @stripamate</p>
       <div class="gallery-grid">
-        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=80" alt="" loading="lazy"/>
-        <img src="https://images.unsplash.com/photo-1522163182402-834f871fd851?w=500&q=80" alt="" loading="lazy"/>
-        <img src="https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=500&q=80" alt="" loading="lazy"/>
-        <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=500&q=80" alt="" loading="lazy"/>
-        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500&q=80" alt="" loading="lazy"/>
-        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80" alt="" loading="lazy"/>
-        <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=500&q=80" alt="" loading="lazy"/>
-        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&q=80" alt="" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=80" alt="Sunrise di Gunung Bromo bersama STRIPMATE" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1522163182402-834f871fd851?w=500&q=80" alt="Pendakian Gunung Papandayan bersama STRIPMATE" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=500&q=80" alt="Puncak Gunung Prau dengan latar pegunungan" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=500&q=80" alt="Telaga Warna Dieng bersama STRIPMATE" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500&q=80" alt="Petualangan pendakian gunung bersama STRIPMATE" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=80" alt="Pantai Karimunjawa bersama STRIPMATE" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=500&q=80" alt="Hiking bersama teman-teman STRIPMATE" loading="lazy"/>
+        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=500&q=80" alt="Peserta STRIPMATE menikmati pemandangan" loading="lazy"/>
       </div>
     </div>
   </section>
@@ -554,19 +655,19 @@
       <p class="section-desc">Punya pertanyaan atau mau konsultasi? Langsung aja chat atau datang ke basecamp kami.</p>
       <div class="contact-grid">
         <div class="contact-info">
-          <a href="https://wa.me/6289647188725" target="_blank" class="contact-item">
+          <a href="https://wa.me/6289647188725" target="_blank" rel="noopener noreferrer" class="contact-item">
             <div class="icon">&#128242;</div>
             <div class="detail"><h4>WhatsApp Admin 1</h4><p>+62 896-4718-8725</p></div>
           </a>
-          <a href="https://wa.me/6285559070165" target="_blank" class="contact-item">
+          <a href="https://wa.me/6285559070165" target="_blank" rel="noopener noreferrer" class="contact-item">
             <div class="icon">&#128242;</div>
             <div class="detail"><h4>WhatsApp Admin 2</h4><p>+62 855-5907-0165</p></div>
           </a>
-          <a href="https://instagram.com/stripamate" target="_blank" class="contact-item">
+          <a href="https://instagram.com/stripamate" target="_blank" rel="noopener noreferrer" class="contact-item">
             <div class="icon">&#128247;</div>
             <div class="detail"><h4>Instagram</h4><p>@stripamate</p></div>
           </a>
-          <a href="https://tiktok.com/@stripamate" target="_blank" class="contact-item">
+          <a href="https://tiktok.com/@stripamate" target="_blank" rel="noopener noreferrer" class="contact-item">
             <div class="icon">&#127911;</div>
             <div class="detail"><h4>TikTok</h4><p>@stripamate</p></div>
           </a>
@@ -585,6 +686,7 @@
       </div>
     </div>
   </section>
+  </main>
 
   <footer>
     <div class="container">
@@ -593,9 +695,9 @@
           <a href="#" class="logo"><img src="Logo stripmate.png" alt="STRIPMATE" style="height:32px;width:auto;vertical-align:middle;filter:brightness(0) invert(1)"/></a>
           <p>Student Trip Organizer yang menghadirkan pengalaman perjalanan, pertemanan, dan cerita baru untuk pelajar & mahasiswa.</p>
           <div class="social">
-            <a href="https://instagram.com/stripamate" target="_blank">IG</a>
-            <a href="https://tiktok.com/@stripamate" target="_blank">TT</a>
-            <a href="https://wa.me/6289647188725" target="_blank">WA</a>
+            <a href="https://instagram.com/stripamate" target="_blank" rel="noopener noreferrer" aria-label="Instagram STRIPMATE">IG</a>
+            <a href="https://tiktok.com/@stripamate" target="_blank" rel="noopener noreferrer" aria-label="TikTok STRIPMATE">TT</a>
+            <a href="https://wa.me/6289647188725" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp STRIPMATE">WA</a>
             <a href="mailto:halo@stripamate.com">@</a>
           </div>
         </div>
