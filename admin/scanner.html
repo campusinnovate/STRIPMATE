@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/assets/css/admin.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/dist/html5-qrcode.min.js"></script>
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
@@ -153,6 +153,10 @@
 
     async function startScanner() {
       try {
+        if (typeof Html5Qrcode === 'undefined') {
+          showToast('Library scanner gagal dimuat. Refresh halaman dan coba lagi.', 'error')
+          return
+        }
         if (!html5QrCode) {
           html5QrCode = new Html5Qrcode("reader")
         }
@@ -183,11 +187,11 @@
       }
     }
 
-    function onScanSuccess(decodedText) {
+    async function onScanSuccess(decodedText) {
       if (!isScanning) return
       navigator.vibrate && navigator.vibrate(200)
       stopScanner()
-      lookupTicket(decodedText.trim())
+      await lookupTicket(decodedText.trim())
     }
 
     function onScanFailure(err) {

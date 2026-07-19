@@ -482,7 +482,6 @@ th.sortable.desc::after{content:'\2193';opacity:1}
   position:relative;overflow:hidden;border-radius:var(--radius-sm);
   background:var(--navy);min-height:320px;
   border:2px dashed rgba(249,115,22,0.3);
-  display:flex;align-items:center;justify-content:center;
   transition:border-color 0.3s
 }
 .scanner-viewfinder.active{border-color:var(--orange)}
@@ -502,6 +501,7 @@ th.sortable.desc::after{content:'\2193';opacity:1}
 .scanner-viewfinder .scan-region::after{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 6px 0 0}
 .scanner-viewfinder .scan-corner-br::before{content:'';position:absolute;bottom:-2px;left:-2px;width:24px;height:24px;border-color:var(--orange);border-style:solid;border-width:0 0 3px 3px;border-radius:0 0 0 6px}
 .scanner-viewfinder .scan-corner-br::after{content:'';position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;border-color:var(--orange);border-style:solid;border-width:0 3px 3px 0;border-radius:0 0 6px 0}
+#reader{position:absolute;inset:0;width:100%;height:100%}
 .scanner-result-card{
   background:var(--glass-bg);backdrop-filter:blur(12px);
   border-radius:var(--radius-sm);padding:1.25rem;
