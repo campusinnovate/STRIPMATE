@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
+  <script>(function(){var t=sessionStorage.getItem('_goto');if(t){sessionStorage.removeItem('_goto');history.replaceState(null,'','/'+t)}else{var p=location.pathname;if(p!=='/'&&p.slice(-5)==='.html')history.replaceState(null,'',p.slice(0,-5))}})()</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Admin Dashboard - STRIPMATE</title>
@@ -52,7 +53,7 @@
           <div style="font-size:2.5rem;margin-bottom:0.5rem">📷</div>
           <h3 style="margin-bottom:0.25rem">Scan Tiket Peserta</h3>
           <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">Gunakan kamera untuk scan QR code e-tiket peserta</p>
-          <a href="/admin/scanner.html" class="btn btn-primary btn-lg">Buka Scanner</a>
+          <a href="/admin/scanner" class="btn btn-primary btn-lg">Buka Scanner</a>
         </div>
       </div>
     </main>
@@ -81,16 +82,16 @@
         const activeTickets = totalTickets - scannedTickets
 
         document.getElementById('statCards').innerHTML = `
-          <a href="/admin/participants.html" class="stat-card"><div class="label">Total Peserta</div><div class="value">${users.count || 0}</div></a>
-          <a href="/admin/bookings.html" class="stat-card"><div class="label">Total Booking</div><div class="value">${bookings.count || 0}</div></a>
-          <a href="/admin/payment-channels.html" class="stat-card"><div class="label">Channel Aktif</div><div class="value">${channels.count || 0}</div></a>
-          <a href="/admin/calendar.html" class="stat-card"><div class="label">Revenue</div><div class="value">${formatCurrency(payments.data ? payments.data.reduce((s, p) => s + (p.amount || 0), 0) : 0)}</div></a>
+          <a href="/admin/participants" class="stat-card"><div class="label">Total Peserta</div><div class="value">${users.count || 0}</div></a>
+          <a href="/admin/bookings" class="stat-card"><div class="label">Total Booking</div><div class="value">${bookings.count || 0}</div></a>
+          <a href="/admin/payment-channels" class="stat-card"><div class="label">Channel Aktif</div><div class="value">${channels.count || 0}</div></a>
+          <a href="/admin/calendar" class="stat-card"><div class="label">Revenue</div><div class="value">${formatCurrency(payments.data ? payments.data.reduce((s, p) => s + (p.amount || 0), 0) : 0)}</div></a>
         `
 
         document.getElementById('ticketStatCards').innerHTML = `
-          <a href="/admin/scanner.html" class="stat-card"><div class="label">Total E-Ticket</div><div class="value">${totalTickets}</div></a>
-          <a href="/admin/scanner.html" class="stat-card"><div class="label">Sudah Scan</div><div class="value">${scannedTickets}</div><div class="sub">${totalTickets > 0 ? Math.round(scannedTickets/totalTickets*100) : 0}% dari total</div></a>
-          <a href="/admin/scanner.html" class="stat-card"><div class="label">Belum Scan</div><div class="value">${activeTickets}</div><div class="sub">Siap diverifikasi</div></a>
+          <a href="/admin/scanner" class="stat-card"><div class="label">Total E-Ticket</div><div class="value">${totalTickets}</div></a>
+          <a href="/admin/scanner" class="stat-card"><div class="label">Sudah Scan</div><div class="value">${scannedTickets}</div><div class="sub">${totalTickets > 0 ? Math.round(scannedTickets/totalTickets*100) : 0}% dari total</div></a>
+          <a href="/admin/scanner" class="stat-card"><div class="label">Belum Scan</div><div class="value">${activeTickets}</div><div class="sub">Siap diverifikasi</div></a>
         `
 
         const recentB = document.getElementById('recentBookings')

@@ -12,6 +12,7 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=sessionStorage.getItem('_goto');if(t){sessionStorage.removeItem('_goto');history.replaceState(null,'','/'+t)}else{var p=location.pathname;if(p!=='/'&&p.slice(-5)==='.html')history.replaceState(null,'',p.slice(0,-5))}})()</script>
   <title>Dashboard - STRIPMATE</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" type="image/png" href="STRIPMATELOGO.png" />
@@ -328,10 +329,10 @@
   <header class="dash-header">
     <div class="contour-bg"></div>
     <div class="container">
-      <a href="index.html" class="logo"><img src="Logo stripmate.png" alt="STRIPMATE"/></a>
+      <a href="/" class="logo"><img src="Logo stripmate.png" alt="STRIPMATE"/></a>
       <div class="nav-right">
-        <a href="index.html">Beranda</a>
-        <a href="blog.html">Blog</a>
+        <a href="/">Beranda</a>
+        <a href="/blog">Blog</a>
         <button class="logout-btn" onclick="handleLogout()">Logout</button>
       </div>
     </div>
@@ -484,7 +485,7 @@
       if (error) { showToast('Gagal memuat data trip.', 'error'); return showError(container, 'Gagal memuat data.') }
       bookingsCache = bookings || []
       if (!bookings || bookings.length === 0) {
-        return showEmpty(container, '<div class="icon">🏔️</div>Belum ada trip yang kamu ikuti. <a href="index.html#upcoming" style="color:var(--ember)">Lihat trip tersedia &rarr;</a>')
+        return showEmpty(container, '<div class="icon">🏔️</div>Belum ada trip yang kamu ikuti. <a href="/#upcoming" style="color:var(--ember)">Lihat trip tersedia &rarr;</a>')
       }
       updateStats()
       container.innerHTML = bookings.map(b => `
@@ -556,7 +557,7 @@
           </div>
           <div class="right">
             <div class="price" style="margin-bottom:0.4rem">${formatCurrency(b.total_amount)}</div>
-            <a href="/invoice.html?invoice=${b.invoice_number}" target="_blank" class="btn btn-outline btn-sm">Download</a>
+            <a href="/invoice?invoice=${b.invoice_number}" target="_blank" class="btn btn-outline btn-sm">Download</a>
           </div>
         </div>
       `).join('')
@@ -747,7 +748,7 @@
         return
       }
       container.innerHTML = posts.map(p => `
-        <a href="blog-post.html?slug=${p.slug}" class="blog-card">
+        <a href="/blog/${p.slug}" class="blog-card">
           <div class="thumb"><img src="${p.image_url || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300&q=80'}" alt=""/></div>
           <div class="info">
             <h4>${escapeHtml(p.title)}</h4>

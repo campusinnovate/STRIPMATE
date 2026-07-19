@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecting... - STRIPMATE</title>
+  <style>
+    body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#FBF4E8;font-family:system-ui,sans-serif;color:#16202E}
+    .spinner{width:32px;height:32px;border:3px solid rgba(20,32,51,0.1);border-top-color:#F2661C;border-radius:50%;animation:s .7s linear infinite;margin:0 auto 1rem}
+    @keyframes s{to{transform:rotate(360deg)}}
+    p{font-size:0.9rem;color:#8B95A6}
+  </style>
+</head>
+<body>
+  <div style="text-align:center">
+    <div class="spinner"></div>
+    <p>Mengarahkan...</p>
+  </div>
+  <script>
+    (function() {
+      var path = location.pathname.replace(/^\//, '')
+      if (!path || path.match(/\.\w+$/) || path === '') return
+
+      var segments = path.split('/')
+      var first = segments[0]
+
+      var simplePages = ['dashboard', 'login', 'invoice', 'blog', 'media-center',
+        'admin', 'admin/trips', 'admin/bookings', 'admin/payments',
+        'admin/participants', 'admin/scanner', 'admin/calendar',
+        'admin/payment-channels', 'admin/blog', 'admin/media', 'admin/testimonials']
+
+      if (simplePages.indexOf(path) !== -1) {
+        sessionStorage.setItem('_goto', path)
+        location.replace('/' + path + '.html')
+        return
+      }
+
+      if (first === 'blog' && segments.length > 1) {
+        var slug = segments.slice(1).join('/')
+        sessionStorage.setItem('_goto', 'blog/' + slug)
+        location.replace('/blog-post.html?slug=' + encodeURIComponent(slug))
+        return
+      }
+    })()
+  </script>
+</body>
+</html>

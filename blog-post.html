@@ -12,6 +12,7 @@
 </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){var t=sessionStorage.getItem('_goto');if(t){sessionStorage.removeItem('_goto');history.replaceState(null,'','/'+t)}else{var p=location.pathname;if(p!=='/'&&p.slice(-5)==='.html')history.replaceState(null,'',p.slice(0,-5))}})()</script>
   <title>STRIPMATE - Blog</title>
   <meta name="description" content="Baca artikel menarik dari STRIPMATE." />
   <meta name="robots" content="index, follow" />
@@ -85,14 +86,14 @@
 <body>
   <nav>
     <div class="container">
-      <a href="index.html" class="logo" onclick="pageTransition(this.href);return false"><img src="Logo stripmate.png" alt="STRIPMATE" style="height:32px;width:auto;display:block"/></a>
-      <a href="blog.html" onclick="pageTransition(this.href);return false">Blog</a>
+      <a href="/" class="logo" onclick="pageTransition(this.href);return false"><img src="Logo stripmate.png" alt="STRIPMATE" style="height:32px;width:auto;display:block"/></a>
+      <a href="/blog" onclick="pageTransition(this.href);return false">Blog</a>
     </div>
   </nav>
 
   <main>
     <div class="container">
-      <a href="blog.html" class="back-link" onclick="pageTransition(this.href);return false">&larr; Kembali ke Blog</a>
+      <a href="/blog" class="back-link" onclick="pageTransition(this.href);return false">&larr; Kembali ke Blog</a>
       <div id="loadingPost" class="loading"><div class="spinner"></div><p>Memuat artikel...</p></div>
       <article id="postContent" style="display:none"></article>
     </div>
@@ -115,9 +116,13 @@
         document.getElementById('loadingPost').innerHTML = '<p>Artikel tidak ditemukan.</p>'
         return
       }
+      const cleanUrl = `/blog/${post.slug}`
+      history.replaceState(null, '', cleanUrl)
       document.title = `${escapeHtml(post.title)} - STRIPMATE`
       const meta = document.querySelector('meta[name="description"]')
       if (meta) meta.content = post.excerpt || ''
+      const canonical = document.querySelector('link[rel="canonical"]')
+      if (canonical) canonical.href = `https://stripmate.id${cleanUrl}`
       const ogTitle = document.querySelector('meta[property="og:title"]')
       const ogDesc = document.querySelector('meta[property="og:description"]')
       const ogImg = document.querySelector('meta[property="og:image"]')
@@ -127,7 +132,7 @@
       if (ogTitle) ogTitle.content = `${escapeHtml(post.title)} - STRIPMATE`
       if (ogDesc) ogDesc.content = post.excerpt || ''
       if (ogImg) ogImg.content = post.image_url || 'https://stripmate.id/STRIPMATELOGO.png'
-      if (ogUrl) ogUrl.content = `https://stripmate.id/blog-post.html?slug=${post.slug}`
+      if (ogUrl) ogUrl.content = `https://stripmate.id${cleanUrl}`
       if (twTitle) twTitle.content = `${escapeHtml(post.title)} - STRIPMATE`
       if (twDesc) twDesc.content = post.excerpt || ''
 
