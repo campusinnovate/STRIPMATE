@@ -94,6 +94,8 @@ CREATE TABLE IF NOT EXISTS e_tickets (
   ticket_number TEXT UNIQUE NOT NULL DEFAULT '',
   issued_at TIMESTAMPTZ DEFAULT NOW(),
   qr_url TEXT DEFAULT '',
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'scanned')),
+  scanned_at TIMESTAMPTZ DEFAULT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -198,6 +200,11 @@ ALTER TABLE bookings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW
 ALTER TABLE payments ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE e_tickets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- E-Ticket status tracking columns (v2 migration)
+ALTER TABLE e_tickets ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active' CHECK (status IN ('active', 'scanned'));
+ALTER TABLE e_tickets ADD COLUMN IF NOT EXISTS scanned_at TIMESTAMPTZ DEFAULT NULL;
+UPDATE e_tickets SET status = 'active' WHERE status IS NULL;
 ALTER TABLE certificates ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE merchandise ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE media_assets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
@@ -330,6 +337,7 @@ DROP POLICY IF EXISTS "blog_delete_admin" ON blog_posts; CREATE POLICY "blog_del
 ALTER TABLE e_tickets ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "tickets_select_own" ON e_tickets; CREATE POLICY "tickets_select_own" ON e_tickets FOR SELECT USING (booking_id IN (SELECT id FROM bookings WHERE user_id = auth.uid()));
 DROP POLICY IF EXISTS "tickets_select_admin" ON e_tickets; CREATE POLICY "tickets_select_admin" ON e_tickets FOR SELECT USING (public.is_admin());
+DROP POLICY IF EXISTS "tickets_update_admin" ON e_tickets; CREATE POLICY "tickets_update_admin" ON e_tickets FOR UPDATE USING (public.is_admin());
 
 -- CERTIFICATES
 ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;

@@ -9,6 +9,7 @@ const ADMIN_SIDEBAR = [
   { page: 'blog', label: 'Blog', icon: '📰', href: '/admin/blog.html' },
   { page: 'media', label: 'Media', icon: '📷', href: '/admin/media.html' },
   { page: 'testimonials', label: 'Testimonials', icon: '💬', href: '/admin/testimonials.html' },
+  { page: 'scanner', label: 'Scanner', icon: '📷', href: '/admin/scanner.html' },
 ]
 
 function injectSidebar(activePage) {

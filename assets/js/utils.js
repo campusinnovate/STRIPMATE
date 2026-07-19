@@ -73,6 +73,14 @@ function getStatusBadge(status) {
   return map[status] || `<span class="badge badge-pending">${status}</span>`
 }
 
+function getTicketStatusBadge(status) {
+  const badges = {
+    active: '<span class="badge badge-paid">Active</span>',
+    scanned: '<span class="badge badge-secondary">Scanned</span>'
+  }
+  return badges[status] || `<span class="badge badge-pending">${status}</span>`
+}
+
 function showToast(message, type = 'success') {
   const existing = document.querySelector('.toast-global')
   if (existing) existing.remove()

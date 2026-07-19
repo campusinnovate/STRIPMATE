@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Scanner E-Ticket - STRIPMATE Admin</title>
+  <link rel="icon" type="image/png" href="STRIPMATELOGO.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="/assets/js/supabase-client.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/utils.js"></script>
+  <script src="/assets/js/whatsapp.js"></script>
+  <script>const PAGE = 'scanner'</script>
+  <script src="/assets/js/admin.js" defer></script>
+</head>
+<body>
+  <div class="admin-body">
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="logo"><img src="../Logo stripmate.png" alt="STRIPMATE"/></div>
+      <nav></nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Scanner E-Ticket</h1>
+        <div class="user-info" id="adminInfo">Loading...</div>
+      </div>
+
+      <div class="scanner-wrap">
+        <div class="scanner-col">
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="scanner-viewfinder" id="viewfinder">
+              <div class="overlay-text" id="placeholderText">
+                <span class="icon">📷</span>
+                <span>Aktifkan kamera untuk memulai scan</span>
+              </div>
+              <div class="scan-region" id="scanRegion">
+                <div class="scan-corner-br"></div>
+              </div>
+              <div id="reader" style="width:100%;height:100%"></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+            <button class="btn btn-primary" id="startBtn" onclick="startScanner()">
+              &#9654; Mulai Kamera
+            </button>
+            <button class="btn btn-secondary" id="stopBtn" onclick="stopScanner()" style="display:none">
+              &#9632; Hentikan Kamera
+            </button>
+          </div>
+
+          <div class="card" style="margin-top:0.5rem">
+            <h3>Input Manual</h3>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.75rem">Masukkan nomor tiket jika kamera tidak berfungsi</p>
+            <div class="scanner-manual-input">
+              <input type="text" id="manualTicket" placeholder="Contoh: TKT-ABCD1234-EFGH" />
+              <button class="btn btn-primary" onclick="lookupManual()">Cari</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Log Scan Sesi Ini</h3>
+            <div class="scanner-session-log" id="sessionLog">
+              <p style="color:var(--text-muted);font-size:0.85rem">Belum ada scan</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="scanner-col">
+          <div class="scanner-result-card" id="resultCard" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+              <h3 style="margin-bottom:0">Hasil Scan</h3>
+              <div id="resultStatus"></div>
+            </div>
+            <div class="info-row"><span class="label">Nomor Tiket</span><span class="value mono" id="rTicket">-</span></div>
+            <div class="info-row"><span class="label">Peserta</span><span class="value" id="rName">-</span></div>
+            <div class="info-row"><span class="label">Trip</span><span class="value" id="rTrip">-</span></div>
+            <div class="info-row"><span class="label">Invoice</span><span class="value mono" id="rInvoice">-</span></div>
+            <div class="info-row"><span class="label">Tanggal Terbit</span><span class="value" id="rIssued">-</span></div>
+            <div class="info-row"><span class="label">Status</span><span class="value" id="rStatus">-</span></div>
+
+            <div id="scanActionArea" style="margin-top:1rem;display:none">
+              <button class="btn btn-green btn-lg w-full" id="scanBtn" onclick="markAsScanned()">
+                &#10003; Tandai Sudah Scan
+              </button>
+              <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.35rem;text-align:center">
+                Tiket akan ditandai sebagai <strong>scanned</strong> dan tidak dapat digunakan lagi
+              </p>
+            </div>
+
+            <div id="alreadyScannedArea" style="margin-top:1rem;display:none">
+              <div style="padding:1rem;text-align:center;background:rgba(148,163,184,0.1);border-radius:0.5rem">
+                <div style="font-size:2rem;margin-bottom:0.35rem">&#10004;</div>
+                <p style="font-size:0.9rem;font-weight:600;color:var(--text-muted)">Tiket sudah di-scan sebelumnya</p>
+                <p style="font-size:0.8rem;color:var(--text-muted)">Status tidak perlu diubah lagi</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="quickStatsCard">
+            <h3>Statistik Cepat</h3>
+            <div id="quickStats"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let html5QrCode = null
+    let isScanning = false
+    let currentTicketId = null
+    let sessionLog = []
+    let scanCallbackRegistered = false
+
+    async function init() {
+      const session = await requireAdmin()
+      if (!session) return
+      injectSidebar(PAGE)
+      document.getElementById('adminInfo').textContent = session.profile.full_name || 'Admin'
+      loadQuickStats()
+    }
+
+    async function loadQuickStats() {
+      const { data: tickets } = await supabaseClient
+        .from('e_tickets')
+        .select('status')
+      if (!tickets) return
+      const total = tickets.length
+      const scanned = tickets.filter(t => t.status === 'scanned').length
+      const active = total - scanned
+      document.getElementById('quickStats').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem">
+          <div style="text-align:center;padding:0.75rem;background:rgba(45,106,79,0.08);border-radius:0.5rem">
+            <div style="font-size:1.3rem;font-weight:800;color:var(--green)">${total}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted)">Total</div>
+          </div>
+          <div style="text-align:center;padding:0.75rem;background:rgba(249,115,22,0.08);border-radius:0.5rem">
+            <div style="font-size:1.3rem;font-weight:800;color:var(--orange)">${active}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted)">Active</div>
+          </div>
+          <div style="text-align:center;padding:0.75rem;background:rgba(27,42,74,0.06);border-radius:0.5rem">
+            <div style="font-size:1.3rem;font-weight:800;color:var(--navy)">${scanned}</div>
+            <div style="font-size:0.72rem;color:var(--text-muted)">Scanned</div>
+          </div>
+        </div>
+      `
+    }
+
+    async function startScanner() {
+      try {
+        if (!html5QrCode) {
+          html5QrCode = new Html5Qrcode("reader")
+        }
+        document.getElementById('startBtn').style.display = 'none'
+        document.getElementById('stopBtn').style.display = ''
+        document.getElementById('viewfinder').classList.add('active')
+        document.getElementById('placeholderText').style.display = 'none'
+        isScanning = true
+
+        const config = {
+          fps: 10,
+          qrbox: { width: 220, height: 220 },
+          aspectRatio: 1.0
+        }
+
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          config,
+          onScanSuccess,
+          onScanFailure
+        )
+      } catch (err) {
+        showToast('Gagal mengakses kamera: ' + err.message, 'error')
+        document.getElementById('startBtn').style.display = ''
+        document.getElementById('stopBtn').style.display = 'none'
+        document.getElementById('viewfinder').classList.remove('active')
+        isScanning = false
+      }
+    }
+
+    function onScanSuccess(decodedText) {
+      if (!isScanning) return
+      navigator.vibrate && navigator.vibrate(200)
+      stopScanner()
+      lookupTicket(decodedText.trim())
+    }
+
+    function onScanFailure(err) {
+      // ignore continuous scan errors
+    }
+
+    function stopScanner() {
+      isScanning = false
+      if (html5QrCode) {
+        try { html5QrCode.stop() } catch(e) {}
+      }
+      document.getElementById('startBtn').style.display = ''
+      document.getElementById('stopBtn').style.display = 'none'
+      document.getElementById('viewfinder').classList.remove('active')
+    }
+
+    async function lookupManual() {
+      const input = document.getElementById('manualTicket').value.trim()
+      if (!input) {
+        showToast('Masukkan nomor tiket terlebih dahulu', 'info')
+        return
+      }
+      lookupTicket(input)
+    }
+
+    async function lookupTicket(ticketNumber) {
+      const resultCard = document.getElementById('resultCard')
+      resultCard.style.display = 'none'
+      document.getElementById('scanActionArea').style.display = 'none'
+      document.getElementById('alreadyScannedArea').style.display = 'none'
+
+      const { data: tickets, error } = await supabaseClient
+        .from('e_tickets')
+        .select('*, bookings:booking_id(invoice_number, user_id, trips:trips(title))')
+        .eq('ticket_number', ticketNumber)
+        .limit(1)
+
+      if (error || !tickets || tickets.length === 0) {
+        showToast('Tiket tidak ditemukan: ' + ticketNumber, 'error')
+        addLog(ticketNumber, 'Tidak ditemukan', 'error')
+        return
+      }
+
+      const ticket = tickets[0]
+
+      let userName = '-'
+      if (ticket.bookings?.user_id) {
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('full_name')
+          .eq('id', ticket.bookings.user_id)
+          .single()
+        if (profile) userName = profile.full_name
+      }
+
+      currentTicketId = ticket.id
+      document.getElementById('rTicket').textContent = ticket.ticket_number
+      document.getElementById('rName').textContent = userName
+      document.getElementById('rTrip').textContent = ticket.bookings?.trips?.title || '-'
+      document.getElementById('rInvoice').textContent = ticket.bookings?.invoice_number || '-'
+      document.getElementById('rIssued').textContent = ticket.issued_at ? formatDate(ticket.issued_at) : '-'
+      document.getElementById('rStatus').innerHTML = getTicketStatusBadge(ticket.status)
+
+      if (ticket.status === 'scanned') {
+        document.getElementById('resultStatus').innerHTML = '<span class="badge badge-secondary">Sudah Scan</span>'
+        document.getElementById('scanActionArea').style.display = 'none'
+        document.getElementById('alreadyScannedArea').style.display = 'block'
+        addLog(ticket.ticket_number, 'Sudah scan sebelumnya', 'info')
+      } else {
+        document.getElementById('resultStatus').innerHTML = '<span class="badge badge-paid">Siap Scan</span>'
+        document.getElementById('scanActionArea').style.display = 'block'
+        document.getElementById('alreadyScannedArea').style.display = 'none'
+        addLog(ticket.ticket_number, 'Menunggu verifikasi', 'pending')
+      }
+
+      resultCard.style.display = 'block'
+    }
+
+    async function markAsScanned() {
+      if (!currentTicketId) return
+
+      const btn = document.getElementById('scanBtn')
+      btn.disabled = true
+      btn.textContent = 'Memproses...'
+
+      const { error } = await supabaseClient
+        .from('e_tickets')
+        .update({
+          status: 'scanned',
+          scanned_at: new Date().toISOString()
+        })
+        .eq('id', currentTicketId)
+
+      btn.disabled = false
+      btn.textContent = '\u2713 Tandai Sudah Scan'
+
+      if (error) {
+        showToast('Gagal update tiket: ' + error.message, 'error')
+        return
+      }
+
+      showToast('Tiket berhasil di-scan!', 'success')
+      document.getElementById('scanActionArea').style.display = 'none'
+      document.getElementById('alreadyScannedArea').style.display = 'block'
+      document.getElementById('alreadyScannedArea').querySelector('p:first-of-type').textContent = '\u2714 Tiket berhasil diverifikasi!'
+      document.getElementById('alreadyScannedArea').querySelector('p:first-of-type').style.color = 'var(--green)'
+      document.getElementById('rStatus').innerHTML = getTicketStatusBadge('scanned')
+
+      addLog(
+        document.getElementById('rTicket').textContent,
+        'Scan berhasil',
+        'success',
+        document.getElementById('rName').textContent
+      )
+
+      loadQuickStats()
+      currentTicketId = null
+    }
+
+    function addLog(ticketNumber, status, type, name) {
+      const container = document.getElementById('sessionLog')
+      const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      const badgeClass = type === 'success' ? 'badge badge-paid' : type === 'error' ? 'badge badge-cancelled' : 'badge badge-pending'
+
+      if (container.querySelector('p') && sessionLog.length === 0) {
+        container.innerHTML = ''
+      }
+
+      sessionLog.unshift({ ticketNumber, status, type, name, time })
+      renderLog()
+    }
+
+    function renderLog() {
+      const container = document.getElementById('sessionLog')
+      container.innerHTML = sessionLog.map(item => `
+        <div class="log-item">
+          <div class="log-info">
+            <strong>${escapeHtml(item.ticketNumber)}</strong>
+            <span>${item.time} ${item.name ? '\u2022 ' + escapeHtml(item.name) : ''}</span>
+          </div>
+          <span class="log-badge badge ${item.type === 'success' ? 'badge-paid' : item.type === 'error' ? 'badge-cancelled' : 'badge-pending'}">${escapeHtml(item.status)}</span>
+        </div>
+      `).join('')
+    }
+
+    init()
+  </script>
+</body>
+</html>

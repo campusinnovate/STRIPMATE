@@ -28,6 +28,8 @@
         <div class="user-info" id="adminInfo">Loading...</div>
       </div>
       <div class="card-grid" id="statCards"></div>
+      <div class="card-grid" id="ticketStatCards" style="margin-bottom:0"></div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem">
         <div class="card">
           <h3>Booking Terbaru</h3>
@@ -36,6 +38,19 @@
         <div class="card">
           <h3>Pembayaran Terbaru</h3>
           <div id="recentPayments"></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1.5rem">
+        <div class="card">
+          <h3>Scan E-Ticket Terbaru</h3>
+          <div id="recentScans"></div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem">
+          <div style="font-size:2.5rem;margin-bottom:0.5rem">📷</div>
+          <h3 style="margin-bottom:0.25rem">Scan Tiket Peserta</h3>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">Gunakan kamera untuk scan QR code e-tiket peserta</p>
+          <a href="/admin/scanner.html" class="btn btn-primary btn-lg">Buka Scanner</a>
         </div>
       </div>
     </main>
@@ -48,19 +63,32 @@
       document.getElementById('adminInfo').textContent = session.profile.full_name || 'Admin'
 
       try {
-        const [users, bookings, payments, trips, channels] = await Promise.all([
+        const [users, bookings, payments, trips, channels, ticketStats, recentScans] = await Promise.all([
           supabaseClient.from('profiles').select('id', { count: 'exact', head: true }),
           supabaseClient.from('bookings').select('id', { count: 'exact', head: true }),
           supabaseClient.from('payments').select('id, amount, status, created_at, booking_id', { count: 'exact' }).order('created_at', { ascending: false }).limit(10),
           supabaseClient.from('trips').select('title, date, status').order('date', { ascending: true }).limit(5),
-          supabaseClient.from('payment_channels').select('id', { count: 'exact', head: true }).eq('is_active', true)
+          supabaseClient.from('payment_channels').select('id', { count: 'exact', head: true }).eq('is_active', true),
+          supabaseClient.from('e_tickets').select('status', { count: 'exact', head: false }),
+          supabaseClient.from('e_tickets').select('ticket_number, status, scanned_at, bookings:booking_id(invoice_number)').not('scanned_at', 'is', null).order('scanned_at', { ascending: false }).limit(5)
         ])
+
+        const allTickets = ticketStats.data || []
+        const totalTickets = allTickets.length
+        const scannedTickets = allTickets.filter(t => t.status === 'scanned').length
+        const activeTickets = totalTickets - scannedTickets
 
         document.getElementById('statCards').innerHTML = `
           <a href="/admin/participants.html" class="stat-card"><div class="label">Total Peserta</div><div class="value">${users.count || 0}</div></a>
           <a href="/admin/bookings.html" class="stat-card"><div class="label">Total Booking</div><div class="value">${bookings.count || 0}</div></a>
           <a href="/admin/payment-channels.html" class="stat-card"><div class="label">Channel Aktif</div><div class="value">${channels.count || 0}</div></a>
           <a href="/admin/calendar.html" class="stat-card"><div class="label">Revenue</div><div class="value">${formatCurrency(payments.data ? payments.data.reduce((s, p) => s + (p.amount || 0), 0) : 0)}</div></a>
+        `
+
+        document.getElementById('ticketStatCards').innerHTML = `
+          <a href="/admin/scanner.html" class="stat-card"><div class="label">Total E-Ticket</div><div class="value">${totalTickets}</div></a>
+          <a href="/admin/scanner.html" class="stat-card"><div class="label">Sudah Scan</div><div class="value">${scannedTickets}</div><div class="sub">${totalTickets > 0 ? Math.round(scannedTickets/totalTickets*100) : 0}% dari total</div></a>
+          <a href="/admin/scanner.html" class="stat-card"><div class="label">Belum Scan</div><div class="value">${activeTickets}</div><div class="sub">Siap diverifikasi</div></a>
         `
 
         const recentB = document.getElementById('recentBookings')
@@ -82,6 +110,22 @@
           }
         } else {
           recentB.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Belum ada booking.</p>'
+        }
+
+        const recentScansContainer = document.getElementById('recentScans')
+        const scanData = recentScans.data || []
+        if (scanData.length > 0) {
+          recentScansContainer.innerHTML = scanData.map(s => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--gray);font-size:0.82rem">
+              <div>
+                <strong style="font-size:0.85rem;color:var(--text)">${escapeHtml(s.ticket_number)}</strong>
+                <br/><span style="font-size:0.72rem;color:var(--text-muted)">${s.scanned_at ? formatDate(s.scanned_at) : '-'} &middot; ${getTicketStatusBadge(s.status)}</span>
+              </div>
+              <span style="font-size:0.75rem;color:var(--text-muted)">${s.bookings?.invoice_number || ''}</span>
+            </div>
+          `).join('')
+        } else {
+          recentScansContainer.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Belum ada scan e-tiket.</p>'
         }
 
         const recentP = document.getElementById('recentPayments')

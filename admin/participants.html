@@ -32,7 +32,7 @@
       <div style="padding:0 2rem 2rem">
         <div class="table-wrapper">
           <table class="admin-table">
-            <thead><tr><th>Nama</th><th>Email</th><th>No HP</th><th>Sekolah</th><th>Domisili</th><th>Trip</th><th>Invoice</th><th>Status</th><th>KTP</th></tr></thead>
+            <thead><tr><th>Nama</th><th>Email</th><th>No HP</th><th>Sekolah</th><th>Domisili</th><th>Trip</th><th>Invoice</th><th>Status</th><th>E-Ticket</th><th>KTP</th></tr></thead>
             <tbody id="participantBody"></tbody>
           </table>
         </div>
@@ -50,17 +50,29 @@
       await fetchParticipants()
     }
 
+    let _ticketMap = {}
+
     async function fetchParticipants() {
       const tbody = document.getElementById('participantBody')
-      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:2rem">Memuat...</td></tr>'
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem">Memuat...</td></tr>'
 
       if (_page === 0) {
-        const { data: bookings, error: bErr } = await supabaseClient
-          .from('bookings')
-          .select('id, user_id, trip_id, invoice_number, status, payment_status, trips(title)')
-          .order('created_at', { ascending: false })
-        if (bErr) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--danger)">Gagal memuat data.</td></tr>'; return }
-        _allBookings = bookings || []
+        const [bookingResult, ticketResult] = await Promise.all([
+          supabaseClient
+            .from('bookings')
+            .select('id, user_id, trip_id, invoice_number, status, payment_status, trips(title)')
+            .order('created_at', { ascending: false }),
+          supabaseClient
+            .from('e_tickets')
+            .select('booking_id, status, ticket_number')
+        ])
+        if (bookingResult.error) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--danger)">Gagal memuat data.</td></tr>'; return }
+        _allBookings = bookingResult.data || []
+        const ticketMap = {}
+        ;(ticketResult.data || []).forEach(t => {
+          ticketMap[t.booking_id] = { status: t.status, ticket_number: t.ticket_number }
+        })
+        _ticketMap = ticketMap
       }
 
       const pageData = _allBookings.slice(_page * PAGE_SIZE, (_page + 1) * PAGE_SIZE)
@@ -80,6 +92,8 @@
         const name = p.full_name || '(tanpa nama)'
         const tripTitle = b.trips?.title || '(trip dihapus)'
         const statusClass = b.status === 'confirmed' ? 'badge-success' : b.status === 'cancelled' ? 'badge-danger' : 'badge-warning'
+        const ticketInfo = _ticketMap[b.id]
+        const ticketStatus = ticketInfo ? getTicketStatusBadge(ticketInfo.status) : '<span class="badge badge-secondary">-</span>'
         return `<tr>
           <td><strong>${escapeHtml(name)}</strong></td>
           <td>${escapeHtml(p.email || '-')}</td>
@@ -89,10 +103,11 @@
           <td>${escapeHtml(tripTitle)}</td>
           <td>${escapeHtml(b.invoice_number)}</td>
           <td><span class="badge ${statusClass}">${b.status} / ${b.payment_status}</span></td>
+          <td style="text-align:center">${ticketStatus}</td>
           <td>${p.ktp_url ? `<a href="${p.ktp_url}" target="_blank" class="btn-sm" download>Download</a>` : '-'}</td>
         </tr>`
       }).join('') + `
-      <tr><td colspan="9" style="text-align:center;padding:0.75rem;background:var(--glass-bg)">
+      <tr><td colspan="10" style="text-align:center;padding:0.75rem;background:var(--glass-bg)">
         <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;font-size:0.85rem">
           <button class="btn-sm" onclick="changePage(-1)" ${_page === 0 ? 'disabled style="opacity:0.4"' : ''}>Sebelum</button>
           <span>Halaman ${_page + 1} dari ${totalPages || 1}</span>
@@ -108,11 +123,11 @@
 
     function exportCSV() {
       const rows = document.querySelectorAll('#participantBody tr')
-      const data = [['Nama','Email','No HP','Sekolah','Domisili','Trip','Invoice','Status']]
+      const data = [['Nama','Email','No HP','Sekolah','Domisili','Trip','Invoice','Status','E-Ticket']]
       rows.forEach(tr => {
         const tds = tr.querySelectorAll('td')
-        if (tds.length < 8) return
-        data.push(Array.from(tds).slice(0,8).map(td => td.textContent.trim()))
+        if (tds.length < 9) return
+        data.push(Array.from(tds).slice(0,9).map(td => td.textContent.trim()))
       })
       downloadCSV('data-peserta.csv', data)
     }

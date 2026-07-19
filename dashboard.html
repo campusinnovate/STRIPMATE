@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="/assets/js/supabase-client.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/utils.js"></script>
@@ -236,11 +237,22 @@
 
     /* ---------- ticket card ---------- */
     .ticket-card{position:relative}
-    .ticket-qr{
-      width:80px;height:80px;background:var(--navy);border-radius:0.6rem;
-      display:flex;align-items:center;justify-content:center;margin:0 auto 0.4rem;
-      font-size:1.7rem;color:var(--ember-light);position:relative;overflow:hidden
+    .ticket-qr-wrap{
+      text-align:center;min-width:100px
     }
+    .ticket-qr{
+      width:90px;height:90px;background:var(--paper);border-radius:0.5rem;
+      display:flex;align-items:center;justify-content:center;margin:0 auto 0.35rem;
+      position:relative;overflow:hidden;border:1.5px solid rgba(20,32,51,0.08);
+      padding:4px
+    }
+    .ticket-qr canvas,.ticket-qr img{width:100%!important;height:100%!important;display:block}
+    .ticket-qr-placeholder{
+      width:90px;height:90px;background:var(--navy);border-radius:0.5rem;
+      display:flex;align-items:center;justify-content:center;margin:0 auto 0.35rem;
+      font-size:1.7rem;color:var(--ember-light)
+    }
+    .ticket-status{margin-top:0.3rem;display:flex;justify-content:center}
 
     /* ---------- toast notifications ---------- */
     #toastStack{
@@ -555,23 +567,51 @@
       container.innerHTML = tickets.map(t => {
         const booking = bookingsCache.find(b => b.id === t.booking_id)
         const tripTitle = booking?.trips?.title || 'E-Ticket'
+        const qrId = 'qr_' + t.id.replace(/-/g, '_')
         return `
           <div class="card ticket-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
-              <div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+              <div style="flex:1;min-width:180px">
                 <h3 style="margin-bottom:0.25rem">${escapeHtml(tripTitle)}</h3>
                 <p class="mono" style="font-size:0.82rem;color:var(--mist)">${escapeHtml(t.ticket_number)}</p>
                 <p style="font-size:0.78rem;color:var(--mist)">Terbit: ${formatDate(t.issued_at)}</p>
+                <div style="margin-top:0.4rem">${getTicketStatusBadge(t.status)}</div>
               </div>
-              <div style="text-align:center">
-                <div class="ticket-qr">&#128274;</div>
-                <button class="btn btn-primary btn-sm" onclick="showToast('E-ticket sedang diunduh...', 'info')">Download</button>
+              <div class="ticket-qr-wrap">
+                <div id="${qrId}" class="ticket-qr"></div>
+                <button class="btn btn-primary btn-sm" onclick="downloadQR('${qrId}', '${escapeHtml(t.ticket_number)}')">Download QR</button>
               </div>
             </div>
           </div>
         `
       }).join('')
       staggerList(container)
+      tickets.forEach(t => {
+        const qrId = 'qr_' + t.id.replace(/-/g, '_')
+        const el = document.getElementById(qrId)
+        if (el) {
+          new QRCode(el, {
+            text: t.ticket_number,
+            width: 82,
+            height: 82,
+            colorDark: '#142033',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+          })
+        }
+      })
+    }
+
+    function downloadQR(qrId, ticketNumber) {
+      const el = document.getElementById(qrId)
+      if (!el) return
+      const canvas = el.querySelector('canvas')
+      if (!canvas) { showToast('QR code belum siap', 'info'); return }
+      const link = document.createElement('a')
+      link.download = 'E-Ticket_' + ticketNumber.replace(/[^A-Za-z0-9]/g, '_') + '.png'
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+      showToast('QR Code berhasil diunduh!', 'success')
     }
 
     async function loadCertificates() {
